@@ -47,19 +47,14 @@ app.use(passport.session());
 app.use('/auth', authRouter);
 app.use('/dashboard', dashboardRouter);
 
-app.get('/user', async (req, res) => {
-    user = await userDataAccess.getUserByEmail('admin@admin.com');
-
-    const jSON = JSON.stringify(user, (key, value) =>
-    typeof value === "bigint" ? `BIGINT::${value}` : value
-  );
-
-    res.json(jSON);
-})
-
 /**
  * Routes
  */
+app.get('/user', async (req, res) => {
+    const user = await userDataAccess.getUserById(1);
+    res.json(user);
+})
+
 app.get('/', checkAuthenticated, (req, res) => {
     res.redirect(`dashboard/`);
 });
