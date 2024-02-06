@@ -1,0 +1,38 @@
+{
+  "name": "library_management_system",
+  "version": "1.0.0",
+  "description": "Library management system project for IU INFO-C451 ",
+  "main": "index.js",
+  "scripts": {
+    "start": "cross-env DEBUG=app,app:* & node ./app.js",
+    "debug": "cross-env DEBUG=app,app:* nodemon ./app.js",
+    "start-windows": "set DEBUG=app,app:* & node ./app.js",
+    "debug-windows": "set DEBUG=* & nodemon ./app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "library-management-system"
+  },
+  "author": "Monica Galvez, Dalton Burge, and William Applegate",
+  "license": "MIT",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "chalk": "^4.1.1",
+    "cookie-parser": "^1.4.6",
+    "debug": "^4.3.1",
+    "dotenv": "^16.4.1",
+    "ejs": "^3.1.9",
+    "express": "^4.18.2",
+    "express-flash": "^0.0.2",
+    "express-session": "^1.18.0",
+    "mariadb": "^3.2.3",
+    "morgan": "^1.10.0",
+    "nodemon": "^3.0.3",
+    "passport": "^0.7.0",
+    "passport-local": "^1.0.0"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3"
+  }
+}
