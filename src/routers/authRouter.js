@@ -22,7 +22,8 @@ authRouter.route('/register').get((req, res) => {
 
 authRouter.route('/register').post( async (req, res) => {
     const {name, phone, email, dob, password} = req.body;
-    const passwordHash = bcrypt.hash(password, 10);
+    const passwordHash = await bcrypt.hash(password, 10);
+    console.log(`password hash created >>>>>>>> ${passwordHash}`);
     let result = await userDataAccess.createUser(name, phone, email, passwordHash, dob);
     if(result) {
          res.redirect('/auth/login');

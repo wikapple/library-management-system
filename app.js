@@ -50,10 +50,6 @@ app.use('/dashboard', dashboardRouter);
 /**
  * Routes
  */
-app.get('/user', async (req, res) => {
-    const user = await userDataAccess.getUserById(1);
-    res.json(user);
-})
 
 app.get('/', checkAuthenticated, (req, res) => {
     res.redirect(`dashboard/`);
