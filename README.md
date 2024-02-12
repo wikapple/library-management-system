@@ -19,7 +19,7 @@ MVC, or Model View Controller, is a web architecture. The application routes req
 #### SRC
 - Stores all the node.js code for the web application, which includes JavaScript files and .EJS files. We will actively work in this directory. It includes a config folder which contains database and security set up. The data folder contains the files responsible for calling the database. The routers folder contains the controller methods used to respond to requests. The views folder stores the .EJS files that are used to dynamically create and deliver html pages to the user. 
 #### .env file
-- Users to store secrets or settings used to run the application. These settings may differ depending on where the environment is being run. This file should be private and not shared in version control, however I have left it to speed up setup.
+- Used to store secrets or settings used to run the application. These settings may differ depending on where the environment is being run. This file should be private and not shared in version control, however I have left it to speed up setup.
 #### .gitignore 
 - Special git file used to ignore certain files in version control. Files matching .gitignore will not be tracked in source control.
 #### app.js
@@ -34,7 +34,7 @@ MVC, or Model View Controller, is a web architecture. The application routes req
 #### Install git
 #### Install preferred IDE (VS Code for example)
 #### clone github repository into a local environment
-#### open the application in an idea or in a terminal
+#### open the application in an IDE or in a terminal
 - In the terminal, run the command: npm install
 - This will install the dependencies listed in the package.json file.
 #### Install MariaDB or MySQL
@@ -42,6 +42,7 @@ MVC, or Model View Controller, is a web architecture. The application routes req
 - Make sure to keep track of your database port number, database username, and password. 
 - Open up Heidi SQL (or MySQL Workbench)
 - Connect to the database, open a query window, and run the script found in the github solution's script folder. 
-- Update the project's .env file to match database setup
+- Update the project's .env file to match database setup (DB_HOST, DB_NAME, DB_PORT, DB_USER, and DB_PASS)
 #### Run application
 - In the application, run the command: npm run debug
+- While the application is running, open a browser and go to localhost:4000 (or the port you specified in .env), and verify you see a default login page.
