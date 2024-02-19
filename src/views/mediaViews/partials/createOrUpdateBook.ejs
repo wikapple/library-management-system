@@ -1,0 +1,37 @@
+<div id="book-modal" class="modal">
+    <form action="media/book" method="POST" class="modal-content">
+        <input type="hidden" id="id" name="id" value="0">
+        <div>
+            <label for="title">title</label> <input id="title" name="title" type="text" required>
+        </div>
+        <div>
+            <label for="author">author</label> <input id="author" name="author" type="text" required>
+        </div>
+        <div>
+            <label for="publisher">publisher</label> <input id="publisher" name="publisher" type="text" required>
+        </div>
+        <div>
+            <label for="description">description</label> <textarea id="description" name="description"
+                required></textarea>
+        </div>
+        <div>
+            <label for="pageCount">page count</label> <input id="pageCount" name="pageCount" type="number" required>
+        </div>
+        <div>
+            <label for="isbn">ISBN</label> <input id="isbn" name="isbn" type="text" maxlength="20" required>
+        </div>
+      <div>
+            <label for="categories">Categories</label>
+            <select name="categories[]" id="categories" multiple>
+                <option value="option1">Option 1</option>
+        <option value="option2">Option 2</option>
+        <option value="option3">Option 3</option>
+        <option value="option4">Option 4</option>
+            </select>
+        </div>
+        <div>
+        <button class="close">Cancel</button> 
+        <input type="submit" value="Save">
+        </div>
+    </form>
+</div>

@@ -1,11 +1,17 @@
 const pool = require('../config/database');
-const debug = require('debug')('app:userDataAccess');
+const debug = require('debug')('app:mediaDataAccess');
 
-const getAllUsers = async () => {
+const getAllBooks = async () => {
     try{
-        const sqlQuery = `CALL user_SelectAll()`;
-        const results = await pool.query(sqlQuery, []);
-        return results;
+        const sqlQuery = `CALL book_SelectAll()`;
+        const booksResult = await pool.query(sqlQuery, []);
+        let books = booksResult[0];
+        for(let book of books){
+            const categoryQuery = `Call category_SelectByMediaId(?)`;
+            const categories = await pool.query(categoryQuery, [book.mediaId])
+            book.categories = categories[0];
+        }
+        return books;
     }
     catch (error) {
         debug(error);
@@ -68,5 +74,5 @@ const selectAllRoles= async () => {
     }
 }
 
-module.exports = {getAllUsers, getUserByEmail, getUserById, createUser, updateUser, selectAllRoles};
+module.exports = {getAllBooks};
 

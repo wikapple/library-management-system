@@ -13,8 +13,9 @@ const session = require('express-session');
 dotenv.config({path: '.env'});
 const userDataAccess = require('./src/data/userDataAccess');
 const passport = require('passport');
-const authRouter = require('./src/routers/authRouter');
-const dashboardRouter = require('./src/routers/dashboardRouter');
+const authRoutes = require('./src/routes/auth.routes');
+const homeRoutes = require('./src/routes/home.routes');
+const mediaRoutes = require('./src/routes/media.routes');
 
 const app = express();
 app.set('views', './src/views/');
@@ -44,37 +45,12 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
-app.use('/auth', authRouter);
-app.use('/dashboard', dashboardRouter);
-
-/**
- * Routes
- */
-
-app.get('/', checkAuthenticated, (req, res) => {
-    res.redirect(`dashboard/`);
-});
+app.use('/auth', authRoutes);
+app.use('/', homeRoutes);
+app.use('/media', mediaRoutes);
 
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
     console.log(`Listening for requests on port ${PORT}`);
 });
-
-function checkNotAuthenticated(req, res, next) {
-    if (req.isAuthenticated()) {
-        return res.redirect('/');
-    }
-    else {
-        next();
-    }
-}
-
-function checkAuthenticated(req, res, next) {
-    if (req.isAuthenticated()){
-        return next();
-    }
-    else{
-        return res.redirect('auth/login');
-    }
-}
