@@ -7,6 +7,8 @@ const mediaRouter = express.Router();
 
 mediaRouter.get('/', authValidator.checkAuthenticated, mediaController.mediaListView);
 mediaRouter.get('/books', authValidator.checkAuthenticated, mediaController.getBookList);
+mediaRouter.post('/book', authValidator.checkAuthenticatedEmployee, mediaController.addOrUpdateBook);
+mediaRouter.get('/categories', authValidator.checkAuthenticated, mediaController.getCategoryList);
 mediaRouter.get('/cds', authValidator.checkAuthenticated, mediaController.getCdList);
 mediaRouter.get('/dvds', authValidator.checkAuthenticated, mediaController.getDvdList);
 mediaRouter.get('/instruments', authValidator.checkAuthenticated, mediaController.getInstrumentList);

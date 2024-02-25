@@ -8,24 +8,33 @@
     <style>
         /* Style for the modal */
         .modal {
-            display: none; /* Hidden by default */
-            position: fixed; /* Stay in place */
-            z-index: 1; /* Sit on top */
+            display: none;
+            /* Hidden by default */
+            position: fixed;
+            /* Stay in place */
+            z-index: 1;
+            /* Sit on top */
             left: 0;
             top: 0;
-            width: 100%; /* Full width */
-            height: 100%; /* Full height */
-            overflow: auto; /* Enable scroll if needed */
-            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            width: 100%;
+            /* Full width */
+            height: 100%;
+            /* Full height */
+            overflow: auto;
+            /* Enable scroll if needed */
+            background-color: rgba(0, 0, 0, 0.4);
+            /* Black w/ opacity */
         }
 
         /* Modal content */
-        .modal-content {
+        .book-modal-content {
             background-color: #fefefe;
-            margin: 15% auto; /* 15% from the top and centered */
+            margin: 15% auto;
+            /* 15% from the top and centered */
             padding: 20px;
             border: 1px solid #888;
-            width: 80%; /* Could be more or less, depending on screen size */
+            width: 50%;
+            /* Could be more or less, depending on screen size */
             display: flex;
             flex-direction: column;
             align-items: start;
@@ -38,58 +47,92 @@
     <!-- Include the partial .ejs files -->
     <%- include('partials/createOrUpdateBook.ejs') %>
 
-    <header>
-        <h1>Media List</h1>
-    </header>
-    <menu>
-        <div class="media-btn-container">
-            <button id="book-button" disabled onClick="loadBookList()">Books</button>
-            <button id="cd-button" onClick="loadCdList()">CDs</button>
-            <button id="dvd-button" onClick="loadDvdList()">DVDs</button>
-            <button id="instrument-button" onClick="loadInstrumentList()">Instruments</button>
-        </div>
-    </menu>
-    <main>
-        <section id="media-list-container">
-            <h2 id="media-type-header"></h2>
-            <button id="add-new-media"></button>
-            <table id="media-table" border="1" bordercolor="#888" cellpadding="2">
+        <header>
+            <h1>Media List</h1>
+        </header>
+        <menu>
+            <div class="media-btn-container">
+                <button id="book-button" disabled onClick="loadBookList()">Books</button>
+                <button id="cd-button" onClick="loadCdList()">CDs</button>
+                <button id="dvd-button" onClick="loadDvdList()">DVDs</button>
+                <button id="instrument-button" onClick="loadInstrumentList()">Instruments</button>
+            </div>
+        </menu>
+        <main>
+            <section id="media-list-container">
+                <h2 id="media-type-header"></h2>
+                <button id="add-new-media"></button>
+                <table id="media-table" border="1" bordercolor="#888" cellpadding="2">
 
-            </table>
-        </section>
-    </main>
-    <script src="js/jquery.min.js"></script>
-    <script>
-        jQuery(document).ready(function () {
-            loadBookList();
-        });
-        function loadBookList() {
-            jQuery('#book-button').prop('disabled', true);
-            jQuery('#cd-button').prop('disabled', false);
-            jQuery('#dvd-button').prop('disabled', false);
-            jQuery('#instrument-button').prop('disabled', false);
-            jQuery('#add-new-media').html('Add new book');
-            jQuery('#add-new-media').click(function() {
-                jQuery('#book-modal').show();
+                </table>
+            </section>
+        </main>
+        <script src="js/jquery.min.js"></script>
+        <script>
+            jQuery(document).ready(function () {
+                loadBookList();
+                loadCategoryList();
             });
 
-            jQuery('.close').click(function () {
-                jQuery('#book-modal').hide();
-            });
+            function loadCategoryList() {
+                jQuery.ajax({
+                    url: '/media/categories',
+                    type: 'GET',
+                    success: function (data) {
+                        let selectContent = ``;
+                        for (category of data) {
+                            selectContent += `<option value="${category.categoryId}">${category.name}</option>`;
+                        }
+                        jQuery('#categories').html(selectContent);
 
-            jQuery(window).click(function(event) {
-                if (event.target == jQuery('#book-modal')[0]) {
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error fetching data:', error);
+                    }
+                });
+            }
+
+            function loadBookList() {
+                
+                jQuery("#book-modal-content").submit(function (e) {
+                    e.preventDefault();
+                });
+                
+                jQuery('#book-button').prop('disabled', true);
+                jQuery('#cd-button').prop('disabled', false);
+                jQuery('#dvd-button').prop('disabled', false);
+                jQuery('#instrument-button').prop('disabled', false);
+                jQuery('#add-new-media').html('Add new book');
+                jQuery('#add-new-media').click(function () {
+                    jQuery('#book-modal').show();
+                });
+                updateBooksTable();
+                jQuery('.close').click(function () {
                     jQuery('#book-modal').hide();
-                }
-            });
+                });
 
-            jQuery.ajax({
-                url: '/media/books',
-                type: 'GET',
-                success: function (data) {
-                    jQuery('#media-type-header').html('Books');
+                jQuery('.submit').click(function () {
+                    jQuery('#book-modal').hide();
+                    updateBooksTable();
+                });
 
-                    let tableContent = `
+                jQuery(window).click(function (event) {
+                    if (event.target == jQuery('#book-modal')[0]) {
+                        jQuery('#book-modal').hide();
+                    }
+                });
+
+
+            }
+
+            function updateBooksTable() {
+                jQuery.ajax({
+                    url: '/media/books',
+                    type: 'GET',
+                    success: function (data) {
+                        jQuery('#media-type-header').html('Books');
+
+                        let tableContent = `
                     <thead>
         <tr>
             <th>Title</th>
@@ -102,8 +145,8 @@
     </thead>
     <tbody>`;
 
-                    for (book of data) {
-                        tableContent += `<tr>
+                        for (book of data) {
+                            tableContent += `<tr>
             <td> ${book.title}</td>
             <td>${book.author}</td>
             <td>${book.publisher}</td>
@@ -111,33 +154,30 @@
             <td>${book.categories.map(category => category.name).join()}</td>
             <td>Edit Delete</td>
         </tr>`
+                        }
+
+                        tableContent += `</tbody>`
+                        jQuery('#media-table').html(tableContent);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error fetching data:', error);
                     }
+                });
+            }
 
-                    tableContent += `</tbody>`
-                    jQuery('#media-table').html(tableContent);
+            function loadCdList() {
+                jQuery('#book-button').prop('disabled', false);
+                jQuery('#cd-button').prop('disabled', true);
+                jQuery('#dvd-button').prop('disabled', false);
+                jQuery('#instrument-button').prop('disabled', false);
 
+                jQuery.ajax({
+                    url: '/media/cds',
+                    type: 'GET',
+                    success: function (data) {
+                        jQuery('#media-type-header').html('CDs');
 
-
-                },
-                error: function (xhr, status, error) {
-                    console.error('Error fetching data:', error);
-                }
-            });
-        }
-
-        function loadCdList() {
-            jQuery('#book-button').prop('disabled', false);
-            jQuery('#cd-button').prop('disabled', true);
-            jQuery('#dvd-button').prop('disabled', false);
-            jQuery('#instrument-button').prop('disabled', false);
-
-            jQuery.ajax({
-                url: '/media/cds',
-                type: 'GET',
-                success: function (data) {
-                    jQuery('#media-type-header').html('CDs');
-
-                    let tableContent = `
+                        let tableContent = `
                     <thead>
         <tr>
             <th>Title</th>
@@ -147,39 +187,39 @@
     </thead>
     <tbody>`;
 
-                    for (cd of data) {
-                        tableContent += `<tr>
+                        for (cd of data) {
+                            tableContent += `<tr>
             <td> ${cd.title}</td>
             <td>${cd.categories.map(category => category.name).join()}</td>
             <td>Edit Delete</td>
         </tr>`
+                        }
+
+                        tableContent += `</tbody>`
+                        jQuery('#media-table').html(tableContent);
+
+
+
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error fetching data:', error);
                     }
+                });
+            }
 
-                    tableContent += `</tbody>`
-                    jQuery('#media-table').html(tableContent);
+            function loadDvdList() {
+                jQuery('#book-button').prop('disabled', false);
+                jQuery('#cd-button').prop('disabled', false);
+                jQuery('#dvd-button').prop('disabled', true);
+                jQuery('#instrument-button').prop('disabled', false);
 
+                jQuery.ajax({
+                    url: '/media/dvds',
+                    type: 'GET',
+                    success: function (data) {
+                        jQuery('#media-type-header').html('DVDs');
 
-
-                },
-                error: function (xhr, status, error) {
-                    console.error('Error fetching data:', error);
-                }
-            });
-        }
-
-        function loadDvdList() {
-            jQuery('#book-button').prop('disabled', false);
-            jQuery('#cd-button').prop('disabled', false);
-            jQuery('#dvd-button').prop('disabled', true);
-            jQuery('#instrument-button').prop('disabled', false);
-
-            jQuery.ajax({
-                url: '/media/dvds',
-                type: 'GET',
-                success: function (data) {
-                    jQuery('#media-type-header').html('DVDs');
-
-                    let tableContent = `
+                        let tableContent = `
                     <thead>
         <tr>
             <th>Title</th>
@@ -189,38 +229,38 @@
     </thead>
     <tbody>`;
 
-                    for (dvd of data) {
-                        tableContent += `<tr>
+                        for (dvd of data) {
+                            tableContent += `<tr>
             <td> ${dvd.title}</td>
             <td>${dvd.categories.map(category => category.name).join()}</td>
             <td>Edit Delete</td>
         </tr>`
+                        }
+
+                        tableContent += `</tbody>`
+                        jQuery('#media-table').html(tableContent);
+
+
+
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error fetching data:', error);
                     }
+                });
+            }
+            function loadInstrumentList() {
+                jQuery('#book-button').prop('disabled', false);
+                jQuery('#cd-button').prop('disabled', false);
+                jQuery('#dvd-button').prop('disabled', false);
+                jQuery('#instrument-button').prop('disabled', true);
 
-                    tableContent += `</tbody>`
-                    jQuery('#media-table').html(tableContent);
+                jQuery.ajax({
+                    url: '/media/cds',
+                    type: 'GET',
+                    success: function (data) {
+                        jQuery('#media-type-header').html('Instruments');
 
-
-
-                },
-                error: function (xhr, status, error) {
-                    console.error('Error fetching data:', error);
-                }
-            });
-        }
-        function loadInstrumentList() {
-            jQuery('#book-button').prop('disabled', false);
-            jQuery('#cd-button').prop('disabled', false);
-            jQuery('#dvd-button').prop('disabled', false);
-            jQuery('#instrument-button').prop('disabled', true);
-
-            jQuery.ajax({
-                url: '/media/cds',
-                type: 'GET',
-                success: function (data) {
-                    jQuery('#media-type-header').html('Instruments');
-
-                    let tableContent = `
+                        let tableContent = `
                     <thead>
         <tr>
             <th>Title</th>
@@ -230,26 +270,26 @@
     </thead>
     <tbody>`;
 
-                    for (instrument of data) {
-                        tableContent += `<tr>
+                        for (instrument of data) {
+                            tableContent += `<tr>
             <td> ${instrument.title}</td>
             <td>${instrument.categories.map(category => category.name).join()}</td>
             <td>Edit Delete</td>
         </tr>`
+                        }
+
+                        tableContent += `</tbody>`
+                        jQuery('#media-table').html(tableContent);
+
+
+
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error fetching data:', error);
                     }
-
-                    tableContent += `</tbody>`
-                    jQuery('#media-table').html(tableContent);
-
-
-
-                },
-                error: function (xhr, status, error) {
-                    console.error('Error fetching data:', error);
-                }
-            });
-        }
-    </script>
+                });
+            }
+        </script>
 </body>
 
 </html>

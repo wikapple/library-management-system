@@ -1,6 +1,17 @@
 const pool = require('../config/database');
 const debug = require('debug')('app:mediaDataAccess');
 
+const getAllCategories = async () => {
+    try{
+        const sqlQuery = `CALL category_SelectAll()`;
+        const categoryResults = await pool.query(sqlQuery, []);
+        return categoryResults[0];
+
+    } catch (error) {
+        debug(error);
+    }
+}
+
 const getAllBooks = async () => {
     try{
         const sqlQuery = `CALL book_SelectAll()`;
@@ -14,6 +25,25 @@ const getAllBooks = async () => {
         return books;
     }
     catch (error) {
+        debug(error);
+    }
+}
+
+const addBook = async (newBook) => {
+    try {
+        const sqlQuery = `CALL book_Insert(?, ?, ?, ?, ?, ?, ?)`
+        const params = [newBook.title, newBook.description, newBook.isbn, newBook.author, newBook.publisher, newBook['categories[]'].join(), newBook.pageCount];
+        const result = await pool.query(sqlQuery, params);
+    } catch (error) {
+        debug(error);
+    }
+}
+const updateBook = async (book) => {
+    try {
+        const sqlQuery = `CALL book_Update(?, ?, ?, ?, ?, ?, ?, ?)`
+        const params = [newBook.mediaId, newBook.title, newBook.description, newBook.isbn, newBook.author, newBook.publisher, newBook['categories[]'].join(), newBook.pageCount];
+        const result = await pool.query(sqlQuery, params);
+    } catch (error) {
         debug(error);
     }
 }
@@ -74,5 +104,5 @@ const selectAllRoles= async () => {
     }
 }
 
-module.exports = {getAllBooks};
+module.exports = {getAllCategories, getAllBooks, addBook, updateBook};
 
