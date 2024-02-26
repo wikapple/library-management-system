@@ -16,9 +16,12 @@ const passport = require('passport');
 const authRoutes = require('./src/routes/auth.routes');
 const homeRoutes = require('./src/routes/home.routes');
 const mediaRoutes = require('./src/routes/media.routes');
-
+const expressLayouts = require('express-ejs-layouts');
 const app = express();
+app.use(express.static(path.join(__dirname, '/public/')));
+
 app.set('views', './src/views/');
+app.use(expressLayouts);
 app.set('view engine', 'ejs');
 const initializePassport = require('./src/config/passport');
 
@@ -33,7 +36,6 @@ initializePassport (
  * Middleware
  */
 app.use(morgan('combined'));
-app.use(express.static(path.join(__dirname, '/public/')));
 app.use(express.json());
 app.use(express.urlencoded({extended:false}));
 app.use(cookieParser());
@@ -45,6 +47,13 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
+app.use((req, res, next) => {
+    console.log("Layout:", res.locals.layout);
+    res.locals.layout = 'shared/layout.ejs';
+    res.locals.currentUser = req.user;
+    next();
+});
+
 app.use('/auth', authRoutes);
 app.use('/', homeRoutes);
 app.use('/media', mediaRoutes);
