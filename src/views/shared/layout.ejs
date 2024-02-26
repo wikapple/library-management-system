@@ -33,15 +33,15 @@
                 <% } %>
               </ul>
               <% if (currentUser) { %>
-              <button type="button" class="btn btn-light mr-5" onClick="logout()">
-                <i class="fa-solid fa-right-from-bracket"></i>
-                logout
-            </button>
+                <button type="button" class="btn btn-light mr-5" onClick="logout()">
+                  <i class="fa-solid fa-right-from-bracket"></i>
+                  logout
+              </button>
             <% } else { %>
-              <button type="button" class="btn btn-light mr-5" onClick="login()">
+              <a href="/auth/login">
                 <i class="fa-solid fa-right-to-bracket"></i>
                 login
-            </button>
+              </a>
             <% } %>
             </div>
           </nav>
@@ -54,5 +54,6 @@
     <script src="/js/jquery.min.js"></script>
     <script src="/js/jquery-ui.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/library.js"></script>
 </body>
 </html>

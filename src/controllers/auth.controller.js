@@ -4,8 +4,6 @@ const userDataAccess = require('../data/userDataAccess');
 const bcrypt = require('bcrypt');
 const passport = require('passport');
 
-const authRouter = express.Router();
-
 const registerView = async (req, res, next) => {
     res.render('authViews/register', {});
 }
@@ -30,10 +28,20 @@ const loginView = async (req, res, next) => {
 
 const login = (
     passport.authenticate('local', {
-    successRedirect: '/',
-    failureRedirect: '/auth/login',
-    failureFlash: true
-}));
+        successRedirect: '/',
+        failureRedirect: '/auth/login',
+        failureFlash: true
+    }));
+
+const logout = (req, res) => {
+    req.logout(err => {
+        if (err) {
+            console.log("Error: ", err);
+            return next(err);
+        }
+        res.redirect('/');
+    });
+};
 
 
-module.exports = {register, registerView, login, loginView };
+module.exports = { register, registerView, login, loginView, logout };
