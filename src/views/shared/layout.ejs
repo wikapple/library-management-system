@@ -2,58 +2,66 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IU Library</title>
-    <!-- Include your CSS imports here -->
-    <link rel="stylesheet" href="/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/css/fontawesome.min.css">
-    <link href="/css/brands.min.css" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IU Library</title>
+  <!-- Include your CSS imports here -->
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/fontawesome.min.css">
+  <link href="/css/brands.min.css" rel="stylesheet">
   <link href="/css/solid.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/css/jquery-ui.min.css">
+  <link rel="stylesheet" href="/css/jquery-ui.min.css">
+  <link rel="stylesheet" href="/css/library.css">
 </head>
+
 <body>
 
-    <!-- Include your toolbar here -->
-    <header>
-        
-          <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <img src="/images/iu-trident-logo-transparent.png" alt="IU Logo" height="45px"class="d-inline-block">
-            <a class="navbar-brand" href="/">IU Student Library</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-              <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-              <ul class="navbar-nav mr-auto">
-                <% if (currentUser) { %>
-                <li class="nav-item active">
-                  <a class="nav-link" href="/"><i class="far fa-user"></i> My Profile</a>
-                </li>
-                <% } %>
-              </ul>
-              <% if (currentUser) { %>
-                <button type="button" class="btn btn-light mr-5" onClick="logout()">
-                  <i class="fa-solid fa-right-from-bracket"></i>
-                  logout
-              </button>
-            <% } else { %>
-              <a href="/auth/login">
-                <i class="fa-solid fa-right-to-bracket"></i>
-                login
-              </a>
-            <% } %>
-            </div>
-          </nav>
-    </header>
-    <!-- Render the content of the specific page -->
-    <%- body %>
+  <!-- Include your toolbar here -->
+  <header>
 
-    <!-- Include your JS imports here -->
-    <script src="/js/fontawesome.min.js"></script>
-    <script src="/js/jquery.min.js"></script>
-    <script src="/js/jquery-ui.min.js"></script>
-    <script src="/js/bootstrap.min.js"></script>
-    <script src="/js/library.js"></script>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <img src="/images/iu-trident-logo-transparent.png" alt="IU Logo" height="45px" class="d-inline-block">
+      <a class="navbar-brand" href="/">IU Student Library</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+          <% if (currentUser) { %>
+            <li class="nav-item active">
+              <a class="nav-link" href="/"><i class="far fa-user"></i> My Profile</a>
+            </li>
+            <% } %>
+        </ul>
+        <% if (currentUser) { %>
+          <button type="button" class="btn btn-light mr-5" onClick="logout()">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            logout
+          </button>
+          <% } else { %>
+            <a href="/auth/login">
+              <i class="fa-solid fa-right-to-bracket"></i>
+              login
+            </a>
+            <% } %>
+      </div>
+    </nav>
+  </header>
+  <!-- Render the content of the specific page -->
+
+  <div class="content">
+    <%- body %>
+  </div>
+
+  <!-- Include your JS imports here -->
+  <script src="/js/fontawesome.min.js"></script>
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/jquery-ui.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <script src="/js/library.js"></script>
 </body>
+
 </html>

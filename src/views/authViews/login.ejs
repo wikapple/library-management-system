@@ -1,16 +1,25 @@
-<h1>Login</h1>
 <% if (messages.error) {%>
     <%= messages.error %>
-<% } %>
-<form action="/auth/login" method="POST">
-    <div>
-        <label for="email">Email</label>
-        <input type="email" id="email" name="email" required>
-    </div>
-    <div>
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" required>
-    </div>
-    <button type="submit">Login</button>
-</form>
-<a href="/auth/register">Register</a>
+        <% } %>
+            <div class="container rounded auth-container">
+                <div class="row justify-content-center"> <!-- Use justify-content-center to center the row -->
+         
+                        <form class="form-signin auth-form container-fluid" action="/auth/login" method="POST">
+                            <h1 class="h3 mb-3 font-weight-normal text-center">Sign In</h1>
+                            <div class="form-group mb-2">
+                                <input type="email" name="email" class="form-control" id="email" aria-describedby="emailHelp"
+                                    placeholder="Enter email">
+                                <small id="emailHelp" class="form-text text-muted">We'll never share your email with
+                                    anyone else.</small>
+                            </div>
+                            <div class="form-group mb-2">
+                                <input type="password" name="password" Yclass="form-control" id="password" placeholder="Password">
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block mb-3">Submit</button>
+                        </form>
+                    </div>
+                    <div class="text-center">
+                        <p>Not a member? <a href="/auth/Register">Register</a></p>
+                    </div>
+            </div>
+            
