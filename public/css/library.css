@@ -1,3 +1,6 @@
+body{
+    background-color: whitesmoke;
+}
 .auth-container {
     background-color: whitesmoke;
     margin-top: 100px;
@@ -5,3 +8,10 @@
     padding: 10px 20px;
 }
 
+.anchor-feature-link {
+    color: inherit;
+    border:1px solid #DDD;
+    padding:10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+    min-width: 320px;
+}
