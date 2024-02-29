@@ -30,8 +30,14 @@ class MediaDataAccess {
         try {
             const sqlQuery = `CALL media_SelectByType(?)`;
             const queryResult = await pool.query(sqlQuery, [typeId]);
-            return queryResult[0];
+            let mediaList = queryResult[0];
 
+            for(let media of mediaList){
+                const categoryQuery = `Call category_SelectByMediaId(?)`;
+                const categoriesQueryResult = await pool.query(categoryQuery, [media.id])
+                media.categories = categoriesQueryResult[0];
+            }
+            return mediaList;
         } catch (error) {
             debug(error);
         }
