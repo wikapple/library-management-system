@@ -50,6 +50,12 @@ class MediaController {
       res.sendStatus(500);
     }
   }
+
+  async mediaListView(req, res) {
+    let model = {};
+
+    res.render(`mediaViews/mediaList.ejs`, {'model': model});
+  }
 }
 
 module.exports = MediaController;
