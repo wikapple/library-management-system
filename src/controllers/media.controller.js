@@ -1,69 +1,55 @@
 const debug = require('debug')('app:authRouter');
-const mediaDataAccess = require('../data/mediaDataAccess');
+const MediaDataAccess = require('../data/MediaDataAccess');
 
+class MediaController {
 
-const mediaListView = async (req, res) => {
-  let model = {};
-  //const reqJson = stringify(req);
+  constructor() {
 
-  model.user = req.user;
-
-  model.books = await mediaDataAccess.getAllBooks();
-
-  res.render(`mediaViews/mediaList.ejs`, { 'model': model });
-};
-
-const getCategoryList = async (req, res) => {
-  const categories = await mediaDataAccess.getAllCategories();
-  res.status(200).json(categories);
-}
-
-const getBookList = async (req, res) => {
-  const books = await mediaDataAccess.getAllBooks();
-  res.status(200).json(books);
-}
-const addOrUpdateBook = async (req, res) => {
-
-  if (typeof req.body['categories[]'] == 'string') {
-    req.body['categories[]'] = [req.body['categories[]']];
   }
 
-  if (req.body.mediaId && req.body.mediaId > 0) {
-    await mediaDataAccess.updateBook(req.body);
-  } else {
-    await mediaDataAccess.addBook(req.body);
+  async getCategoryList(req, res) {
+    const mediaDataAccess = new MediaDataAccess();
+    const categories = await mediaDataAccess.getAllCategories();
+    res.status(200).json(categories);
   }
-  res.status(204).send('success');
-}
 
-function stringify(obj) {
-  let cache = [];
-  let str = JSON.stringify(obj, function (key, value) {
-    if (typeof value === "object" && value !== null) {
-      if (cache.indexOf(value) !== -1) {
-        // Circular reference found, discard key
-        return;
-      }
-      // Store value in our collection
-      cache.push(value);
+  async getMediaTypeList(req, res) {
+    const mediaDataAccess = new MediaDataAccess();
+    const mediaTypes = await mediaDataAccess.getAllMediaTypes();
+    res.status(200).json(mediaTypes);
+  }
+
+  async getMediaListByType(req, res) {
+    const mediaType = req.params.typeId;
+    const mediaDataAccess = new MediaDataAccess();
+    const mediaList = await mediaDataAccess.getMediaListByType(mediaType);
+    res.status(200).json(mediaList);
+  }
+
+  async addOrUpdateMedia(req, res) {
+    const mediaDataAccess = new MediaDataAccess();
+
+    const dbCallSuccessful =  (req.body?.id === 0) ?
+      await mediaDataAccess.createMedia(req.body) :
+      await mediaDataAccess.updateMedia(req.body); 
+    
+    if(dbCallSuccessful) {
+      res.sendStatus(204);
+    } else {
+      res.sendStatus(500);
     }
-    return value;
-  });
-  cache = null; // reset the cache
-  return str;
-}
-const getCdList = async (req, res) => {
-  const books = await mediaDataAccess.getAllBooks();
-  res.status(200).json([]);
-}
-const getDvdList = async (req, res) => {
-  const books = await mediaDataAccess.getAllBooks();
-  res.status(200).json([]);
-}
-const getInstrumentList = async (req, res) => {
-  const books = await mediaDataAccess.getAllBooks();
-  res.status(200).json([]);
+  }
+  async deleteMedia(req, res) {
+    const mediaDataAccess = new MediaDataAccess();
+
+    const dbCallSuccessful =  await mediaDataAccess.deleteMediaById(req.params.mediaId);
+    
+    if(dbCallSuccessful) {
+      res.sendStatus(204);
+    } else {
+      res.sendStatus(500);
+    }
+  }
 }
 
-
-module.exports = { mediaListView, getCategoryList, getBookList, addOrUpdateBook, getCdList, getDvdList, getInstrumentList };
+module.exports = MediaController;

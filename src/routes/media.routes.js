@@ -1,16 +1,20 @@
 const express = require('express');
 const debug = require('debug')('app:authRouter');
-const mediaController = require('../controllers/media.controller');
+const MediaController = require('../controllers/media.controller');
 const authValidator = require('../middleware/validators/authValidator.middleware');
 
 const mediaRouter = express.Router();
+const mediaController = new MediaController();
 
-mediaRouter.get('/', authValidator.checkAuthenticated, mediaController.mediaListView);
-mediaRouter.get('/books', authValidator.checkAuthenticated, mediaController.getBookList);
-mediaRouter.post('/book', authValidator.checkAuthenticatedEmployee, mediaController.addOrUpdateBook);
-mediaRouter.get('/categories', authValidator.checkAuthenticated, mediaController.getCategoryList);
-mediaRouter.get('/cds', authValidator.checkAuthenticated, mediaController.getCdList);
-mediaRouter.get('/dvds', authValidator.checkAuthenticated, mediaController.getDvdList);
-mediaRouter.get('/instruments', authValidator.checkAuthenticated, mediaController.getInstrumentList);
+mediaRouter.get('/categories', mediaController.getCategoryList);
+
+mediaRouter.get('/types', mediaController.getMediaTypeList);
+mediaRouter.get('/mediaList/:typeId', mediaController.getMediaListByType);
+mediaRouter.post('/', (req, res) => mediaController.addOrUpdateMedia(req, res));
+mediaRouter.delete('/:mediaId', (req, res) => mediaController.deleteMedia(req, res));
+//mediaRouter.get('/', authValidator.checkAuthenticated, mediaController.mediaListView);
+
+
+
 
 module.exports = mediaRouter;
