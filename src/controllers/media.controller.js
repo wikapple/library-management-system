@@ -1,3 +1,4 @@
+const chalk = require('chalk');
 const debug = require('debug')('app:authRouter');
 const MediaDataAccess = require('../data/MediaDataAccess');
 
@@ -21,8 +22,11 @@ class MediaController {
 
   async getMediaListByType(req, res) {
     const mediaType = req.params.typeId;
+    const filterValue = req.query.filter;
     const mediaDataAccess = new MediaDataAccess();
-    const mediaList = await mediaDataAccess.getMediaListByType(mediaType);
+    const mediaList = filterValue ? 
+      await mediaDataAccess.getMediaListByTypeAndFilter(mediaType, filterValue) :
+      await mediaDataAccess.getMediaListByType(mediaType);
     res.status(200).json(mediaList);
   }
 

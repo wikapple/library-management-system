@@ -313,6 +313,32 @@ BEGIN
 END//
 DELIMITER ;
 
+-- Dumping structure for procedure librarydb.media_Filter
+DROP PROCEDURE IF EXISTS `media_Filter`;
+DELIMITER //
+CREATE PROCEDURE `media_Filter`(
+	IN `typeIdInput` INT,
+	IN `filterValue` VARCHAR(255)
+)
+BEGIN
+	SELECT i.id, i.description, mt.name AS type, m.uniqueIdentifier, m.author, i.name, m.publisher, m.isChildSafe, m.pageCountOrSize   
+	FROM media m
+	INNER JOIN BaseRentalItem i
+	ON m.baseRentalItemId = i.id
+	INNER JOIN MediaType mt
+	ON m.typeId = mt.Id
+	WHERE 
+		m.typeId = typeIdInput 
+		AND 
+		(
+			m.uniqueIdentifier LIKE CONCAT('%',filterValue,'%')
+			OR m.publisher LIKE CONCAT('%',filterValue,'%')
+			OR m.author LIKE CONCAT('%',filterValue,'%')
+			OR i.name LIKE CONCAT('%',filterValue,'%')
+		);
+END//
+DELIMITER ;
+
 -- Dumping structure for procedure librarydb.media_Insert
 DROP PROCEDURE IF EXISTS `media_Insert`;
 DELIMITER //
