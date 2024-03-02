@@ -32,8 +32,7 @@ class MediaController {
 
   async addOrUpdateMedia(req, res) {
     const mediaDataAccess = new MediaDataAccess();
-
-    const dbCallSuccessful =  (req.body?.id === 0) ?
+    const dbCallSuccessful =  (req.body?.id == 0) ?
       await mediaDataAccess.createMedia(req.body) :
       await mediaDataAccess.updateMedia(req.body); 
     

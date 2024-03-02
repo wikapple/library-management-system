@@ -62,13 +62,15 @@ class MediaDataAccess {
 
     async createMedia(createRequest) {
         try {
-            const { uniqueIdentifier, name, description, publisher, isChildSafe, type, size, categories, author, } = createRequest;
+            const { uniqueIdentifier, name, description, publisher, isChildSafe, type, size, author, } = createRequest;
 
+            const categoryList = createRequest['categories[]'].join();
+            const isChildSafeEnabled = isChildSafe === 'on';
             const sqlQuery = `CALL media_Insert(?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
             await pool.query(
                 sqlQuery,
-                [uniqueIdentifier, name, description, publisher, isChildSafe, type, size, categories, author],
+                [uniqueIdentifier, name, description, publisher, isChildSafeEnabled, type, size, categoryList, author],
                 (error, results, fields) => {
                     if (error) {
                         throw error;
