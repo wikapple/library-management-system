@@ -1,18 +1,27 @@
 jQuery(document).ready(function () {
-    jQuery('#item-type-selector').change(function(){
+    jQuery('#item-type-selector').change(function () {
         jQuery('#search-media-input').val('');
         const value = jQuery(this).val();
         updateMediaTable(value);
     });
     initializeMediaTypes();
 
-    jQuery('#search-btn').click(function() {
+    jQuery('#search-btn').click(function () {
         const searchValue = jQuery('#search-media-input').val();
         const mediaTypeValue = jQuery('#item-type-selector').val();
         updateMediaTable(mediaTypeValue, searchValue);
     });
 
-    jQuery('#clear-search-btn').click(function() {
+    jQuery('#search-media-input').keypress(function (event) {
+        if (event.which === 13) {
+            const searchValue = jQuery('#search-media-input').val();
+            const mediaTypeValue = jQuery('#item-type-selector').val();
+            updateMediaTable(mediaTypeValue, searchValue);
+        }
+
+    });
+
+    jQuery('#clear-search-btn').click(function () {
         jQuery('#search-media-input').val('');
         const mediaTypeValue = jQuery('#item-type-selector').val();
         updateMediaTable(mediaTypeValue);
@@ -27,7 +36,7 @@ function initializeMediaTypes() {
         type: 'GET',
         success: function (mediaTypeData) {
             itemTypeSelector.empty();
-            for (type of mediaTypeData) {  
+            for (type of mediaTypeData) {
                 itemTypeSelector.append(jQuery('<option>', {
                     value: type.Id,
                     text: type.name
@@ -42,15 +51,15 @@ function initializeMediaTypes() {
     });
 }
 
-function updateMediaTable(mediaTypeSelected, filter = ''){
-    
+function updateMediaTable(mediaTypeSelected, filter = '') {
+
     jQuery.ajax({
         url: `/media/mediaList/${mediaTypeSelected}?filter=${filter}`,
         method: 'GET',
-        success: function(response) {
+        success: function (response) {
             jQuery('#media-table tbody').empty();
 
-            jQuery.each(response, function(index, item) {
+            jQuery.each(response, function (index, item) {
                 var row = jQuery('<tr>');
                 row.append(jQuery('<td>').text(item.name));
                 row.append(jQuery('<td>').text(item.author));
@@ -61,7 +70,7 @@ function updateMediaTable(mediaTypeSelected, filter = ''){
                 jQuery('#media-table tbody').append(row);
             });
         },
-        error: function(xhr, status, error) {
+        error: function (xhr, status, error) {
             console.log(error?.message);
         }
     });
