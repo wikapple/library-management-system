@@ -29,7 +29,7 @@ jQuery(document).ready(function () {
         updateMediaTable(mediaTypeValue);
     });
 
-    jQuery('#exampleModal').on('hidden.bs.modal', function () {
+    jQuery('#add-media-modal').on('hidden.bs.modal', function () {
         jQuery('#create-or-update-form')[0].reset();
     });
 
@@ -57,7 +57,34 @@ jQuery(document).ready(function () {
             });
         }
         jQuery(this).addClass('was-validated');
-        jQuery('#exampleModal').modal('hide');
+        jQuery('#add-media-modal').modal('hide');
+    });
+    let mediaIdSelected;
+    let rowSelected;
+    jQuery(document).on('click', '.delete-media-btn', function () {
+        mediaIdSelected = jQuery(this).data('id');
+        rowSelected = jQuery(this).closest('tr');
+    });
+
+    jQuery('#confirm-delete-media-btn').click(function() {
+        jQuery.ajax({
+            type: 'DELETE',
+            url: `/media/${mediaIdSelected}`,
+            success: function(response) {
+                rowSelected.addClass('removing'); 
+                
+                setTimeout(function() {
+                  rowSelected.remove(); 
+                }, 500); 
+
+              jQuery('#delete-confirmation-modal').modal('hide');
+
+            },
+            error: function(xhr, status, error) {
+              console.error('Error deleting row:', error);
+             
+            }
+          });
     });
 });
 
@@ -124,7 +151,7 @@ function updateMediaTable(mediaTypeSelected, filter = '') {
                 row.append(jQuery('<td>').text(item.publisher));
                 row.append(jQuery('<td>').text(item.categories.map(x => x.name)));
                 row.append(jQuery('<td>').text('0/0'));
-                row.append(jQuery('<td>').html('<div class="btn-group" role="group" aria-label="Basic example"><button type="button" class="btn btn-outline-secondary"><i class="fa-solid fa-circle-info"></i></button><button type="button" class="btn btn-outline-info"><i class="fa-solid fa-pen-to-square"></i></button><button type="button" class="btn btn-outline-danger"><i class="fa-solid fa-trash"></i></button></div>'));
+                row.append(jQuery('<td>').html(`<div class="btn-group" role="group" aria-label="Basic example"><button type="button" class="btn btn-outline-secondary" data-toggle="modal" data-target="#deleteConfirmationModal" data-id="${item.id}"><i class="fa-solid fa-circle-info"></i></button><button type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#deleteConfirmationModal" data-id="${item.id}"><i class="fa-solid fa-pen-to-square"></i></button><button type="button" class="btn btn-outline-danger delete-media-btn" data-toggle="modal" data-target="#delete-confirmation-modal" data-id="${item.id}"><i class="fa-solid fa-trash"></i></button></div>`));
                 jQuery('#media-table tbody').append(row);
             });
         },
