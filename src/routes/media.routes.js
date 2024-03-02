@@ -12,6 +12,7 @@ mediaRouter.get('/types', mediaController.getMediaTypeList);
 mediaRouter.get('/mediaList/:typeId', mediaController.getMediaListByType);
 mediaRouter.post('/', (req, res) => mediaController.addOrUpdateMedia(req, res));
 mediaRouter.delete('/:mediaId', (req, res) => mediaController.deleteMedia(req, res));
+mediaRouter.get('/:mediaId', (req, res) => mediaController.getMedia(req, res));
 mediaRouter.get('/', authValidator.checkAuthenticated, (req, res) => mediaController.mediaListView(req, res));
 
 

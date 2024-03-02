@@ -33,7 +33,7 @@ class MediaDataAccess {
             const queryResult = await pool.query(sqlQuery, [typeId]);
             let mediaList = queryResult[0];
 
-            for(let media of mediaList){
+            for (let media of mediaList) {
                 const categoryQuery = `Call category_SelectByMediaId(?)`;
                 const categoriesQueryResult = await pool.query(categoryQuery, [media.id])
                 media.categories = categoriesQueryResult[0];
@@ -49,7 +49,7 @@ class MediaDataAccess {
             const queryResult = await pool.query(sqlQuery, [typeId, filterValue]);
             let mediaList = queryResult[0];
 
-            for(let media of mediaList){
+            for (let media of mediaList) {
                 const categoryQuery = `Call category_SelectByMediaId(?)`;
                 const categoriesQueryResult = await pool.query(categoryQuery, [media.id])
                 media.categories = categoriesQueryResult[0];
@@ -86,13 +86,19 @@ class MediaDataAccess {
     }
     async updateMedia(updateRequest) {
         try {
-            const { id, uniqueIdentifier, name, description, publisher, isChildSafe, type, size, categories, author, } = updateRequest;
-
+            const { id, uniqueIdentifier, name, description, publisher, type, size, author, } = updateRequest;
+            const isChildSafe = updateRequest.isChildSafe ? true : false;
+            let categoryList = updateRequest['categories[]'];
+            if(Array.isArray(categoryList)) {
+                debug(`category list length: ${categoryList.length}`);
+                debug(`categoryList: ${categoryList}`);
+                categoryList= categoryList.join();
+            } 
             const sqlQuery = `CALL media_UpdateById(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
             await pool.query(
                 sqlQuery,
-                [id, uniqueIdentifier, name, description, publisher, isChildSafe, type, categories, author, size],
+                [id, uniqueIdentifier, name, description, publisher, isChildSafe, type, categoryList, author, size],
                 (error, results, fields) => {
                     if (error) {
                         throw error;
@@ -106,6 +112,27 @@ class MediaDataAccess {
             return false;
         }
     }
+
+    async getMediaById(mediaId) {
+        try {
+            const sqlQuery = `CALL media_SelectById(?)`;
+            const dbResult = await pool.query(sqlQuery, [mediaId],
+                (error, results, fields) => {
+                    if (error) {
+                        throw error;
+                    }
+                }
+            );
+            let media = dbResult[0][0];
+            const categoryQuery = `Call category_SelectByMediaId(?)`;
+            const categoriesQueryResult = await pool.query(categoryQuery, [media.id])
+            media.categories = categoriesQueryResult[0];
+            return media;
+        } catch (error) {
+            debug(error);
+            return;
+        }
+    }
     async deleteMediaById(mediaIdToDelete) {
         try {
             const sqlQuery = `Call media_DeleteById(?)`;
@@ -114,10 +141,10 @@ class MediaDataAccess {
                 sqlQuery,
                 [mediaIdToDelete],
                 (error, results, fields) => {
-                if (error) {
-                    throw error;
+                    if (error) {
+                        throw error;
+                    }
                 }
-            }
             );
             return true;
 

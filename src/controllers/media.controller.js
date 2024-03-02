@@ -19,6 +19,13 @@ class MediaController {
     const mediaTypes = await mediaDataAccess.getAllMediaTypes();
     res.status(200).json(mediaTypes);
   }
+  async getMedia(req, res) {
+    const mediaDataAccess = new MediaDataAccess();
+
+    const dbResult=  await mediaDataAccess.getMediaById(req.params.mediaId);
+    
+    res.status(200).json(dbResult);
+  }
 
   async getMediaListByType(req, res) {
     const mediaType = req.params.typeId;
