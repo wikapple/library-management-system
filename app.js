@@ -17,6 +17,7 @@ const authRoutes = require('./src/routes/auth.routes');
 const homeRoutes = require('./src/routes/home.routes');
 const mediaRoutes = require('./src/routes/media.routes');
 const itemRoutes = require('./src/routes/item.routes');
+const apiRoutes = require('./src/routes/api.routes');
 const expressLayouts = require('express-ejs-layouts');
 const app = express();
 app.use(express.static(path.join(__dirname, '/public/')));
@@ -58,6 +59,7 @@ app.use('/auth', authRoutes);
 app.use('/', homeRoutes);
 app.use('/media', mediaRoutes);
 app.use('/item', itemRoutes);
+app.use('/api', apiRoutes);
 
 const PORT = process.env.PORT || 3000;
 

@@ -25,8 +25,8 @@
     <input type="hidden" id="id" name="id" value=<%=viewModel.isNewMedia ? 0 : viewModel.mediaToUpdate.id %> required>
     <div class="row">
       <div class="col-sm-6 col-md-4 col-lg-3 form-group ">
-        <label for="item-type-selector" class="col-form-label">Media Type</label>
-        <select id="item-type-selector" name="type" class="form-select form-select-lg custom-select"
+        <label for="media-type-selector" class="col-form-label">Media Type</label>
+        <select id="media-type-selector" name="type" class="form-select form-select-lg custom-select"
           aria-label="media type select" required>
           <% if(viewModel.isNewMedia) { %>
             <option value="" selected>Select media type</option>

@@ -85,7 +85,7 @@ class MediaDataAccess {
 
         } catch (error) {
             debug(error);
-            return false;
+            throw error;
         }
     }
     async updateMedia(updateRequest) {

@@ -9,37 +9,7 @@ class MediaController {
     this._mediaDataAccess = new MediaDataAccess();
   }
 
-  async getCategoryList(req, res) {
-
-    const categories = await this._mediaDataAccess.getAllCategories();
-    res.status(200).json(categories);
-  }
-
-  async getMediaTypeList(req, res) {
-    const mediaDataAccess = new MediaDataAccess();
-    const mediaTypes = await mediaDataAccess.getAllMediaTypes();
-    res.status(200).json(mediaTypes);
-  }
-  async getMedia(req, res) {
-
-    const dbResult=  await this._mediaDataAccess.getMediaById(req.params.mediaId);
-    
-    res.status(200).json(dbResult);
-  }
-
-  async getMediaListByType(req, res) {
-    const mediaType = req.params.typeId;
-    const filterValue = req.query.filter;
-
-    const mediaList = filterValue ? 
-      await this._mediaDataAccess.getMediaListByTypeAndFilter(mediaType, filterValue) :
-      await this._mediaDataAccess.getMediaListByType(mediaType);
-
-    res.status(200).json(mediaList);
-  }
-
   async addOrUpdateMedia(req, res) {
-    debug('in add or update media');
     const dbCallSuccessful =  (req.body?.id == 0) ?
       await this._mediaDataAccess.createMedia(req.body) :
       await this._mediaDataAccess.updateMedia(req.body); 
@@ -53,16 +23,22 @@ class MediaController {
     const dbCallSuccessful =  await this._mediaDataAccess.deleteMediaById(req.params.mediaId);
     
     if(dbCallSuccessful) {
-      res.sendStatus(204);
+      res.redirect('/media');
     } else {
       res.sendStatus(500);
     }
   }
 
   async mediaListView(req, res) {
-    let model = {};
+    let viewModel = {};
 
-    res.render(`mediaViews/mediaList.ejs`, {'model': model});
+    viewModel.mediaTypes = await this._mediaDataAccess.getAllMediaTypes();
+
+    res.render(`mediaViews/mediaList.ejs`, { viewModel });
+  }
+
+  async getMediaDetailsView(req, res) {
+    res.status(200).json({'yay': 1});
   }
   async getCreateOrEditView(req, res) {
     const id = req.params.mediaId;

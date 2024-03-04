@@ -1,15 +1,16 @@
 <link rel="stylesheet" href="/css/media-list.css">
-<%- include('partials/createOrUpdateMedia.ejs') %>
 <%- include('partials/deleteMedia.ejs') %>
 <div class="container"><h2 class="pb-2 border-bottom"><i class="fa-solid fa-book fa-lg"></i> Media Management</h2></div>
 
 <div class="container">
     <div class="row align-items-end mb-3">
         <div class="col-md-2 mb-2">
-            <label for="item-type-selector">Media Type: </label>
-            <select id="item-type-selector" class="form-control"
+            <label for="media-type-selector">Media Type: </label>
+            <select id="media-type-selector" class="form-control"
                 aria-label="size 3 select example">
-                <option selected>Open this select menu</option>
+                <% for(let type of viewModel.mediaTypes) { %>
+                    <option value="<%= type.id %>"><%= type.name %></option>
+                    <% } %>
             </select>
         </div>
         <div class="col-md-8 mb-2">
@@ -23,7 +24,7 @@
             </div>
         </div>
         <div class="col-1 mb-2">
-            <a href="/media/views/0" class="btn btn-primary btn-rounded delete-media-btn"> Add Media<i class="fa-solid fa-plus"></i></a>
+            <a href="/media/createOrEdit/0" class="btn btn-primary btn-rounded delete-media-btn"> Add Media<i class="fa-solid fa-plus"></i></a>
         </div>
     </div>
 </div>
