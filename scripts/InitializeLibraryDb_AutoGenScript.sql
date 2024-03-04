@@ -27,13 +27,13 @@ CREATE TABLE IF NOT EXISTS `baserentalitem` (
   `description` text DEFAULT '\'\'',
   `name` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 -- Dumping data for table librarydb.baserentalitem: ~6 rows (approximately)
 DELETE FROM `baserentalitem`;
 INSERT INTO `baserentalitem` (`id`, `description`, `name`) VALUES
 	(7, 'Dracula is a novel by Bram Stoker, published in 1897. An epistolary novel, the narrative is related through letters, diary entries, and newspaper articles. It has no single protagonist and opens with solicitor Jonathan Harker taking a business trip to sta', 'Dracula'),
-	(8, 'Dracula is a novel by Bram Stoker, published in 1897. An epistolary novel, the narrative is related through letters, diary entries, and newspaper articles. It has no single protagonist and opens with solicitor Jonathan Harker taking a business trip to sta', 'Dracula'),
+	(8, '        The novel tells the story of Dracula\'s attempt to move from Transylvania to England so that he may find new blood and spread the undead curse, and of the battle between Dracula and a small group of men and a woman led by Professor Abraham Van Helsing.    ', 'Dracula'),
 	(9, 'A dazzling new edition of J.K. Rowling\'s Harry Potter and the Sorcerer\'s Stone, fully illustrated in brilliant color and featuring exclusive interactive paper craft elements, including a foldout Hogwarts letter and more! In this stunning new edition of Harry Potter and the Sorcerer\'s Stone, experience the story as never before. J.K. Rowling\'s complete and unabridged text is accompanied by full-color illustrations on nearly every page and eight exclusive, interactive paper craft elements: Readers will open Harry\'s Hogwarts letter, reveal the magical entryway to Diagon Alley, make a sumptuous feast appear in the Great Hall, and more.Designed and illustrated by award-winning design studio MinaLima -- best known for establishing the visual graphic style of the Harry Potter and Fantastic Beasts films -- this edition is sure to be a keepsake for Harry Potter fans, a beautiful addition to any collector\'s bookshelf, and an enchanting way to introduce the first book in this beloved series to a new generation of readers.', 'Harry Potter and The Sorcerer\'s Stone'),
 	(10, 'War and Peace centers broadly on Napoleon’s invasion of Russia in 1812 and follows three of the best-known characters in literature: Pierre Bezukhov, the illegitimate son of a count who is fighting for his inheritance and yearning for spiritual fulfillment; Prince Andrei Bolkonsky, who leaves behind his family to fight in the war against Napoleon; and Natasha Rostov, the beautiful young daughter of a nobleman, who intrigues both men. As Napoleon’s army invades, Tolstoy vividly follows characters from diverse backgrounds—peasants and nobility, civilians and soldiers—as they struggle with the problems unique to their era, their history, and their culture. And as the novel progresses, these characters transcend their specificity, becoming some of the most moving—and human—figures in world literature. Pevear and Volokhonsky have brought us this classic novel in a translation remarkable for its fidelity to Tolstoy’s style and cadence and for its energetic, accessible prose.', 'War and Peace'),
 	(11, 'George and Harold are fourth-grade buddies with a penchant for practical jokes. When the boys\' latest prank drives their science teacher over the edge, their clueless principal, Mr. Krupp, quickly hires a replacement: Professor Pippy P. Poopypants. Of course, George and Harold can\'t resist making fun of the Professor\'s silly name. But then the Professor retaliates by forcing everyone in town to change their own names to be equally silly, with colossal consequences!', 'Captain Underpants And The Perilous Plot Of Professor Poopypants'),
@@ -156,7 +156,7 @@ CREATE TABLE IF NOT EXISTS `media` (
   PRIMARY KEY (`baseRentalItemId`),
   KEY `media_mediaType_FK` (`typeId`),
   CONSTRAINT `media_baseRentalItem_FK` FOREIGN KEY (`baseRentalItemId`) REFERENCES `baserentalitem` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `media_mediaType_FK` FOREIGN KEY (`typeId`) REFERENCES `mediatype` (`Id`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `media_mediaType_FK` FOREIGN KEY (`typeId`) REFERENCES `mediatype` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 -- Dumping data for table librarydb.media: ~5 rows (approximately)
@@ -206,14 +206,14 @@ INSERT INTO `mediacategories` (`mediaId`, `categoryId`) VALUES
 -- Dumping structure for table librarydb.mediatype
 DROP TABLE IF EXISTS `mediatype`;
 CREATE TABLE IF NOT EXISTS `mediatype` (
-  `Id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
-  PRIMARY KEY (`Id`)
+  PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
--- Dumping data for table librarydb.mediatype: ~9 rows (approximately)
+-- Dumping data for table librarydb.mediatype: ~10 rows (approximately)
 DELETE FROM `mediatype`;
-INSERT INTO `mediatype` (`Id`, `name`) VALUES
+INSERT INTO `mediatype` (`id`, `name`) VALUES
 	(1, 'book'),
 	(2, 'dvd'),
 	(3, 'cd'),
@@ -224,6 +224,23 @@ INSERT INTO `mediatype` (`Id`, `name`) VALUES
 	(8, 'cassette'),
 	(9, 'vinyl'),
 	(10, 'diskette');
+
+-- Dumping structure for table librarydb.rentalitemcopy
+DROP TABLE IF EXISTS `rentalitemcopy`;
+CREATE TABLE IF NOT EXISTS `rentalitemcopy` (
+  `itemCopyGuid` varchar(36) NOT NULL DEFAULT '',
+  `copyCondition` varchar(50) NOT NULL,
+  `isAvailable` bit(1) NOT NULL,
+  `baseRentalItemId` int(11) NOT NULL,
+  PRIMARY KEY (`itemCopyGuid`) USING BTREE,
+  KEY `RentalItemCopy_BaseRentalItem_FK` (`baseRentalItemId`),
+  CONSTRAINT `RentalItemCopy_BaseRentalItem_FK` FOREIGN KEY (`baseRentalItemId`) REFERENCES `baserentalitem` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+-- Dumping data for table librarydb.rentalitemcopy: ~1 rows (approximately)
+DELETE FROM `rentalitemcopy`;
+INSERT INTO `rentalitemcopy` (`itemCopyGuid`, `copyCondition`, `isAvailable`, `baseRentalItemId`) VALUES
+	('18fa80d0-ce73-431e-a1fb-b52897245885', 'new', b'1', 8);
 
 -- Dumping structure for table librarydb.userrole
 DROP TABLE IF EXISTS `userrole`;
@@ -469,6 +486,82 @@ BEGIN
 	
 	COMMIT;
 	ROLLBACK;
+END//
+DELIMITER ;
+
+-- Dumping structure for procedure librarydb.rentalItemCopy_DeleteByItemCopyGuid
+DROP PROCEDURE IF EXISTS `rentalItemCopy_DeleteByItemCopyGuid`;
+DELIMITER //
+CREATE PROCEDURE `rentalItemCopy_DeleteByItemCopyGuid`(
+	IN `guidInput` VARCHAR(36)
+)
+BEGIN
+DELETE FROM rentalItemCopy
+WHERE copy.itemCopyGuid = guidInput;
+
+END//
+DELIMITER ;
+
+-- Dumping structure for procedure librarydb.rentalItemCopy_Insert
+DROP PROCEDURE IF EXISTS `rentalItemCopy_Insert`;
+DELIMITER //
+CREATE PROCEDURE `rentalItemCopy_Insert`(
+	IN `guidInput` VARCHAR(36),
+	IN `copyConditionInput` VARCHAR(50),
+	IN `isAvailableInput` BIT,
+	IN `baseRentalItemIdInput` INT
+)
+BEGIN
+INSERT INTO rentalitemcopy (itemCopyGuid, copyCondition, isAvailable, baseRentalItemId)
+VALUES (guidInput, copyConditionInput, isAvailableInput, baseRentalItemIdInput);
+END//
+DELIMITER ;
+
+-- Dumping structure for procedure librarydb.rentalItemCopy_SelectByBaseItemId
+DROP PROCEDURE IF EXISTS `rentalItemCopy_SelectByBaseItemId`;
+DELIMITER //
+CREATE PROCEDURE `rentalItemCopy_SelectByBaseItemId`(
+	IN `baseItemIdInput` INT
+)
+BEGIN
+SELECT copy.itemCopyGuid, copy.copyCondition, copy.isAvailable, baseItem.name, baseItem.description
+FROM RentalItemCopy copy
+INNER JOIN baserentalitem baseItem
+ON copy.baseRentalItemId = baserentalitem.id
+WHERE baseItem.id = baseItemIdInput;
+END//
+DELIMITER ;
+
+-- Dumping structure for procedure librarydb.rentalItemCopy_SelectByItemCopyGuid
+DROP PROCEDURE IF EXISTS `rentalItemCopy_SelectByItemCopyGuid`;
+DELIMITER //
+CREATE PROCEDURE `rentalItemCopy_SelectByItemCopyGuid`(
+	IN `guidInput` VARCHAR(36)
+)
+BEGIN
+SELECT copy.itemCopyGuid, copy.copyCondition, copy.isAvailable, baseItem.name, baseItem.description
+FROM RentalItemCopy copy
+INNER JOIN baserentalitem baseItem
+ON copy.baseRentalItemId = baseItem.id
+WHERE copy.itemCopyGuid = guidInput;
+
+END//
+DELIMITER ;
+
+-- Dumping structure for procedure librarydb.rentalItemCopy_UpdateByRentalItemGuid
+DROP PROCEDURE IF EXISTS `rentalItemCopy_UpdateByRentalItemGuid`;
+DELIMITER //
+CREATE PROCEDURE `rentalItemCopy_UpdateByRentalItemGuid`(
+	IN `guidInput` VARCHAR(36),
+	IN `copyConditionInput` VARCHAR(50),
+	IN `isAvailableInput` BIT
+)
+BEGIN
+UPDATE rentalItemCopy
+SET
+	copyCondition = copyConditionInput,
+	isAvailable = isAvailableInput
+WHERE itemCopyGuid = guidInput;
 END//
 DELIMITER ;
 
