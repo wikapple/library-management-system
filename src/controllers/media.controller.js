@@ -39,6 +39,7 @@ class MediaController {
   }
 
   async addOrUpdateMedia(req, res) {
+    debug('in add or update media');
     const dbCallSuccessful =  (req.body?.id == 0) ?
       await this._mediaDataAccess.createMedia(req.body) :
       await this._mediaDataAccess.updateMedia(req.body); 
@@ -75,7 +76,6 @@ class MediaController {
     } else {
       viewModel.isNewMedia = true;
     }
-    debug(`description: ${viewModel?.mediaToUpdate?.description}`);
     viewModel.categories = await this._mediaDataAccess.getAllCategories();
     viewModel.mediaTypes = await this._mediaDataAccess.getAllMediaTypes();
  
