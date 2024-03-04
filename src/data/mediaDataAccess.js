@@ -62,15 +62,19 @@ class MediaDataAccess {
 
     async createMedia(createRequest) {
         try {
-            const { uniqueIdentifier, name, description, publisher, isChildSafe, type, size, author, } = createRequest;
+            const { uniqueIdentifier, name, description, publisher, type, size, author } = createRequest;
 
-            const categoryList = createRequest['categories[]'].join();
-            const isChildSafeEnabled = isChildSafe === 'on';
+
+            const isChildSafe = createRequest.isChildSafe ? true : false;
+            let categoryList = createRequest['categories[]'];
+            if(Array.isArray(categoryList)) {
+                categoryList= categoryList.join();
+            } 
             const sqlQuery = `CALL media_Insert(?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
             await pool.query(
                 sqlQuery,
-                [uniqueIdentifier, name, description, publisher, isChildSafeEnabled, type, size, categoryList, author],
+                [uniqueIdentifier, name, description, publisher, isChildSafe, type, size, categoryList, author],
                 (error, results, fields) => {
                     if (error) {
                         throw error;
@@ -90,8 +94,6 @@ class MediaDataAccess {
             const isChildSafe = updateRequest.isChildSafe ? true : false;
             let categoryList = updateRequest['categories[]'];
             if(Array.isArray(categoryList)) {
-                debug(`category list length: ${categoryList.length}`);
-                debug(`categoryList: ${categoryList}`);
                 categoryList= categoryList.join();
             } 
             const sqlQuery = `CALL media_UpdateById(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;

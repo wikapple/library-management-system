@@ -16,6 +16,7 @@ const passport = require('passport');
 const authRoutes = require('./src/routes/auth.routes');
 const homeRoutes = require('./src/routes/home.routes');
 const mediaRoutes = require('./src/routes/media.routes');
+const itemRoutes = require('./src/routes/item.routes');
 const expressLayouts = require('express-ejs-layouts');
 const app = express();
 app.use(express.static(path.join(__dirname, '/public/')));
@@ -48,7 +49,6 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 app.use((req, res, next) => {
-    console.log("Layout:", res.locals.layout);
     res.locals.layout = 'shared/layout.ejs';
     res.locals.currentUser = req.user;
     next();
@@ -57,9 +57,10 @@ app.use((req, res, next) => {
 app.use('/auth', authRoutes);
 app.use('/', homeRoutes);
 app.use('/media', mediaRoutes);
+app.use('/item', itemRoutes);
 
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-    console.log(`Listening for requests on port ${PORT}`);
+    debug(`Listening for requests on port ${PORT}`);
 });

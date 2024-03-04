@@ -36,7 +36,7 @@ const login = (
 const logout = (req, res) => {
     req.logout(err => {
         if (err) {
-            console.log("Error: ", err);
+            debug("Error: ", err);
             return next(err);
         }
         res.redirect('/');

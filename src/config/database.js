@@ -1,3 +1,5 @@
+const debug = require('debug')('app:database');
+
 const mariadb = require('mariadb');
 
 const pool = mariadb.createPool({
@@ -15,16 +17,16 @@ pool.getConnection((err, connection) => {
 
    if(err) {
     if (err.code === 'PROTOCOL_CONNECTION_LOST') {
-        console.log('Database connection lost');
+        debug('Database connection lost');
     }
     else if (err.code === 'ER_CON_COUNT_ERROR') {
-        console.log('Database has too many connections');
+        debug('Database has too many connections');
     }
     else if (err.code === 'ECONNREFUSED') {
-        console.log('Database connection was refused');
+        debug('Database connection was refused');
     }
     else {
-        console.log(`database error: error-code:${err.code}`);
+        debug(`database error: error-code:${err.code}`);
     }
    }
    if (connection) connection.release();

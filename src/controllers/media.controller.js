@@ -1,16 +1,17 @@
 const chalk = require('chalk');
-const debug = require('debug')('app:authRouter');
-const MediaDataAccess = require('../data/MediaDataAccess');
+const debug = require('debug')('app:mediaController');
+const MediaDataAccess = require('../data/mediaDataAccess');
 
 class MediaController {
 
+  
   constructor() {
-
+    this._mediaDataAccess = new MediaDataAccess();
   }
 
   async getCategoryList(req, res) {
-    const mediaDataAccess = new MediaDataAccess();
-    const categories = await mediaDataAccess.getAllCategories();
+
+    const categories = await this._mediaDataAccess.getAllCategories();
     res.status(200).json(categories);
   }
 
@@ -20,9 +21,8 @@ class MediaController {
     res.status(200).json(mediaTypes);
   }
   async getMedia(req, res) {
-    const mediaDataAccess = new MediaDataAccess();
 
-    const dbResult=  await mediaDataAccess.getMediaById(req.params.mediaId);
+    const dbResult=  await this._mediaDataAccess.getMediaById(req.params.mediaId);
     
     res.status(200).json(dbResult);
   }
@@ -30,29 +30,26 @@ class MediaController {
   async getMediaListByType(req, res) {
     const mediaType = req.params.typeId;
     const filterValue = req.query.filter;
-    const mediaDataAccess = new MediaDataAccess();
+
     const mediaList = filterValue ? 
-      await mediaDataAccess.getMediaListByTypeAndFilter(mediaType, filterValue) :
-      await mediaDataAccess.getMediaListByType(mediaType);
+      await this._mediaDataAccess.getMediaListByTypeAndFilter(mediaType, filterValue) :
+      await this._mediaDataAccess.getMediaListByType(mediaType);
+
     res.status(200).json(mediaList);
   }
 
   async addOrUpdateMedia(req, res) {
-    const mediaDataAccess = new MediaDataAccess();
     const dbCallSuccessful =  (req.body?.id == 0) ?
-      await mediaDataAccess.createMedia(req.body) :
-      await mediaDataAccess.updateMedia(req.body); 
+      await this._mediaDataAccess.createMedia(req.body) :
+      await this._mediaDataAccess.updateMedia(req.body); 
     
     if(dbCallSuccessful) {
-      res.sendStatus(204);
-    } else {
-      res.sendStatus(500);
+      res.redirect('/media');
     }
   }
   async deleteMedia(req, res) {
-    const mediaDataAccess = new MediaDataAccess();
 
-    const dbCallSuccessful =  await mediaDataAccess.deleteMediaById(req.params.mediaId);
+    const dbCallSuccessful =  await this._mediaDataAccess.deleteMediaById(req.params.mediaId);
     
     if(dbCallSuccessful) {
       res.sendStatus(204);
@@ -65,6 +62,24 @@ class MediaController {
     let model = {};
 
     res.render(`mediaViews/mediaList.ejs`, {'model': model});
+  }
+  async getCreateOrEditView(req, res) {
+    const id = req.params.mediaId;
+    let viewModel = {};
+    if (id && id != 0) {
+      viewModel.isNewMedia = false;
+      viewModel.mediaToUpdate = await this._mediaDataAccess.getMediaById(id);
+      if(! viewModel.mediaToUpdate) {
+        res.redirect('/')
+      }
+    } else {
+      viewModel.isNewMedia = true;
+    }
+    debug(`description: ${viewModel?.mediaToUpdate?.description}`);
+    viewModel.categories = await this._mediaDataAccess.getAllCategories();
+    viewModel.mediaTypes = await this._mediaDataAccess.getAllMediaTypes();
+ 
+    res.render(`mediaViews/createOrEditMedia.ejs`, {viewModel});
   }
 }
 
