@@ -1,5 +1,5 @@
 const chalk = require('chalk');
-const debug = require('debug')('app:mediaController');
+const debug = require('debug')('app:mediaApiController');
 const MediaDataAccess = require('../data/mediaDataAccess');
 
 class MediaApiController {

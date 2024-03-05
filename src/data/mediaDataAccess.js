@@ -72,7 +72,7 @@ class MediaDataAccess {
             } 
             const sqlQuery = `CALL media_Insert(?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
-            await pool.query(
+            const dbResponse = await pool.query(
                 sqlQuery,
                 [uniqueIdentifier, name, description, publisher, isChildSafe, type, size, categoryList, author],
                 (error, results, fields) => {
@@ -80,7 +80,7 @@ class MediaDataAccess {
                         throw error;
                     }
                 }
-            );
+            );            
             return true;
 
         } catch (error) {

@@ -8,7 +8,7 @@ const mediaController = new MediaController();
 
 mediaRouter.post('/', mediaController.addOrUpdateMedia.bind(mediaController));
 mediaRouter.delete('/:mediaId', mediaController.deleteMedia.bind(mediaController));
-mediaRouter.get('/', authValidator.checkAuthenticated, mediaController.mediaListView.bind(mediaController));
+mediaRouter.get('/', mediaController.mediaListView.bind(mediaController));
 mediaRouter.get('/:mediaId', mediaController.getMediaDetailsView.bind(mediaController));
 mediaRouter.get('/createOrEdit/:mediaId', mediaController.getCreateOrEditView.bind(mediaController));
 

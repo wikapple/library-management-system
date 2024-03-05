@@ -1,128 +1,121 @@
 <link rel="stylesheet" href="/css/media-create-edit.css">
-<script>
-  function resetFormButtonClicked() {
-    jQuery('#create-or-update-form')[0].reset();
-  }
-</script>
-<div class="container">
-  <div class="py-3 text-center">
-    <% if (viewModel.isNewMedia) { %>
-      <h2 id="form-title">Create new media form</h2>
-      <p id="form-description" class="lead">Create a new media such as a book or other media type. After creating the
-        media, the library can begin registering its copies of the media.</p>
-      <% } else {%>
-        <h2 id="form-title">Update existing media form</h2>
-        <p id="form-description" class="lead">Make edits to existing media. Doing this will update media description for
-          all its copies.</p>
-        <% } %>
-  </div>
-  <div class="row">
-    <div class="col-8 col-md-9 col-lg-10"></div>
-    <div class="col-4 col-md-3 col-lg-1"><button class="btn btn-outline-info" onclick="resetFormButtonClicked()"><i
-          class="fa-solid fa-rotate-right"></i> Reset Form</button></div>
-  </div>
-  <form class="needs-validation" id="create-or-update-form" action="/media" METHOD="POST">
-    <input type="hidden" id="id" name="id" value=<%=viewModel.isNewMedia ? 0 : viewModel.mediaToUpdate.id %> required>
+
+<%- include('partials/categorySelectModal.ejs') %>
+  <div class="container">
+    <div class="py-3 text-center">
+      <% if (viewModel.isNewMedia) { %>
+        <h2 id="form-title"><i class="fa-solid fa-book fa-lg"></i> Create new media form</h2>
+        <p id="form-description" class="lead">Create a new media such as a book or other media type. After creating the
+          media, the library can begin registering its copies of the media.</p>
+        <% } else {%>
+          <h2 id="form-title">Update existing media form</h2>
+          <p id="form-description" class="lead">Make edits to existing media. Doing this will update media description
+            for
+            all its copies.</p>
+          <% } %>
+    </div>
     <div class="row">
-      <div class="col-sm-6 col-md-4 col-lg-3 form-group ">
-        <label for="media-type-selector" class="col-form-label">Media Type</label>
-        <select id="media-type-selector" name="type" class="form-select form-select-lg custom-select"
-          aria-label="media type select" required>
-          <% if(viewModel.isNewMedia) { %>
-            <option value="" selected>Select media type</option>
-            <% } %>
-              <% for(let type of viewModel.mediaTypes) { %>
-                <option <% if (!viewModel.isNewMedia && viewModel.mediaToUpdate.type===type.name) { %>
-                  selected
+      <div class="col-8 col-md-9 col-lg-10"></div>
+      <div class="col-4 col-md-3 col-lg-1"><button class="btn btn-outline-info" onclick="resetFormButtonClicked()"><i
+            class="fa-solid fa-rotate-right"></i> Reset Form</button></div>
+    </div>
+    <form class="needs-validation" id="create-or-update-form">
+      <input type="hidden" id="id" name="id" value=<%=viewModel.isNewMedia ? 0 : viewModel.mediaToUpdate.id %> required>
+      <div class="row">
+        <div class="col-sm-6 col-md-4 col-lg-3 form-group ">
+          <label for="media-type-selector" class="col-form-label">Media Type</label>
+          <select id="media-type-selector" name="type" class="form-select form-select-lg custom-select"
+            aria-label="media type select" required>
+            <% if(viewModel.isNewMedia) { %>
+              <option value="" selected>Select media type</option>
+              <% } %>
+                <% for(let type of viewModel.mediaTypes) { %>
+                  <option <% if (!viewModel.isNewMedia && viewModel.mediaToUpdate.type===type.name) { %>
+                    selected
+                    <% } %>
+                      value="<%= type.id %>">
+                        <%= type.name %>
+                  </option>
                   <% } %>
-                    value="<%= type.id %>">
-                      <%= type.name %>
-                </option>
-                <% } %>
-        </select>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-md-12 col-lg-4 mb-3">
-        <label for="name" class="col-form-label">Title</label>
-        <input type="text" class="form-control" id="name" name="name" placeholder="Enter media title" <% if
-          (!viewModel.isNewMedia) { %> value="<%= viewModel.mediaToUpdate.name %>" <% } %> required>
-            <div class="invalid-feedback">
-              Valid title is required.
-            </div>
-      </div>
-      <div class="col-md-6 col-lg-4 mb-3">
-        <label for="author" class="col-form-label">Author</label>
-        <input type="text" name="author" class="form-control" id="author" placeholder="Enter the media author" <% if
-          (!viewModel.isNewMedia) { %> value="<%= viewModel.mediaToUpdate.author %>" <% } %> required>
-            <div class="invalid-feedback">
-              Valid author is required.
-            </div>
-      </div>
-      <div class="col-md-6 col-lg-4 mb-3">
-        <label for="publisher" class="col-form-label">Publisher</label>
-        <input type="text" class="form-control" id="publisher" name="publisher" placeholder="Enter media publisher" <%
-          if (!viewModel.isNewMedia) { %> value="<%= viewModel.mediaToUpdate.publisher %>" <% } %> required>
-            <div class="invalid-feedback">
-              Valid publisher is required.
-            </div>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-6 col-lg-2 mb-3">
-        <label for="isChildSafe" class="form-check-label col-form-label">Is the media safe for children to use? </label>
-        <input type="checkbox" class="form-control form-checkbox" id="isChildSafe" name="isChildSafe" <% if
-          (!viewModel.isNewMedia && viewModel.mediaToUpdate.isChildSafe) { %> checked <% } %>>
-      </div>
-      <div class="col-md-6 col-lg-3 form-group">
-        <label for="size">page count or memory size</label>
-        <input type="number" id="size" name="size" class="form-control d-block w-100" required <% if
-          (!viewModel.isNewMedia) { %> value="<%= viewModel.mediaToUpdate.pageCountOrSize %>" <% } %>/>
-      </div>
-
-      <div class="col-md-12 col-lg-7 mb-3">
-        <label for="uniqueIdentifier">ISBN or Serial Number</label>
-        <input type="text" class="form-control" id="uniqueIdentifier" name="uniqueIdentifier"
-          placeholder="Enter the ISBN or other unique identifier for the media" required <% if (!viewModel.isNewMedia) {
-          %> value="<%= viewModel.mediaToUpdate.uniqueIdentifier %>" <% } %>>
-            <div class="invalid-feedback">
-              Valid unique identifier is required.
-            </div>
-      </div>
-    </div>
-    <div class="row py-4">
-      <div class="col-lg-3 mb-3">
-        <label class="col-form-label col-sm-12" for="categories[]">Categories</label>
-        <select class="form-select form-select-lg col-sm-12 flex-grow-1" id="categories[]" name="categories[]" multiple>
-          <% for (let category of viewModel.categories ) { %>
-            <option value="<%= category.id %>" <% if (!viewModel.isNewMedia &&
-              viewModel.mediaToUpdate.categories.map(x=> x.id).includes(category.id)) { %>
-              selected
-              <% } %> >
-                <%= category.name %>
-            </option>
-            <% } %>
-        </select>
-        <div class="invalid-feedback">
-          Valid unique identifier is required.
+          </select>
         </div>
       </div>
-      <div class="col-lg-9 form-group">
+      <div class="row">
+        <div class="col-md-12 col-lg-4 mb-3">
+          <label for="name" class="col-form-label">Title</label>
+          <input type="text" class="form-control" id="name" name="name" placeholder="Enter media title" <% if
+            (!viewModel.isNewMedia) { %> value="<%= viewModel.mediaToUpdate.name %>" <% } %> required>
+              <div class="invalid-feedback">
+                Valid title is required.
+              </div>
+        </div>
+        <div class="col-md-6 col-lg-4 mb-3">
+          <label for="author" class="col-form-label">Author</label>
+          <input type="text" name="author" class="form-control" id="author" placeholder="Enter the media author" <% if
+            (!viewModel.isNewMedia) { %> value="<%= viewModel.mediaToUpdate.author %>" <% } %> required>
+              <div class="invalid-feedback">
+                Valid author is required.
+              </div>
+        </div>
+        <div class="col-md-6 col-lg-4 mb-3">
+          <label for="publisher" class="col-form-label">Publisher</label>
+          <input type="text" class="form-control" id="publisher" name="publisher" placeholder="Enter media publisher" <%
+            if (!viewModel.isNewMedia) { %> value="<%= viewModel.mediaToUpdate.publisher %>" <% } %> required>
+              <div class="invalid-feedback">
+                Valid publisher is required.
+              </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 col-lg-2 mb-3">
+          <label for="isChildSafe" class="form-check-label col-form-label">Is the media safe for children to use?
+          </label>
+          <input type="checkbox" class="form-control form-checkbox" id="isChildSafe" name="isChildSafe" <% if
+            (!viewModel.isNewMedia && viewModel.mediaToUpdate.isChildSafe) { %> checked <% } %>>
+        </div>
+        <div class="col-md-6 col-lg-3 form-group">
+          <label for="size">page count or memory size</label>
+          <input type="number" id="size" name="size" class="form-control d-block w-100" required <% if
+            (!viewModel.isNewMedia) { %> value="<%= viewModel.mediaToUpdate.pageCountOrSize %>" <% } %>/>
+        </div>
+
+        <div class="col-md-12 col-lg-7 mb-3">
+          <label for="uniqueIdentifier">ISBN or Serial Number</label>
+          <input type="text" class="form-control" id="uniqueIdentifier" name="uniqueIdentifier"
+            placeholder="Enter the ISBN or other unique identifier for the media" required <% if (!viewModel.isNewMedia)
+            { %> value="<%= viewModel.mediaToUpdate.uniqueIdentifier %>" <% } %>>
+              <div class="invalid-feedback">
+                Valid unique identifier is required.
+              </div>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-12 text-center">
+          <button type="button" id="categories-button" class="btn btn-outline-primary" data-toggle="modal"
+            data-target="#category-select-modal">Select categories (
+            <%= viewModel.isNewMedia ? 0 : viewModel.mediaToUpdate.categories.length %> selected)
+          </button>
+        </div>
+      </div>
+
+      <div class="row py-2">
+      </div>
+      <div class="col-lg-12 form-group">
         <label for="description" class="col-form-label">Description:</label>
 
 
         <textarea rows="4" required class="form-control form-control-lg text-area-input" name="description"
-          id="description"> <% if (!viewModel.isNewMedia) { %> <%= viewModel.mediaToUpdate.description %> <% } %></textarea>
+          id="description"><% if (!viewModel.isNewMedia) { %><%=viewModel.mediaToUpdate.description%><% } %></textarea>
       </div>
-    </div>
-    <div class="row">
-      <div class="col-md-6 mb-2">
-        <a href="/media" class="btn btn-danger btn-lg btn-block" type="cancel">Cancel</a>
+      <div class="row">
+        <div class="col-md-6 mb-2">
+          <a href="/media" class="btn btn-outline-danger btn-lg btn-block" type="cancel">Cancel</a>
+        </div>
+        <div class="col-md-6 mb-2">
+          <button class="btn btn-success btn-lg btn-block" type="submit">Submit</button>
+        </div>
       </div>
-      <div class="col-md-6 mb-2">
-        <button class="btn btn-primary btn-lg btn-block" type="submit">Submit</button>
-      </div>
-    </div>
-  </form>
-</div>
+    </form>
+  </div>
+  <script src="/js/mediaCreateOrEdit.js"></script>
