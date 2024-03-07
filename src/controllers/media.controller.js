@@ -43,7 +43,15 @@ class MediaController {
   }
 
   async getMediaDetailsView(req, res) {
-    res.status(200).json({ 'message':'this is a todo item' });
+
+    const id = req.params.mediaId;
+    let viewModel = {};
+
+    const mediaDetails = await this._mediaDataAccess.getMediaById(id);
+
+    viewModel.mediaDetails = mediaDetails;
+
+    res.render(`mediaViews/mediaDetail.ejs`, {viewModel});
   }
 
   async getCreateOrEditView(req, res) {

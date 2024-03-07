@@ -1,0 +1,16 @@
+.description-container{
+    font-size: 1.3em;
+    padding: 6px 20px;
+    border: 1px solid grey;
+    border-radius: 10px;
+}
+.categories-row{
+    font-size: 1.2em;
+}
+.summary-container{
+    font-size: 1.2em;
+}
+.detail-text{
+    font-size: 1.25em;
+    font-weight: 400;
+}
