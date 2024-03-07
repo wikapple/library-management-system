@@ -17,7 +17,7 @@ const register = async (req, res, next) => {
     }
     else {
         request.flash('Error', 'Failed to register user')
-        res.redirect('/auth/register');
+        res.redirect('/register');
     }
 }
 
@@ -29,7 +29,7 @@ const loginView = async (req, res, next) => {
 const login = (
     passport.authenticate('local', {
         successRedirect: '/',
-        failureRedirect: '/auth/login',
+        failureRedirect: '/login',
         failureFlash: true
     }));
 

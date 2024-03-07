@@ -1,12 +1,14 @@
 const chalk = require('chalk');
 const debug = require('debug')('app:mediaController');
 const MediaDataAccess = require('../data/mediaDataAccess');
+const ItemDataAccess = require('../data/itemDataAccess');
 
 class MediaController {
 
 
   constructor() {
     this._mediaDataAccess = new MediaDataAccess();
+    this._itemDataAccess = new ItemDataAccess();
   }
 
   async addOrUpdateMedia(req, res) {
@@ -50,6 +52,10 @@ class MediaController {
     const mediaDetails = await this._mediaDataAccess.getMediaById(id);
 
     viewModel.mediaDetails = mediaDetails;
+
+    const mediaCopiesList = await this._itemDataAccess.getItemByBaseId(id);
+
+    viewModel.mediaCopiesList = mediaCopiesList;
 
     res.render(`mediaViews/mediaDetail.ejs`, {viewModel});
   }

@@ -29,34 +29,6 @@ jQuery(document).ready(function () {
         updateMediaTable(mediaTypeValue);
     });
 
-    let mediaIdSelected;
-    let rowSelected;
-    
-    jQuery(document).on('click', '.delete-media-btn', function () {
-        mediaIdSelected = jQuery(this).data('id');
-        rowSelected = jQuery(this).closest('tr');
-    });
-
-    jQuery('#confirm-delete-media-btn').click(function() {
-        jQuery.ajax({
-            type: 'DELETE',
-            url: `api/media/${mediaIdSelected}`,
-            success: function(response) {
-                rowSelected.addClass('removing'); 
-                
-                setTimeout(function() {
-                  rowSelected.remove(); 
-                }, 500); 
-
-              jQuery('#delete-confirmation-modal').modal('hide');
-
-            },
-            error: function(xhr, status, error) {
-              console.error('Error deleting row:', error);
-             
-            }
-          });
-    });
 });
 
 function updateMediaTable(mediaTypeSelected, filter = '') {
