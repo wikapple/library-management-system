@@ -10,6 +10,15 @@ const registerView = async (req, res, next) => {
 
 const register = async (req, res, next) => {
     const { name, phone, email, dob, password } = req.body;
+
+    var userAlreadyExists = await userDataAccess.getUserByEmail(email);
+    if(userAlreadyExists) {
+        debug('user already exists');
+        req.flash('error', 'User already exists');
+        res.status(400).redirect('/auth/register');
+        return;
+    }
+
     const passwordHash = await bcrypt.hash(password, 10);
     let result = await userDataAccess.createUser(name, phone, email, passwordHash, dob);
     if (result) {
@@ -17,7 +26,7 @@ const register = async (req, res, next) => {
     }
     else {
         request.flash('Error', 'Failed to register user')
-        res.redirect('/register');
+        res.redirect('/auth/register');
     }
 }
 
@@ -29,7 +38,7 @@ const loginView = async (req, res, next) => {
 const login = (
     passport.authenticate('local', {
         successRedirect: '/',
-        failureRedirect: '/login',
+        failureRedirect: '/auth/login',
         failureFlash: true
     }));
 

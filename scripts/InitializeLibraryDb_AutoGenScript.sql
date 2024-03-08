@@ -128,9 +128,10 @@ CREATE TABLE IF NOT EXISTS `libraryuser` (
   `DateOfBirth` date NOT NULL COMMENT 'The user''s date of birth',
   `UserRoleId` int(11) NOT NULL COMMENT 'The user may only have one user role',
   PRIMARY KEY (`UserId`),
+  UNIQUE KEY `Email` (`Email`),
   KEY `UserRoleId` (`UserRoleId`),
   CONSTRAINT `libraryuser_ibfk_1` FOREIGN KEY (`UserRoleId`) REFERENCES `userrole` (`RoleId`) ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 -- Dumping data for table librarydb.libraryuser: ~10 rows (approximately)
 DELETE FROM `libraryuser`;
@@ -184,7 +185,7 @@ CREATE TABLE IF NOT EXISTS `mediacategories` (
   CONSTRAINT `mediaFK` FOREIGN KEY (`mediaId`) REFERENCES `media` (`baseRentalItemId`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
--- Dumping data for table librarydb.mediacategories: ~24 rows (approximately)
+-- Dumping data for table librarydb.mediacategories: ~27 rows (approximately)
 DELETE FROM `mediacategories`;
 INSERT INTO `mediacategories` (`mediaId`, `categoryId`) VALUES
 	(8, 28),
@@ -246,7 +247,7 @@ CREATE TABLE IF NOT EXISTS `rentalitemcopy` (
   CONSTRAINT `RentalItemCopy_BaseRentalItem_FK` FOREIGN KEY (`baseRentalItemId`) REFERENCES `baserentalitem` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
--- Dumping data for table librarydb.rentalitemcopy: ~2 rows (approximately)
+-- Dumping data for table librarydb.rentalitemcopy: ~1 rows (approximately)
 DELETE FROM `rentalitemcopy`;
 INSERT INTO `rentalitemcopy` (`itemCopyGuid`, `copyCondition`, `isAvailable`, `baseRentalItemId`) VALUES
 	('18fa80d0-ce73-431e-a1fb-b52897245885', 'new', b'1', 8),
