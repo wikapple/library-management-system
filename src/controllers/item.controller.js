@@ -61,10 +61,8 @@ class ItemController {
         const rentalItemGuid = req.params.rentalItemGuid;
 
         const rentalItem = await this._itemDataAccess.getItemByGuid(rentalItemGuid);
-        debug(rentalItem);
         viewModel.rentalItem = rentalItem;
         const qrCode = await this.generateQRCode(rentalItemGuid);
-        debug(qrCode);
         viewModel.qrCode = qrCode;
 
         // Get Transaction history
