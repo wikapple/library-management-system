@@ -1,0 +1,24 @@
+.btn-circle {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    padding: 0;
+    text-align: center;
+    font-size: 18px;
+  }
+
+  .search-input-rounded {
+    border-radius: 20px;
+  }
+
+  .form-check-input[type="checkbox"] {
+    transform: scale(1.5); /* Adjust the scale factor as needed */
+  }
+
+  tr {
+    transition: opacity 0.5s ease; /* Add a transition for opacity */
+  }
+  
+  tr.removing {
+    opacity: 0; /* Set opacity to 0 when removing */
+  }

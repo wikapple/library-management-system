@@ -30,3 +30,45 @@ BEGIN
 	ROLLBACK;
 END //
 DELIMITER ;
+
+
+
+DELIMITER //
+CREATE DEFINER=`root`@`localhost` PROCEDURE `memberAccount_SelectAll`()
+LANGUAGE SQL
+NOT DETERMINISTIC
+CONTAINS SQL
+SQL SECURITY DEFINER
+COMMENT 'Selects all members'
+BEGIN
+    SELECT lu.userId, lu.name, lu.phoneNumber, lu.email, ma.balance, ma.isFrozen
+    FROM libraryuser lu
+    INNER JOIN
+    MemberAccount ma
+    ON lu.userId = ma.userId
+END //
+DELIMITER ;
+
+
+DELIMITER //
+CREATE DEFINER=`root`@`localhost` PROCEDURE `memberAccount_filter`(
+    IN `filterValue` VARCHAR(255)
+)
+LANGUAGE SQL
+NOT DETERMINISTIC
+CONTAINS SQL
+SQL SECURITY DEFINER
+COMMENT 'Selects all members that match filter value'
+BEGIN
+    SELECT lu.userId, lu.name, lu.phoneNumber, lu.email, ma.balance, ma.isFrozen
+    FROM libraryuser lu
+    INNER JOIN
+    MemberAccount ma
+    ON lu.userId = ma.userId
+    WHERE
+        lu.name LIKE CONCAT('%',filterValue,'%')
+        OR lu.phoneNumber LIKE CONCAT('%',filterValue,'%')
+        OR lu.email LIKE LIKE CONCAT('%',filterValue,'%');
+
+END //
+DELIMITER ;

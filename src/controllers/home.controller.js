@@ -1,9 +1,8 @@
-const debug = require('debug')('app:authRouter');
+const debug = require('debug')('app:homeController');
 
 const home = (req, res) => {
 
     const userRole = req.user.userRole;
-    debug(`user role: ${userRole}`);
     let userDashboard = ['Administrator', 'StaffMember'].includes(userRole) ?
         'employeeHome' : 'memberHome';
 

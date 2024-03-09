@@ -3,12 +3,15 @@ const debug = require('debug')('app:apiRouter');
 const MediaApiController = require('../api/media.api.controller');
 const authValidator = require('../middleware/validators/authValidator.middleware');
 const ItemApiController = require('../api/item.api.controller');
-
+const MemberApiController = require('../api/member.api.controller');
 const apiRouter = express.Router();
 const mediaApiController = new MediaApiController();
 const itemApiController = new ItemApiController;
-
+const memberApiController = new MemberApiController();
 // users
+
+// members
+apiRouter.get('/member/', memberApiController.getMembers.bind(memberApiController));
 
 // media types
 

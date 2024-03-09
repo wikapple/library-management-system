@@ -1,5 +1,5 @@
 const express = require('express');
-const debug = require('debug')('app:authRouter');
+const debug = require('debug')('app:authController');
 const UserDataAccess = require('../data/userDataAccess');
 const bcrypt = require('bcrypt');
 const passport = require('passport');
