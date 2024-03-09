@@ -8,7 +8,7 @@
             <div class="container">
                 <div class="py-2 text-center">
                     <h1 id="title">Rental Item Details</h1>
-                    <p class="text-center lead"><%=viewModel.rentalItem.itemCopyGuid%></p>
+                    <p class="text-center lead"><%=viewModel.rentalItem.rentalItemGuid%></p>
                 </div>
             </div>
             <div class="container summary-container">
@@ -61,7 +61,7 @@
                                 Item Copy Number:
                             </div>
                             <div class="col-md-8 detail-text mb-2">
-                                <%=viewModel.rentalItem.itemCopyGuid%>
+                                <%=viewModel.rentalItem.rentalItemGuid%>
                             </div>
                         </div>
                         <div class="row align-items-center">
@@ -85,7 +85,7 @@
                 <div class="container copies-container py-4">
                     <div class="row mb-2">
                         <div class="col text-center">
-                            <h4>Transaction History of Copy: <%=viewModel.rentalItem.itemCopyGuid%>
+                            <h4>Transaction History of Copy: <%=viewModel.rentalItem.rentalItemGuid%>
                             </h4>
                         </div>
                     </div>

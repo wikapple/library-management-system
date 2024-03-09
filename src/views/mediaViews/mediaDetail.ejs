@@ -122,24 +122,24 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <% if (viewModel.mediaCopiesList.length==0) { %>
+                        <% if (viewModel?.rentalItemList == null || viewModel?.rentalItemList?.length == 0 ) { %>
                             <tr>
                                 <td colspan="4" class="text-center">No media copies</td>
                             </tr>
                             <%} else { %>
-                                <% for (let copy of viewModel.mediaCopiesList) { %>
+                                <% for (let rentalItem of viewModel.rentalItemList) { %>
                                     <tr>
                                         <th scope="row">
-                                            <%=copy.itemCopyGuid%>
+                                            <%=rentalItem.rentalItemGuid%>
                                         </th>
                                         <td>
-                                            <%=copy.copyCondition%>
+                                            <%=rentalItem.itemCondition%>
                                         </td>
                                         <td>
-                                            <%=copy.isAvailable ? "Yes" : "No" %>
+                                            <%=rentalItem.isAvailable ? "Yes" : "No" %>
                                         </td>
                                         <td>
-                                            <a href="/item/<%=copy.itemCopyGuid%>" class="btn btn-outline-info"><i
+                                            <a href="/item/<%=rentalItem.rentalItemGuid%>" class="btn btn-outline-info"><i
                                                     class="fa-solid fa-circle-info"></i> View Rental Item</a>
                                         </td>
                                     </tr>

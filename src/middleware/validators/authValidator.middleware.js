@@ -16,7 +16,7 @@ function checkAuthenticated(req, res, next) {
     }
 }
 function checkAuthenticatedMember(req, res, next) {
-    const userRole = req.user.UserRole;
+    const userRole = req.user.userRole;
 
     if (userRole.toLowerCase() === 'member') {
         return next();
@@ -27,7 +27,7 @@ function checkAuthenticatedMember(req, res, next) {
 }
 
 function checkAuthenticatedEmployee(req, res, next) {
-    const userRole = req.user.UserRole;
+    const userRole = req.user.userRole;
     
     if (['Administrator', 'StaffMember'].includes(userRole)) {
         return next();
@@ -37,7 +37,7 @@ function checkAuthenticatedEmployee(req, res, next) {
     }
 }
 function checkAuthenticatedAdministrator(req, res, next) {
-    const userRole = req.user.UserRole;
+    const userRole = req.user.userRole;
 
     if (userRole.toLowerCase() === 'administrator') {
         return next();

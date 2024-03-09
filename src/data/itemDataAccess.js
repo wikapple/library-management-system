@@ -9,7 +9,7 @@ class ItemDataAccess {
     async createItem(createRequest) {
         try {
             const { itemGuid, condition, isAvailable, baseItemId } = createRequest;
-            const sqlQuery = `CALL rentalItemCopy_Insert(?, ?, ?, ?)`;
+            const sqlQuery = `CALL rentalItem_Insert(?, ?, ?, ?)`;
             await pool.query(sqlQuery, [itemGuid, condition, isAvailable, baseItemId], (error, results, fields) => {
                 if (error) {
                     throw error;
@@ -26,7 +26,7 @@ class ItemDataAccess {
     async updateItem(createRequest) {
         try {
             const { itemGuid, condition, isAvailable } = createRequest;
-            const sqlQuery = `CALL rentalItemCopy_UpdateByRentalItemGuid(?, ?, ?)`;
+            const sqlQuery = `CALL rentalItem_UpdateByRentalItemGuid(?, ?, ?)`;
             await pool.query(sqlQuery, [itemGuid, condition, isAvailable], (error, results, fields) => {
                 if (error) {
                     throw error;
@@ -43,7 +43,7 @@ class ItemDataAccess {
     async getItemByGuid(guidInput) {
 
         try {
-            const sqlQuery = `CALL rentalItemCopy_SelectByItemCopyGuid(?)`;
+            const sqlQuery = `CALL rentalItem_SelectByRentalItemGuid(?)`;
             const dbResponse = await pool.query(sqlQuery, [guidInput]);
             const rentalItem = dbResponse[0][0];
             return rentalItem;
@@ -54,7 +54,7 @@ class ItemDataAccess {
     // getItemByBaseId
     async getItemByBaseId(baseItemId) {
         try {
-            const sqlQuery = `CALL rentalItemCopy_SelectByBaseItemId(?)`;
+            const sqlQuery = `CALL rentalItem_SelectByBaseItemId(?)`;
             const dbResponse = await pool.query(sqlQuery, [baseItemId]);
             const rentalItem = dbResponse[0];
             return rentalItem;
