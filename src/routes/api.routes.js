@@ -2,9 +2,11 @@ const express = require('express');
 const debug = require('debug')('app:apiRouter');
 const MediaApiController = require('../api/media.api.controller');
 const authValidator = require('../middleware/validators/authValidator.middleware');
+const ItemApiController = require('../api/item.api.controller');
 
 const apiRouter = express.Router();
 const mediaApiController = new MediaApiController();
+const itemApiController = new ItemApiController;
 
 // users
 
@@ -22,7 +24,11 @@ apiRouter.get('/media/:mediaId', mediaApiController.getMedia.bind(mediaApiContro
 // instruments
 
 // rental item
-
+apiRouter.post('/item', itemApiController.createOrUpdateItem.bind(itemApiController));
+apiRouter.get('/item/:rentalItemGuid', itemApiController.getItemByGuid.bind(itemApiController));
+apiRouter.get('/item/qrcode/:rentalItemGuid', itemApiController.getItemQrCode.bind(itemApiController));
+apiRouter.get('/item/baseItem/:baseItemId', itemApiController.getItemByBaseItemId.bind(itemApiController));
+apiRouter.delete('/item/:rentalItemBuid', itemApiController.deleteItemByGuid.bind(itemApiController));
 
 
 module.exports = apiRouter;

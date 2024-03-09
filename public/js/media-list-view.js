@@ -46,7 +46,7 @@ function updateMediaTable(mediaTypeSelected, filter = '') {
                 row.append(jQuery('<td>').text(item.publisher));
                 row.append(jQuery('<td>').text(item.categories.map(x => x.name).join(', ')));
                 row.append(jQuery('<td>').text('0 / 0'));
-                row.append(jQuery('<td>').html(`<a href="/media/${item.id}" class="btn btn-outline-info"><i class="fa-solid fa-circle-info"></i> View Details</button>`));
+                row.append(jQuery('<td>').html(`<a href="/media/${item.id}" class="btn btn-outline-info"><i class="fa-solid fa-circle-info"></i> View Details</a>`));
                 jQuery('#media-table tbody').append(row);
             });
         },

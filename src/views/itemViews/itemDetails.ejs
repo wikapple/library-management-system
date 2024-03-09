@@ -1,0 +1,112 @@
+<link rel="stylesheet" href="/css/item-details.css">
+
+
+<%- include('partials/deleteItemModal.ejs') %>
+    <%- include('partials/updateItemModal.ejs') %>
+        <%- include('partials/qrCodeModal.ejs') %>
+
+            <div class="container">
+                <div class="py-2 text-center">
+                    <h1 id="title">Rental Item Details</h1>
+                    <p class="text-center lead"><%=viewModel.rentalItem.itemCopyGuid%></p>
+                </div>
+            </div>
+            <div class="container summary-container">
+                <div class="row py-3">
+                    <div class="col-md-4 order-md-2">
+                        <div class="row justify-content-around">
+                            <div class="col-12 mb-3 dropdown">
+                                <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fa-solid fa-wrench"></i> Edit
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <button class="btn btn-outline-info mb-2" id="edit-item-btn" data-toggle="modal"
+                                        data-target="#update-item-modal">
+                                        <i class="fa-solid fa-pen-to-square"></i> Edit Item
+                                    </button>
+                                    <button class="btn btn-outline-danger delete-item-btn" id="delete-media-btn"
+                                        data-toggle="modal" data-target="#delete-confirmation-modal">
+                                        <i class="fa-solid fa-qrcode"></i> Delete Item
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <button class="btn btn-outline-info show-media-btn" id="diplay-qrcode-btn"
+                                    data-toggle="modal" data-target="#display-qrcode-modal">
+                                    <i class="fa-solid fa-qrcode"></i> Show QR-Code
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8 order-md-1">
+                        <div class="row align-items-center">
+                            <div class="col-md-4 col-lg-3">
+                                Copy of:
+                            </div>
+                            <div class="col-md-8 detail-text mb-2">
+                                <a href="<%=" /media/"+viewModel.rentalItem.id%>"><%=viewModel.rentalItem.name%></a>
+                            </div>
+                        </div>
+                        <div class="row align-items-center">
+                            <div class="col-md-4 col-lg-3">
+                                Item Type:
+                            </div>
+                            <div class="col-md-8 detail-text mb-2">
+                                <%=viewModel.rentalItem.itemType%>
+                            </div>
+                        </div>
+                        <div class="row align-items-center">
+                            <div class="col-md-4 col-lg-3">
+                                Item Copy Number:
+                            </div>
+                            <div class="col-md-8 detail-text mb-2">
+                                <%=viewModel.rentalItem.itemCopyGuid%>
+                            </div>
+                        </div>
+                        <div class="row align-items-center">
+                            <div class="col-md-4 col-lg-3">
+                                Is Available?
+                            </div>
+                            <div class="col-md-8 detail-text mb-2">
+                                <%=viewModel.rentalItem.isAvailable? "Yes" : "No" %>
+                            </div>
+                        </div>
+                        <div class="row align-items-center">
+                            <div class="col-md-4 col-lg-3">
+                                Condition:
+                            </div>
+                            <div class="col-md-8 detail-text mb-2">
+                                <%=viewModel.rentalItem.copyCondition%>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="container copies-container py-4">
+                    <div class="row mb-2">
+                        <div class="col text-center">
+                            <h4>Transaction History of Copy: <%=viewModel.rentalItem.itemCopyGuid%>
+                            </h4>
+                        </div>
+                    </div>
+                    <table class="table table-bordered" id="transaction-history-table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Rental Date</th>
+                                <th scope="col">Return Date</th>
+                                <th scope="col">Member</th>
+                                <th scope="col">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (!viewModel?.tansactions || viewModel?.transactions?.length==0) { %>
+                                <tr>
+                                    <td colspan="4" class="text-center">No transaction history</td>
+                                </tr>
+                                <%} %>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <script src="/js/item-details.js"></script>

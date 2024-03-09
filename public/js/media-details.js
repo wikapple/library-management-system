@@ -53,7 +53,7 @@ jQuery('#create-item-modal-form').submit(function(event) {
 function updateCopyTable() {
   const baseItemId = jQuery('#id').val();
   jQuery.ajax({
-    url: `/item/baseItem/${baseItemId}`,
+    url: `/api/item/baseItem/${baseItemId}`,
     method: 'GET',
     success: function (response) {
         jQuery('#copy-table tbody').empty();
@@ -63,7 +63,7 @@ function updateCopyTable() {
             row.append(jQuery('<td>').text(copy.itemCopyGuid));
             row.append(jQuery('<td>').text(copy.copyCondition));
             row.append(jQuery('<td>').text(copy.isAvailable ? 'Yes' : 'No'));
-            row.append(jQuery('<td>').text('@mdo'));
+            row.append(jQuery('<td>').html(`<a href="/item/${copy.id}" class="btn btn-outline-info"><i class="fa-solid fa-circle-info"></i> View Rental Item</a>`));
             jQuery('#copy-table tbody').append(row);
         });
     },

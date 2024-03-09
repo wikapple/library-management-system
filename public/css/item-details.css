@@ -1,0 +1,41 @@
+@media print {
+    body {
+      margin: 0;
+    }
+    #print-content {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    #qr-container {
+      text-align: center;
+    }
+  }
+
+
+  .description-container{
+    font-size: 1.3em;
+    padding: 6px 20px;
+    border: 1px solid grey;
+    border-radius: 10px;
+}
+.categories-row{
+    font-size: 1.2em;
+}
+.summary-container{
+    font-size: 1.2em;
+}
+.detail-text{
+    font-size: 1.25em;
+    font-weight: 400;
+}
+.copy-label {
+    font-size: 1.2em;
+}
+.copy-create-modal {
+    padding: 12px;
+}
+.form-check-input[type="checkbox"] {
+    transform: scale(1.5);
+  }

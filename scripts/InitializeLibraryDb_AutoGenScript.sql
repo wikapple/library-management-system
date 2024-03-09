@@ -247,10 +247,11 @@ CREATE TABLE IF NOT EXISTS `rentalitemcopy` (
   CONSTRAINT `RentalItemCopy_BaseRentalItem_FK` FOREIGN KEY (`baseRentalItemId`) REFERENCES `baserentalitem` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
--- Dumping data for table librarydb.rentalitemcopy: ~1 rows (approximately)
+-- Dumping data for table librarydb.rentalitemcopy: ~2 rows (approximately)
 DELETE FROM `rentalitemcopy`;
 INSERT INTO `rentalitemcopy` (`itemCopyGuid`, `copyCondition`, `isAvailable`, `baseRentalItemId`) VALUES
 	('18fa80d0-ce73-431e-a1fb-b52897245885', 'new', b'1', 8),
+	('484daa14-149b-4677-9f5a-efe4e0f2fd1d', 'New', b'1', 8),
 	('73681d3c-65f5-413e-876e-e8a88ebe5a67', 'New', b'1', 8);
 
 -- Dumping structure for table librarydb.userrole
@@ -550,7 +551,7 @@ CREATE PROCEDURE `rentalItemCopy_SelectByItemCopyGuid`(
 	IN `guidInput` VARCHAR(36)
 )
 BEGIN
-SELECT copy.itemCopyGuid, copy.copyCondition, copy.isAvailable, baseItem.name, baseItem.description, baseItem.itemType
+SELECT copy.itemCopyGuid, copy.copyCondition, copy.isAvailable, baseItem.name, baseItem.description, baseItem.itemType, baseItem.id
 FROM RentalItemCopy copy
 INNER JOIN baserentalitem baseItem
 ON copy.baseRentalItemId = baseItem.id

@@ -4,7 +4,7 @@ const ItemDataAccess = require('../data/itemDataAccess');
 const { v4: uuidv4 } = require('uuid');
 const QRCode = require('qrcode');
 
-class ItemController {
+class ItemApiController {
 
     constructor() {
         this._itemDataAccess = new ItemDataAccess();
@@ -56,22 +56,6 @@ class ItemController {
         }
     }
 
-    async getItemDetailsViewByGuid(req, res) {
-        let viewModel = {}
-        const rentalItemGuid = req.params.rentalItemGuid;
-
-        const rentalItem = await this._itemDataAccess.getItemByGuid(rentalItemGuid);
-        viewModel.rentalItem = rentalItem;
-
-        const qrCode = await this.generateQRCode(rentalItemGuid);
-        debug(qrCode);
-        viewModel.qrCode = qrCode;
-
-        // Get Transaction history
-        
-        res.render(`itemViews/itemDetails.ejs`, { viewModel });
-    }
-
     // getItemByGuid
     async getItemByGuid(req, res) {
         const rentalItemGuid = req.params.rentalItemGuid;
@@ -117,4 +101,4 @@ class ItemController {
     }
 }
 
-module.exports = ItemController;
+module.exports = ItemApiController;

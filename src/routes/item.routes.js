@@ -7,7 +7,7 @@ const itemRouter = express.Router();
 const itemController = new ItemController();
 
 itemRouter.post('/', itemController.createOrUpdateItem.bind(itemController));
-itemRouter.get('/:rentalItemGuid', itemController.getItemByGuid.bind(itemController));
+itemRouter.get('/:rentalItemGuid', itemController.getItemDetailsViewByGuid.bind(itemController));
 itemRouter.get('/qrcode/:rentalItemGuid', itemController.getItemQrCode.bind(itemController));
 itemRouter.get('/baseItem/:baseItemId', itemController.getItemByBaseItemId.bind(itemController));
 itemRouter.delete('/:rentalItemBuid', itemController.deleteItemByGuid.bind(itemController));
