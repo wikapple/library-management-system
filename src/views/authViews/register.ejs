@@ -8,7 +8,7 @@
       <% if (messages.error) {%>
         <p class="text-danger"><%=messages.error%></p>
     <% } %>
-      <form id="registerForm" class="form-signin auth-form container-fluid" action="/auth/register" method="POST">
+      <form id="registerForm" class="form-signin auth-form container-fluid" action="/auth/member/register" method="POST">
         <div class="form-group mb-2">
             <label for="name">Name:</label>
             <input type="text" name="name" class="form-control" id="name" placeholder="Enter your name" required>

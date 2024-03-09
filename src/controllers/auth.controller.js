@@ -1,56 +1,63 @@
 const express = require('express');
 const debug = require('debug')('app:authRouter');
-const userDataAccess = require('../data/userDataAccess');
+const UserDataAccess = require('../data/userDataAccess');
 const bcrypt = require('bcrypt');
 const passport = require('passport');
 
-const registerView = async (req, res, next) => {
-    res.render('authViews/register', {});
-}
+class AuthController {
 
-const register = async (req, res, next) => {
-    const { name, phone, email, dob, password } = req.body;
-
-    var userAlreadyExists = await userDataAccess.getUserByEmail(email);
-    if(userAlreadyExists) {
-        debug('user already exists');
-        req.flash('error', 'User already exists');
-        res.status(400).redirect('/auth/register');
-        return;
+    constructor() {
+        this.userDataAccess = new UserDataAccess();
     }
 
-    const passwordHash = await bcrypt.hash(password, 10);
-    let result = await userDataAccess.createUser(name, phone, email, passwordHash, dob);
-    if (result) {
-        res.redirect('/auth/login');
+    async registerView (req, res, next) {
+        res.render('authViews/register', {});
     }
-    else {
-        request.flash('Error', 'Failed to register user')
-        res.redirect('/auth/register');
-    }
-}
-
-
-const loginView = async (req, res, next) => {
-    res.render('authViews/login', {});
-}
-
-const login = (
-    passport.authenticate('local', {
-        successRedirect: '/',
-        failureRedirect: '/auth/login',
-        failureFlash: true
-    }));
-
-const logout = (req, res) => {
-    req.logout(err => {
-        if (err) {
-            debug("Error: ", err);
-            return next(err);
+    
+    async registerMember(req, res, next) {
+        const { name, phone, email, dob, password } = req.body;
+    
+        var userAlreadyExists = await this.userDataAccess.getUserByEmail(email);
+        if(userAlreadyExists) {
+            debug('user already exists');
+            req.flash('error', 'User already exists');
+            res.status(400).redirect('/auth/register');
+            return;
         }
-        res.redirect('/');
-    });
-};
+    
+        const passwordHash = await bcrypt.hash(password, 10);
+        let result = await this.userDataAccess.createMember(name, phone, email, passwordHash, dob);
+        if (result) {
+            res.redirect('/auth/login');
+        }
+        else {
+            request.flash('Error', 'Failed to register new member')
+            res.redirect('/auth/register');
+        }
+    }
+    
+    
+    async loginView(req, res, next) {
+        res.render('authViews/login', {});
+    }
+    
+    login = (
+        passport.authenticate('local', {
+            successRedirect: '/',
+            failureRedirect: '/auth/login',
+            failureFlash: true
+        }));
+    
+    logout (req, res) {
+        req.logout(err => {
+            if (err) {
+                debug("Error: ", err);
+                return next(err);
+            }
+            res.redirect('/');
+        });
+    };
+}
 
 
-module.exports = { register, registerView, login, loginView, logout };
+module.exports = AuthController;

@@ -11,7 +11,7 @@ const path = require('path');
 const morgan = require('morgan');
 const session = require('express-session');
 dotenv.config({path: '.env'});
-const userDataAccess = require('./src/data/userDataAccess');
+const UserDataAccess = require('./src/data/userDataAccess');
 const passport = require('passport');
 const authRoutes = require('./src/routes/auth.routes');
 const homeRoutes = require('./src/routes/home.routes');
@@ -27,10 +27,11 @@ app.use(expressLayouts);
 app.set('view engine', 'ejs');
 const initializePassport = require('./src/config/passport');
 
+this.userDataAccess = new UserDataAccess();
 initializePassport (
     passport,
-    async email => await userDataAccess.getUserByEmail(email),
-    async id => await userDataAccess.getUserById(id)
+    async email => await this.userDataAccess.getUserByEmail(email),
+    async id => await this.userDataAccess.getUserById(id)
  );
 
 
