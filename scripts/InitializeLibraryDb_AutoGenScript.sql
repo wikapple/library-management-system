@@ -130,9 +130,9 @@ CREATE TABLE IF NOT EXISTS `libraryuser` (
   UNIQUE KEY `Email` (`email`) USING BTREE,
   KEY `UserRoleId` (`userRoleId`) USING BTREE,
   CONSTRAINT `libraryuser_ibfk_1` FOREIGN KEY (`userRoleId`) REFERENCES `userrole` (`roleId`) ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
--- Dumping data for table librarydb.libraryuser: ~10 rows (approximately)
+-- Dumping data for table librarydb.libraryuser: ~12 rows (approximately)
 DELETE FROM `libraryuser`;
 INSERT INTO `libraryuser` (`userId`, `name`, `phoneNumber`, `email`, `passwordHash`, `dateOfBirth`, `userRoleId`) VALUES
 	(1, 'admin', '111-222-3333', 'admin@admin.com', '$2a$12$PbFqKsS1gGmPuMHPus6jIOst0RpmOTkji8s2tAyxUyGglh7tMu3Ny', '1990-01-01', 3),
@@ -145,7 +145,8 @@ INSERT INTO `libraryuser` (`userId`, `name`, `phoneNumber`, `email`, `passwordHa
 	(9, 'Kyle', '1234132451232', 'wefa@eafa.com', '$2b$10$L8dQN.dOrWLv5Yvvag3ef.nnrCpft8cVEqEAdfGS6ynkdEVJ4ecgi', '2024-02-26', 1),
 	(10, 'Matt', '123-456-1234', 'matt@matthew.com', '$2b$10$olKlcya6kiYEbjAD.bd1E.zlcDolOddK.rqIHdZwoOr87KjlY3mT6', '2024-02-26', 1),
 	(12, 'William Applegate', '502-648-5380', 'wikapple@iu.edu', '$2b$10$h2G81ek0A.ydC9WPYT2mNOjhEOyr4JnVxjq8csq6xk1hQyP3GBG4a', '1990-05-05', 1),
-	(15, 'John Doe', '111-222-3333', 'john@doe.com', '$2b$10$FgZathCO1yJpDlzXJ/EbqeWhOFXiev5iE8RV4vi1TlCG9YC1IeYju', '1990-01-01', 1);
+	(15, 'John Doe', '111-222-3333', 'john@doe.com', '$2b$10$FgZathCO1yJpDlzXJ/EbqeWhOFXiev5iE8RV4vi1TlCG9YC1IeYju', '1990-01-01', 1),
+	(16, 'Mary Member', '987-654-3210', 'mary@member.com', '$2b$10$02kOSB0AsqmnX7j457TaOO0UvhoMzkZbUwyN5n6fXHm9..NEoBUQK', '2000-01-01', 1);
 
 -- Dumping structure for table librarydb.media
 DROP TABLE IF EXISTS `media`;
@@ -234,6 +235,21 @@ INSERT INTO `mediatype` (`id`, `name`) VALUES
 	(8, 'cassette'),
 	(9, 'vinyl'),
 	(10, 'diskette');
+
+-- Dumping structure for table librarydb.memberaccount
+DROP TABLE IF EXISTS `memberaccount`;
+CREATE TABLE IF NOT EXISTS `memberaccount` (
+  `userId` int(11) NOT NULL,
+  `balance` decimal(20,2) NOT NULL DEFAULT 0.00,
+  `isFrozen` bit(1) NOT NULL DEFAULT b'0',
+  PRIMARY KEY (`userId`),
+  CONSTRAINT `MemberAccount_LibraryUser_FK` FOREIGN KEY (`userId`) REFERENCES `libraryuser` (`userId`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+-- Dumping data for table librarydb.memberaccount: ~1 rows (approximately)
+DELETE FROM `memberaccount`;
+INSERT INTO `memberaccount` (`userId`, `balance`, `isFrozen`) VALUES
+	(16, 0.00, b'0');
 
 -- Dumping structure for table librarydb.rentalitem
 DROP TABLE IF EXISTS `rentalitem`;
@@ -498,6 +514,48 @@ BEGIN
 	
 	COMMIT;
 	ROLLBACK;
+END//
+DELIMITER ;
+
+-- Dumping structure for procedure librarydb.memberAccount_Insert
+DROP PROCEDURE IF EXISTS `memberAccount_Insert`;
+DELIMITER //
+CREATE PROCEDURE `memberAccount_Insert`(
+	IN `nameInput` VARCHAR(255),
+	IN `phoneNumberInput` VARCHAR(20),
+	IN `emailInput` VARCHAR(255),
+	IN `passwordHashInput` VARCHAR(255),
+	IN `dobInput` DATE,
+	OUT `IdOutput` INT
+)
+    COMMENT 'Inserts a user into the database with the default role of Member and created a member account'
+BEGIN
+	START TRANSACTION;
+	  SET @memberIdVar = (SELECT roleId FROM userrole WHERE NAME LIKE 'Member' LIMIT 1);
+
+	  INSERT INTO librarydb.libraryuser (NAME, phoneNumber, email, passwordhash, dateofbirth, userRoleId)
+	  VALUES(nameInput, phoneNumberInput, emailInput, passwordHashInput, dobInput, @memberIdVar);
+	
+	  SET IdOutput = LAST_INSERT_ID();
+	
+	  INSERT INTO librarydb.memberaccount (userId)
+	  VALUES (IdOutput);
+	COMMIT;
+	ROLLBACK;
+END//
+DELIMITER ;
+
+-- Dumping structure for procedure librarydb.memberAccount_SelectAll
+DROP PROCEDURE IF EXISTS `memberAccount_SelectAll`;
+DELIMITER //
+CREATE PROCEDURE `memberAccount_SelectAll`()
+    COMMENT 'Selects all members'
+BEGIN
+    SELECT lu.userId, lu.name, lu.phoneNumber, lu.email, ma.balance, ma.isFrozen
+    FROM libraryuser lu
+    INNER JOIN
+    MemberAccount ma
+    ON lu.userId = ma.userId;
 END//
 DELIMITER ;
 
