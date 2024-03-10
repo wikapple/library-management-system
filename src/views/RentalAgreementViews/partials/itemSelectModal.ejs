@@ -1,0 +1,46 @@
+<div class="modal fade" id="item-select-modal" tabindex="-1" role="dialog" aria-labelledby="item-select-modal-label"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="item-select-modal-label">Select rental item to checkout</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <p class="lead">Scan a rental Item QR Code</p>
+                    <div class="modal-body">
+                        <video id="qrScannerVideo"></video>
+                    </div>
+                </div>
+                <p class="text-center">Or</p>
+                <div class="container-fluid">
+                    <p class="lead">Search for an item by item ID:</p>
+                    <div class="row align-items-center justify-content-center mb-3">
+                        <div class="col-12 mb-2">
+                            <div class="input-group">
+                                <input id="search-item-input" class="form-control" type="text"
+                                    placeholder="Enter rental item ID" />
+                                <div class="input-group-append">
+                                    <button id="search-item-btn" type="submit" class="btn btn-outline-primary"><i
+                                            class="fa-solid fa-magnifying-glass"></i></button>
+                                    <button id="clear-item-search-btn" type="reset" class="btn btn-outline-danger"><i
+                                            class="fa-solid fa-x"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <h6 class="">Search Results (select one):</h6>
+                    <div id="item-search-results" class="item-search-results">
+                        
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer text-center">
+                <button type="button" class="btn btn-secondary btn-block" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

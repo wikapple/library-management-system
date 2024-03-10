@@ -51,6 +51,18 @@ class ItemDataAccess {
             debug(error);
         }
     }
+
+    async getItemListByGuidFilter(guidFilter) {
+        try {
+            const sqlQuery = `CALL rentalItem_Filter(?)`;
+            const dbResponse = await pool.query(sqlQuery, [guidFilter]);
+            const filteredList = dbResponse[0];
+            return filteredList;
+        } catch (error) {
+            debug(error);
+        }
+    }
+
     // getItemByBaseId
     async getItemByBaseId(baseItemId) {
         try {

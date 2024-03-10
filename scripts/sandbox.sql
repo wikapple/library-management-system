@@ -68,7 +68,48 @@ BEGIN
     WHERE
         lu.name LIKE CONCAT('%',filterValue,'%')
         OR lu.phoneNumber LIKE CONCAT('%',filterValue,'%')
-        OR lu.email LIKE LIKE CONCAT('%',filterValue,'%');
+        OR lu.email LIKE CONCAT('%',filterValue,'%');
 
+END //
+DELIMITER ;
+
+
+DELIMITER //
+CREATE DEFINER=`root`@`localhost` PROCEDURE `memberAccount_SelectByUserId`(
+    IN `userIdInput` int
+)
+LANGUAGE SQL
+NOT DETERMINISTIC
+CONTAINS SQL
+SQL SECURITY DEFINER
+COMMENT 'Selects a member by their user ID'
+BEGIN
+    SELECT lu.userId, lu.name, lu.phoneNumber, lu.email, ma.balance, ma.isFrozen
+    FROM libraryuser lu
+    INNER JOIN
+    MemberAccount ma
+    ON lu.userId = ma.userId
+    WHERE
+        lu.userId = userIdInput;
+
+END //
+DELIMITER ;
+
+DELIMITER //
+CREATE DEFINER=`root`@`localhost` PROCEDURE `rentalItem_Filter`(
+    IN `filterValue` VARCHAR(36)
+)
+LANGUAGE SQL
+NOT DETERMINISTIC
+CONTAINS SQL
+SQL SECURITY DEFINER
+COMMENT 'Selects all rental items that have an ID containing the filter value'
+BEGIN
+    SELECT item.rentalItemGuid, item.itemCondition, item.isAvailable, baseItem.name, baseItem.description, baseItem.itemType, baseItem.id
+    FROM RentalItem item
+    INNER JOIN baserentalitem baseItem
+ON item.baseRentalItemId = baseItem.id
+    WHERE
+        item.rentalItemGuid LIKE CONCAT('%',filterValue,'%');
 END //
 DELIMITER ;

@@ -63,6 +63,16 @@ class ItemApiController {
         return res.status(200).json(rentalItem);
     }
 
+    async getItemsFilteredByGuid(req, res) {
+        const filterValue = req.query.filter;
+        if(filterValue) {
+            const rentalItemList = await this._itemDataAccess.getItemListByGuidFilter(filterValue);
+            return res.status(200).json(rentalItemList);
+        } else {
+            return res.status(400);
+        }
+    }
+
 
     // getItemByBaseItemId
     async getItemByBaseItemId(req, res) {

@@ -27,6 +27,7 @@ apiRouter.get('/media/:mediaId', mediaApiController.getMedia.bind(mediaApiContro
 // instruments
 
 // rental item
+apiRouter.get('/item', itemApiController.getItemsFilteredByGuid.bind(itemApiController));
 apiRouter.post('/item', itemApiController.createOrUpdateItem.bind(itemApiController));
 apiRouter.get('/item/:rentalItemGuid', itemApiController.getItemByGuid.bind(itemApiController));
 apiRouter.get('/item/qrcode/:rentalItemGuid', itemApiController.getItemQrCode.bind(itemApiController));

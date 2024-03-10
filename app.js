@@ -19,6 +19,7 @@ const mediaRoutes = require('./src/routes/media.routes');
 const itemRoutes = require('./src/routes/item.routes');
 const apiRoutes = require('./src/routes/api.routes');
 const memberRoutes = require('./src/routes/member.routes');
+const rentalAgreementRoutes = require('./src/routes/rentalagreement.routes');
 const expressLayouts = require('express-ejs-layouts');
 const app = express();
 app.use(express.static(path.join(__dirname, '/public/')));
@@ -63,6 +64,7 @@ app.use('/media', mediaRoutes);
 app.use('/item', itemRoutes);
 app.use('/api', apiRoutes);
 app.use('/member', memberRoutes);
+app.use('/rentalagreement', rentalAgreementRoutes);
 
 const PORT = process.env.PORT || 3000;
 

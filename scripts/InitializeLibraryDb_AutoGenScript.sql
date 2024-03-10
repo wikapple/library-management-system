@@ -81,6 +81,20 @@ INSERT INTO `category` (`id`, `name`) VALUES
 	(53, 'Early Child Development Friendly'),
 	(54, 'Teenager Friendly');
 
+-- Dumping structure for table librarydb.employeeaccount
+DROP TABLE IF EXISTS `employeeaccount`;
+CREATE TABLE IF NOT EXISTS `employeeaccount` (
+  `userId` int(11) NOT NULL,
+  PRIMARY KEY (`userId`),
+  CONSTRAINT `EmployeeAccount_LibraryUser_FK` FOREIGN KEY (`userId`) REFERENCES `libraryuser` (`userId`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+-- Dumping data for table librarydb.employeeaccount: ~2 rows (approximately)
+DELETE FROM `employeeaccount`;
+INSERT INTO `employeeaccount` (`userId`) VALUES
+	(1),
+	(2);
+
 -- Dumping structure for table librarydb.instrument
 DROP TABLE IF EXISTS `instrument`;
 CREATE TABLE IF NOT EXISTS `instrument` (
@@ -246,10 +260,42 @@ CREATE TABLE IF NOT EXISTS `memberaccount` (
   CONSTRAINT `MemberAccount_LibraryUser_FK` FOREIGN KEY (`userId`) REFERENCES `libraryuser` (`userId`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
--- Dumping data for table librarydb.memberaccount: ~1 rows (approximately)
+-- Dumping data for table librarydb.memberaccount: ~10 rows (approximately)
 DELETE FROM `memberaccount`;
 INSERT INTO `memberaccount` (`userId`, `balance`, `isFrozen`) VALUES
+	(3, 0.00, b'0'),
+	(4, 0.00, b'0'),
+	(5, 0.00, b'0'),
+	(7, 0.00, b'0'),
+	(8, 0.00, b'0'),
+	(9, 0.00, b'0'),
+	(10, 0.00, b'0'),
+	(12, 0.00, b'0'),
+	(15, 0.00, b'0'),
 	(16, 0.00, b'0');
+
+-- Dumping structure for table librarydb.rentalagreement
+DROP TABLE IF EXISTS `rentalagreement`;
+CREATE TABLE IF NOT EXISTS `rentalagreement` (
+  `transactionId` varchar(36) NOT NULL,
+  `checkoutDate` date NOT NULL,
+  `checkinDueDate` date NOT NULL,
+  `rentalItemId` varchar(36) NOT NULL,
+  `borrowerId` int(11) NOT NULL,
+  `checkoutApprovedBy` int(11) NOT NULL,
+  `checkinApprovedBy` int(11) DEFAULT NULL,
+  `actualCheckinDate` date DEFAULT NULL,
+  PRIMARY KEY (`transactionId`),
+  KEY `RentalAgreement_Member_FK` (`borrowerId`),
+  KEY `RentalAgreement_EmployeeCheckout_FK` (`checkoutApprovedBy`),
+  KEY `RentalAgreement_EmployeeCheckin_FK` (`checkinApprovedBy`),
+  CONSTRAINT `RentalAgreement_EmployeeCheckin_FK` FOREIGN KEY (`checkinApprovedBy`) REFERENCES `employeeaccount` (`userId`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `RentalAgreement_EmployeeCheckout_FK` FOREIGN KEY (`checkoutApprovedBy`) REFERENCES `employeeaccount` (`userId`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `RentalAgreement_Member_FK` FOREIGN KEY (`borrowerId`) REFERENCES `memberaccount` (`userId`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+-- Dumping data for table librarydb.rentalagreement: ~0 rows (approximately)
+DELETE FROM `rentalagreement`;
 
 -- Dumping structure for table librarydb.rentalitem
 DROP TABLE IF EXISTS `rentalitem`;
@@ -517,6 +563,27 @@ BEGIN
 END//
 DELIMITER ;
 
+-- Dumping structure for procedure librarydb.memberAccount_filter
+DROP PROCEDURE IF EXISTS `memberAccount_filter`;
+DELIMITER //
+CREATE PROCEDURE `memberAccount_filter`(
+    IN `filterValue` VARCHAR(255)
+)
+    COMMENT 'Selects all members that match filter value'
+BEGIN
+    SELECT lu.userId, lu.name, lu.phoneNumber, lu.email, ma.balance, ma.isFrozen
+    FROM libraryuser lu
+    INNER JOIN
+    MemberAccount ma
+    ON lu.userId = ma.userId
+    WHERE
+        lu.name LIKE CONCAT('%',filterValue,'%')
+        OR lu.phoneNumber LIKE CONCAT('%',filterValue,'%')
+        OR lu.email LIKE CONCAT('%',filterValue,'%');
+
+END//
+DELIMITER ;
+
 -- Dumping structure for procedure librarydb.memberAccount_Insert
 DROP PROCEDURE IF EXISTS `memberAccount_Insert`;
 DELIMITER //
@@ -556,6 +623,25 @@ BEGIN
     INNER JOIN
     MemberAccount ma
     ON lu.userId = ma.userId;
+END//
+DELIMITER ;
+
+-- Dumping structure for procedure librarydb.memberAccount_SelectByUserId
+DROP PROCEDURE IF EXISTS `memberAccount_SelectByUserId`;
+DELIMITER //
+CREATE PROCEDURE `memberAccount_SelectByUserId`(
+    IN `userIdInput` int
+)
+    COMMENT 'Selects a member by their user ID'
+BEGIN
+    SELECT lu.userId, lu.name, lu.phoneNumber, lu.email, ma.balance, ma.isFrozen
+    FROM libraryuser lu
+    INNER JOIN
+    MemberAccount ma
+    ON lu.userId = ma.userId
+    WHERE
+        lu.userId = userIdInput;
+
 END//
 DELIMITER ;
 

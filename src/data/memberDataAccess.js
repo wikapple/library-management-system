@@ -8,7 +8,7 @@ class MemberDataAccess {
         try {
             const sqlQuery = `Call memberAccount_SelectAll();`;
             const result = await pool.query(sqlQuery, []);
-            
+
             return result[0];
         }
         catch (error) {
@@ -22,6 +22,16 @@ class MemberDataAccess {
             let memberList = result[0];
 
             return memberList;
+        } catch (error) {
+            debug(error);
+        }
+    }
+    async getMemberById(userId) {
+        try {
+            const sqlQuery = `CALL memberAccount_SelectByUserId(?)`;
+            const result = await pool.query(sqlQuery, [userId]);
+            let member = result[0][0];
+            return member;
         } catch (error) {
             debug(error);
         }
