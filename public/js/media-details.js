@@ -46,7 +46,7 @@ jQuery('#create-item-modal-form').submit(function(event) {
       });
   }
   jQuery(this).addClass('was-validated');
-  jQuery('#create-copy-modal').modal('hide');
+  jQuery('#create-rental-item-modal').modal('hide');
 });
 });
 
@@ -60,10 +60,10 @@ function updateCopyTable() {
 
         jQuery.each(response, function (index, copy) {
             var row = jQuery('<tr>');
-            row.append(jQuery('<td>').text(copy.itemCopyGuid));
-            row.append(jQuery('<td>').text(copy.copyCondition));
-            row.append(jQuery('<td>').text(copy.isAvailable ? 'Yes' : 'No'));
-            row.append(jQuery('<td>').html(`<a href="/item/${copy.id}" class="btn btn-outline-info"><i class="fa-solid fa-circle-info"></i> View Rental Item</a>`));
+            row.append(jQuery('<td>').text(copy.rentalItemGuid));
+            row.append(jQuery('<td>').text(copy.itemCondition));
+            row.append(jQuery('<td>').text(copy.isOnHold ? 'Yes' : 'No'));
+            row.append(jQuery('<td>').html(`<a href="/item/${copy.rentalItemGuid}" class="btn btn-outline-info"><i class="fa-solid fa-circle-info"></i> View Rental Item</a>`));
             jQuery('#copy-table tbody').append(row);
         });
     },

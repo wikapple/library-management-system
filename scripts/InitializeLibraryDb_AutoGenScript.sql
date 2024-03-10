@@ -294,7 +294,7 @@ CREATE TABLE IF NOT EXISTS `rentalagreement` (
   CONSTRAINT `RentalAgreement_Member_FK` FOREIGN KEY (`borrowerId`) REFERENCES `memberaccount` (`userId`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
--- Dumping data for table librarydb.rentalagreement: ~0 rows (approximately)
+-- Dumping data for table librarydb.rentalagreement: ~2 rows (approximately)
 DELETE FROM `rentalagreement`;
 INSERT INTO `rentalagreement` (`transactionId`, `checkoutDate`, `checkinDueDate`, `rentalItemId`, `borrowerId`, `checkoutApprovedBy`, `checkinApprovedBy`, `actualCheckinDate`) VALUES
 	(1, '2024-03-10', '2024-03-24', '18fa80d0-ce73-431e-a1fb-b52897245885', 5, 1, NULL, NULL),
@@ -305,7 +305,7 @@ DROP TABLE IF EXISTS `rentalitem`;
 CREATE TABLE IF NOT EXISTS `rentalitem` (
   `rentalItemGuid` varchar(36) NOT NULL DEFAULT '',
   `itemCondition` varchar(50) NOT NULL,
-  `isAvailable` bit(1) NOT NULL,
+  `isOnHold` bit(1) NOT NULL,
   `baseRentalItemId` int(11) NOT NULL,
   PRIMARY KEY (`rentalItemGuid`) USING BTREE,
   KEY `RentalItemCopy_BaseRentalItem_FK` (`baseRentalItemId`),
@@ -314,10 +314,16 @@ CREATE TABLE IF NOT EXISTS `rentalitem` (
 
 -- Dumping data for table librarydb.rentalitem: ~1 rows (approximately)
 DELETE FROM `rentalitem`;
-INSERT INTO `rentalitem` (`rentalItemGuid`, `itemCondition`, `isAvailable`, `baseRentalItemId`) VALUES
-	('18fa80d0-ce73-431e-a1fb-b52897245885', 'new', b'1', 8),
-	('484daa14-149b-4677-9f5a-efe4e0f2fd1d', 'New', b'1', 8),
-	('73681d3c-65f5-413e-876e-e8a88ebe5a67', 'New', b'1', 8);
+INSERT INTO `rentalitem` (`rentalItemGuid`, `itemCondition`, `isOnHold`, `baseRentalItemId`) VALUES
+	('06b9bb1b-a57e-4dd2-b27a-14a719dbecee', 'New', b'1', 9),
+	('181a261b-b591-4866-8d3c-c904df3fd67c', 'New', b'0', 9),
+	('18fa80d0-ce73-431e-a1fb-b52897245885', 'new', b'0', 8),
+	('484daa14-149b-4677-9f5a-efe4e0f2fd1d', 'New', b'0', 8),
+	('73681d3c-65f5-413e-876e-e8a88ebe5a67', 'New', b'0', 8),
+	('8fe8174f-537a-445b-9646-0cb71903aeb8', 'Fair', b'0', 11),
+	('a7f90d43-1000-4d04-9585-ed02c420ee84', 'New', b'0', 11),
+	('a977e95c-4328-4b5e-b715-fdd93b84135e', 'New', b'0', 12),
+	('db3dd69e-836b-494a-9a4b-3593d7531b69', 'Fair', b'0', 10);
 
 -- Dumping structure for table librarydb.userrole
 DROP TABLE IF EXISTS `userrole`;
@@ -688,21 +694,6 @@ BEGIN
 END//
 DELIMITER ;
 
--- Dumping structure for procedure librarydb.rentalItemCopy_Insert
-DROP PROCEDURE IF EXISTS `rentalItemCopy_Insert`;
-DELIMITER //
-CREATE PROCEDURE `rentalItemCopy_Insert`(
-	IN `guidInput` VARCHAR(36),
-	IN `copyConditionInput` VARCHAR(50),
-	IN `isAvailableInput` BIT,
-	IN `baseRentalItemIdInput` INT
-)
-BEGIN
-INSERT INTO rentalitem (rentalItemGuid, copyCondition, isAvailable, baseRentalItemId)
-VALUES (guidInput, copyConditionInput, isAvailableInput, baseRentalItemIdInput);
-END//
-DELIMITER ;
-
 -- Dumping structure for procedure librarydb.rentalItem_DeleteByItemCopyGuid
 DROP PROCEDURE IF EXISTS `rentalItem_DeleteByItemCopyGuid`;
 DELIMITER //
@@ -733,6 +724,21 @@ ON item.baseRentalItemId = baseItem.id
 END//
 DELIMITER ;
 
+-- Dumping structure for procedure librarydb.rentalItem_Insert
+DROP PROCEDURE IF EXISTS `rentalItem_Insert`;
+DELIMITER //
+CREATE PROCEDURE `rentalItem_Insert`(
+	IN `guidInput` VARCHAR(36),
+	IN `copyConditionInput` VARCHAR(50),
+	IN `isOnHoldInput` BIT,
+	IN `baseRentalItemIdInput` INT
+)
+BEGIN
+INSERT INTO rentalitem (rentalItemGuid, itemCondition, isOnHold, baseRentalItemId)
+VALUES (guidInput, copyConditionInput, isOnHoldInput, baseRentalItemIdInput);
+END//
+DELIMITER ;
+
 -- Dumping structure for procedure librarydb.rentalItem_SelectByBaseItemId
 DROP PROCEDURE IF EXISTS `rentalItem_SelectByBaseItemId`;
 DELIMITER //
@@ -740,7 +746,7 @@ CREATE PROCEDURE `rentalItem_SelectByBaseItemId`(
 	IN `baseItemIdInput` INT
 )
 BEGIN
-SELECT item.rentalItemGuid, item.itemCondition, item.isAvailable, baseItem.name, baseItem.description, baseItem.itemType
+SELECT item.rentalItemGuid, item.itemCondition, item.isOnHold, baseItem.name, baseItem.description, baseItem.itemType
 FROM RentalItem item
 INNER JOIN baserentalitem baseItem
 ON item.baseRentalItemId = baseItem.id
@@ -755,7 +761,7 @@ CREATE PROCEDURE `rentalItem_SelectByRentalItemGuid`(
 	IN `guidInput` VARCHAR(36)
 )
 BEGIN
-SELECT item.rentalItemGuid, item.itemCondition, item.isAvailable, baseItem.name, baseItem.description, baseItem.itemType, baseItem.id
+SELECT item.rentalItemGuid, item.itemCondition, item.isOnHold, baseItem.name, baseItem.description, baseItem.itemType, baseItem.id
 FROM RentalItem item
 INNER JOIN baserentalitem baseItem
 ON item.baseRentalItemId = baseItem.id
@@ -770,13 +776,13 @@ DELIMITER //
 CREATE PROCEDURE `rentalItem_UpdateByRentalItemGuid`(
 	IN `guidInput` VARCHAR(36),
 	IN `copyConditionInput` VARCHAR(50),
-	IN `isAvailableInput` BIT
+	IN `isOnHoldInput` BIT
 )
 BEGIN
 UPDATE rentalItem
 SET
 	itemCondition = copyConditionInput,
-	isAvailable = isAvailableInput
+	isOnHold = isOnHoldInput
 WHERE rentalItemGuid = guidInput;
 END//
 DELIMITER ;

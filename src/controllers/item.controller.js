@@ -26,7 +26,7 @@ class ItemController {
     async createNewItem(req, res) {
         let dbParams = {
             itemGuid: uuidv4(),
-            isAvailable: req.body.isAvailable ? true : false,
+            isOnHold: req.body.isOnHold ? true : false,
             condition: req.body.condition,
             baseItemId: req.body.baseItemId
         };
@@ -43,7 +43,7 @@ class ItemController {
     async updateItem(req, res) {
         let dbParams = {
             itemGuid: req.body.itemGuid,
-            isAvailable: req.body.isAvailable ? true : false,
+            isOnHold: req.body.isOnHold ? true : false,
             condition: req.body.condition,
         };
 
@@ -66,7 +66,6 @@ class ItemController {
         viewModel.qrCode = qrCode;
 
         // Get Transaction history
-        
         res.render(`itemViews/itemDetails.ejs`, { viewModel });
     }
 

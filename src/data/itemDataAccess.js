@@ -1,5 +1,5 @@
 const pool = require('../config/database');
-const debug = require('debug')('app:mediaDataAccess');
+const debug = require('debug')('app:itemDataAccess');
 const chalk = require('chalk');
 
 
@@ -8,9 +8,9 @@ class ItemDataAccess {
     // createItem
     async createItem(createRequest) {
         try {
-            const { itemGuid, condition, isAvailable, baseItemId } = createRequest;
+            const { itemGuid, condition, isOnHold, baseItemId } = createRequest;
             const sqlQuery = `CALL rentalItem_Insert(?, ?, ?, ?)`;
-            await pool.query(sqlQuery, [itemGuid, condition, isAvailable, baseItemId], (error, results, fields) => {
+            await pool.query(sqlQuery, [itemGuid, condition, isOnHold, baseItemId], (error, results, fields) => {
                 if (error) {
                     throw error;
                 }
@@ -23,11 +23,11 @@ class ItemDataAccess {
         }
     }
     // updateItem
-    async updateItem(createRequest) {
+    async updateItem(updateRequest) {
         try {
-            const { itemGuid, condition, isAvailable } = createRequest;
+            const { itemGuid, condition, isOnHold } = createRequest;
             const sqlQuery = `CALL rentalItem_UpdateByRentalItemGuid(?, ?, ?)`;
-            await pool.query(sqlQuery, [itemGuid, condition, isAvailable], (error, results, fields) => {
+            await pool.query(sqlQuery, [itemGuid, condition, isOnHold], (error, results, fields) => {
                 if (error) {
                     throw error;
                 }
@@ -41,7 +41,6 @@ class ItemDataAccess {
     }
     // getItemByGuid
     async getItemByGuid(guidInput) {
-
         try {
             const sqlQuery = `CALL rentalItem_SelectByRentalItemGuid(?)`;
             const dbResponse = await pool.query(sqlQuery, [guidInput]);

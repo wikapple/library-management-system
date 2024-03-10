@@ -1,6 +1,6 @@
 <link rel="stylesheet" href="/css/media-details.css">
 <%- include('partials/deleteMedia.ejs') %>
-    <%- include('partials/createCopyModal.ejs') %>
+    <%- include('partials/createRentalItemModal.ejs') %>
 
         <div class="container">
             <div class="py-2 text-center">
@@ -109,15 +109,15 @@
                         </h4>
                     </div>
                     <div class="col text-center"><button class="btn btn-outline-success" data-toggle="modal"
-                            data-target="#create-copy-modal"><i class="fa-solid fa-plus"></i>
+                            data-target="#create-rental-item-modal"><i class="fa-solid fa-plus"></i>
                             Add Copies</button></div>
                 </div>
                 <table class="table table-bordered" id="copy-table">
                     <thead>
                         <tr>
-                            <th scope="col">Copy ID</th>
+                            <th scope="col">rental item ID</th>
                             <th scope="col">Condition</th>
-                            <th scope="col">Is Available?</th>
+                            <th scope="col">Is on hold?</th>
                             <th scope="col">Actions</th>
                         </tr>
                     </thead>
