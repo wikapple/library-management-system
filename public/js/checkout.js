@@ -21,7 +21,7 @@ jQuery(document).ready(function () {
 
     updateItemSearchResults();
 
-    jQuery('#select-item-modal').on('shown.bs.modal', function() {
+    jQuery('#select-item-modal').on('shown.bs.modal', function () {
         scanQrCode();
     });
 
@@ -43,7 +43,45 @@ jQuery(document).ready(function () {
         updateItemSearchResults();
     });
 
+    jQuery('#item-select-modal').on('shown.bs.modal', function () {
+        initializeScanner();
+
+    });
+
 });
+
+async function initializeScanner() {
+
+    let cameras = await Html5Qrcode.getCameras();
+    let camera = cameras[0];
+
+    const scanner = new Html5Qrcode('rentalItemQrcodeReader');
+
+    scanner.start(
+        camera.id,
+        {
+            fps: 10,
+            qrbox: { width: 250, height: 250 }
+        },
+        (decodedText, decodedResult) => {
+            // action on success
+            processRentalItemId(decodedText);
+            scanner.stop().then((ignore) => {
+                // What to do when scanner stops
+              }).catch((err) => {
+                // What to do when scanner stopping causes an error
+              });
+
+        },
+        (errorMessage) => {
+            // error 
+            //console.log(errorMessage);
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+
+}
 
 function updateMemberSearchResults(filter = undefined) {
     const resultsContainer = jQuery('#member-search-results');
@@ -170,10 +208,10 @@ function updateItemSearchResults(filter = undefined) {
 }
 
 function selectItem(rentalItem) {
-    let row = jQuery('<tr>');
+
     const currentDate = new Date().toISOString().split('T')[0];
     let twoWeeksFromToday = new Date();
-    twoWeeksFromToday.setDate(twoWeeksFromToday.getDate() + 7);
+    twoWeeksFromToday.setDate(twoWeeksFromToday.getDate() + 14);
     twoWeeksFromToday = twoWeeksFromToday.toISOString().split('T')[0];
 
     var currentDateInputField = $('<input>', {
@@ -187,41 +225,39 @@ function selectItem(rentalItem) {
         id: 'twoWeeksLaterInput',
         type: 'date',
         class: 'form-control',
-        value: twoWeeksLater, 
-        disabled: false
+        value: twoWeeksFromToday,
+        disabled: false,
+        min: currentDate
     });
-
+    let row = jQuery('<tr>');
     row.append(jQuery('<td>').text(rentalItem.rentalItemGuid));
     row.append(jQuery('<td>').text(rentalItem.name));
     row.append(jQuery('<td>').text(rentalItem.itemType));
     row.append(jQuery('<td>').append(currentDateInputField));
     row.append(jQuery('<td>').append(twoWeeksLaterInputField));
     row.append(jQuery('<td>').html(`<button class="btn btn-outline-danger" onClick="">Remove Item</button>`));
-    jQuery('#item-table body').append(row);
+    jQuery('#item-table tbody').append(row);
 
     jQuery('#item-select-modal').modal('hide');
     jQuery('#search-item-input').val('');
-
-    jQuery('#item-select-modal').modal.hide();
 }
 
-async function scanQrCode() {
-    const scanner = new Instascan.Scanner({ video: document.getElementById('qrScannerVideo') });
-    scanner.addListener('scan', async function (content) {
-        const rentalItemId = content;
-
-        const rentalItem = await getItemByRentalItemId(rentalItemId);
-
-        selectRentalItem(rentalItem);
-    });
-}
-
-async function getItemByRentalItemId(rentalItemId) {
+async function processRentalItemId(rentalItemId) {
     jQuery.ajax({
         url: `/api/item/${rentalItemId}`,
         method: 'GET',
         success: function (response) {
-            return response;
+            if (response) {
+                selectItem(response);
+                
+            } else {
+                // What to do if no valid rental item is returned?
+
+            }
+        },
+        error: function (error) {
+            initializeScanner();
+            // What to do on an api error
         }
     });
 }

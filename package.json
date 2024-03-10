@@ -27,7 +27,6 @@
     "express-ejs-layouts": "^2.5.1",
     "express-flash": "^0.0.2",
     "express-session": "^1.18.0",
-    "instascan": "^1.0.0",
     "mariadb": "^3.2.3",
     "morgan": "^1.10.0",
     "nodemon": "^3.0.3",
@@ -37,6 +36,7 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
-    "cross-env": "^7.0.3"
+    "cross-env": "^7.0.3",
+    "html5-qrcode": "^2.3.8"
   }
 }

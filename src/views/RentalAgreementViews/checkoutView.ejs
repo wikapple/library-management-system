@@ -1,3 +1,4 @@
+
 <link rel="stylesheet" href="/css/checkout.css">
 <%- include('partials/memberSelectModal.ejs') %>
 <%- include('partials/itemSelectModal.ejs') %>
@@ -50,12 +51,6 @@
                 </tr>
             </thead>
             <tbody>
-                <% if (!viewModel?.tansactions || viewModel?.transactions?.length==0) { %>
-                    <tr>
-                        <td colspan="6" class="text-center">Please add a rental item</td>
-                    </tr>
-                    <%} %>
-
             </tbody>
         </table>
     </div>
@@ -64,4 +59,5 @@
             <button class="btn btn-success"><i class="fa-solid fa-square-check"></i> Complete Checkout</button>
         </div>
     </div>
+    <script src="/js/html5-qrcode.min.js"></script>
     <script src="/js/checkout.js"></script>
