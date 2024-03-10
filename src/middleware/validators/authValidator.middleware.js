@@ -12,7 +12,7 @@ function checkAuthenticated(req, res, next) {
         return next();
     }
     else{
-        return res.redirect('auth/login');
+        return res.redirect('/auth/login');
     }
 }
 function checkAuthenticatedMember(req, res, next) {
@@ -27,6 +27,11 @@ function checkAuthenticatedMember(req, res, next) {
 }
 
 function checkAuthenticatedEmployee(req, res, next) {
+
+    if (!req.isAuthenticated()) {
+        return res.redirect('/auth/login');
+    }
+
     const userRole = req.user.userRole;
     
     if (['Administrator', 'StaffMember'].includes(userRole)) {

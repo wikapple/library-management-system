@@ -1,6 +1,32 @@
 
 jQuery(document).ready(function () {
     updateMemberSearchResults();
+
+    jQuery('#complete-checkout-btn').click(function () {
+        const userId = jQuery('#user-id').val();
+        const checkoutDate = new Date().toISOString().split('T')[0];
+        const rentalAgreements = getItemTableData();
+
+
+        jQuery.ajax({
+            url: '/api/rentalagreement/checkout',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                userId: userId,
+                checkoutDate: checkoutDate,
+                rentalAgreements: rentalAgreements
+            }),
+            success: function(response) {
+                console.log(response);
+            },
+            error: function(xhr, status, error) {
+                console.log("Checkout failure");
+                console.log(xhr.responseText);
+            }
+        });
+    });
+
     jQuery('#search-member-btn').click(function () {
         const searchValue = jQuery('#search-member-input').val();
         updateMemberSearchResults(searchValue);
@@ -264,4 +290,17 @@ async function processRentalItemId(rentalItemId) {
             // What to do on an api error
         }
     });
+}
+
+function getItemTableData() {
+    let itemData = [];
+
+    jQuery('#item-table tbody tr').each(function() {
+        let rowData = {};
+
+        rowData.rentalItemId = jQuery(this).find('td:eq(0)').text();
+        rowData.returnDate = jQuery(this).find('td:eq(4) input[type="date"]').val();
+        itemData.push(rowData);
+    });
+    return itemData;
 }

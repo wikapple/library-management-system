@@ -1,5 +1,5 @@
 const chalk = require('chalk');
-const debug = require('debug')('app:memberController');
+const debug = require('debug')('app:memberApiController');
 const MemberDataAccess = require('../data/memberDataAccess');
 
 class MemberApiController {
