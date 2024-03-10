@@ -113,3 +113,49 @@ ON item.baseRentalItemId = baseItem.id
         item.rentalItemGuid LIKE CONCAT('%',filterValue,'%');
 END //
 DELIMITER ;
+
+DELIMITER //
+CREATE DEFINER=`root`@`localhost` PROCEDURE `rentalAgreement_Insert`(
+	IN `checkoutDateInput` DATE,
+	IN `checkinDueDateInput` DATE,
+	IN `rentalItemIdInput` VARCHAR(36),
+	IN `borrowerIdInput` INT,
+	IN `checkoutApprovedByInput` INT,
+	OUT `IsSuccessful` BIT
+)
+LANGUAGE SQL
+NOT DETERMINISTIC
+CONTAINS SQL
+SQL SECURITY DEFINER
+COMMENT 'Inserts a new rental agreement'
+BEGIN
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SET IsSuccessful = 0;
+    END;
+    START TRANSACTION;
+        SET IsSuccessful = 0;
+        INSERT INTO RentalAgreement(checkoutDate, checkinDueDate, rentalItemId, borrowerId, checkoutApprovedBy)
+        VALUES (checkoutDateInput, checkinDueDateInput, rentalItemIdInput, borrowerIdInput, checkoutApprovedByInput);
+    COMMIT;
+    SET IsSuccessful = 1;
+END //
+DELIMITER ;
+
+
+DELIMITER //
+CREATE DEFINER=`root`@`localhost` PROCEDURE `rentalAgreement_SelectAll`(
+
+)
+LANGUAGE SQL
+NOT DETERMINISTIC
+CONTAINS SQL
+SQL SECURITY DEFINER
+COMMENT 'Selects all rental agreement'
+BEGIN
+    SELECT *
+    FROM RentalAgreement;
+END //
+DELIMITER ;
+

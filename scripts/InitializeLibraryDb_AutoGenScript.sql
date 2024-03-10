@@ -277,7 +277,7 @@ INSERT INTO `memberaccount` (`userId`, `balance`, `isFrozen`) VALUES
 -- Dumping structure for table librarydb.rentalagreement
 DROP TABLE IF EXISTS `rentalagreement`;
 CREATE TABLE IF NOT EXISTS `rentalagreement` (
-  `transactionId` varchar(36) NOT NULL,
+  `transactionId` int(11) NOT NULL AUTO_INCREMENT,
   `checkoutDate` date NOT NULL,
   `checkinDueDate` date NOT NULL,
   `rentalItemId` varchar(36) NOT NULL,
@@ -292,10 +292,13 @@ CREATE TABLE IF NOT EXISTS `rentalagreement` (
   CONSTRAINT `RentalAgreement_EmployeeCheckin_FK` FOREIGN KEY (`checkinApprovedBy`) REFERENCES `employeeaccount` (`userId`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `RentalAgreement_EmployeeCheckout_FK` FOREIGN KEY (`checkoutApprovedBy`) REFERENCES `employeeaccount` (`userId`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `RentalAgreement_Member_FK` FOREIGN KEY (`borrowerId`) REFERENCES `memberaccount` (`userId`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 -- Dumping data for table librarydb.rentalagreement: ~0 rows (approximately)
 DELETE FROM `rentalagreement`;
+INSERT INTO `rentalagreement` (`transactionId`, `checkoutDate`, `checkinDueDate`, `rentalItemId`, `borrowerId`, `checkoutApprovedBy`, `checkinApprovedBy`, `actualCheckinDate`) VALUES
+	(1, '2024-03-10', '2024-03-24', '18fa80d0-ce73-431e-a1fb-b52897245885', 5, 1, NULL, NULL),
+	(2, '2024-03-10', '2024-03-24', '18fa80d0-ce73-431e-a1fb-b52897245885', 5, 1, NULL, NULL);
 
 -- Dumping structure for table librarydb.rentalitem
 DROP TABLE IF EXISTS `rentalitem`;
@@ -645,6 +648,46 @@ BEGIN
 END//
 DELIMITER ;
 
+-- Dumping structure for procedure librarydb.rentalAgreement_Insert
+DROP PROCEDURE IF EXISTS `rentalAgreement_Insert`;
+DELIMITER //
+CREATE PROCEDURE `rentalAgreement_Insert`(
+	IN `checkoutDateInput` DATE,
+	IN `checkinDueDateInput` DATE,
+	IN `rentalItemIdInput` VARCHAR(36),
+	IN `borrowerIdInput` INT,
+	IN `checkoutApprovedByInput` INT,
+	OUT `IsSuccessful` BIT
+)
+    COMMENT 'Inserts a new rental agreement'
+BEGIN
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SET IsSuccessful = 0;
+    END;
+    START TRANSACTION;
+        SET IsSuccessful = 0;
+        INSERT INTO RentalAgreement(checkoutDate, checkinDueDate, rentalItemId, borrowerId, checkoutApprovedBy)
+        VALUES (checkoutDateInput, checkinDueDateInput, rentalItemIdInput, borrowerIdInput, checkoutApprovedByInput);
+    COMMIT;
+    SET IsSuccessful = 1;
+END//
+DELIMITER ;
+
+-- Dumping structure for procedure librarydb.rentalAgreement_SelectAll
+DROP PROCEDURE IF EXISTS `rentalAgreement_SelectAll`;
+DELIMITER //
+CREATE PROCEDURE `rentalAgreement_SelectAll`(
+
+)
+    COMMENT 'Selects all rental agreement'
+BEGIN
+    SELECT *
+    FROM RentalAgreement;
+END//
+DELIMITER ;
+
 -- Dumping structure for procedure librarydb.rentalItemCopy_Insert
 DROP PROCEDURE IF EXISTS `rentalItemCopy_Insert`;
 DELIMITER //
@@ -670,6 +713,23 @@ BEGIN
 DELETE FROM rentalItemCopy
 WHERE rentalItemGuid = guidInput;
 
+END//
+DELIMITER ;
+
+-- Dumping structure for procedure librarydb.rentalItem_Filter
+DROP PROCEDURE IF EXISTS `rentalItem_Filter`;
+DELIMITER //
+CREATE PROCEDURE `rentalItem_Filter`(
+    IN `filterValue` VARCHAR(36)
+)
+    COMMENT 'Selects all rental items that have an ID containing the filter value'
+BEGIN
+    SELECT item.rentalItemGuid, item.itemCondition, item.isAvailable, baseItem.name, baseItem.description, baseItem.itemType, baseItem.id
+    FROM RentalItem item
+    INNER JOIN baserentalitem baseItem
+ON item.baseRentalItemId = baseItem.id
+    WHERE
+        item.rentalItemGuid LIKE CONCAT('%',filterValue,'%');
 END//
 DELIMITER ;
 
