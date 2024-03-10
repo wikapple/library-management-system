@@ -4,3 +4,7 @@
 .modal-content {
     background-color: whitesmoke;
 }
+.rentalItemQrcodeReader-container {
+    width: 404px;
+    height: 303px;
+}

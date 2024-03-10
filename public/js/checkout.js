@@ -19,12 +19,6 @@ jQuery(document).ready(function () {
         updateMemberSearchResults();
     });
 
-    updateItemSearchResults();
-
-    jQuery('#select-item-modal').on('shown.bs.modal', function () {
-        scanQrCode();
-    });
-
     jQuery('#search-item-btn').click(function () {
         const searchValue = jQuery('#search-item-input').val();
         updateItemSearchResults(searchValue);
@@ -47,6 +41,14 @@ jQuery(document).ready(function () {
         initializeScanner();
 
     });
+    jQuery('#item-select-modal').on('hidden.bs.modal', function () {
+        jQuery('#search-item-input').val('');
+        updateItemSearchResults();
+    });
+
+    jQuery('#item-table').on('click', '.remove-item-btn', function() {
+        jQuery(this).closest('tr').remove();
+    })
 
 });
 
@@ -56,7 +58,6 @@ async function initializeScanner() {
     let camera = cameras[0];
 
     const scanner = new Html5Qrcode('rentalItemQrcodeReader');
-
     scanner.start(
         camera.id,
         {
@@ -150,7 +151,7 @@ function selectMember(member) {
     jQuery('#checkout-member-form').show();
     jQuery('#member-select-modal').modal('hide');
     jQuery('#search-member-input').val('');
-    updateSearchResults();
+    updateMemberSearchResults();
 
 }
 
@@ -213,6 +214,9 @@ function selectItem(rentalItem) {
     let twoWeeksFromToday = new Date();
     twoWeeksFromToday.setDate(twoWeeksFromToday.getDate() + 14);
     twoWeeksFromToday = twoWeeksFromToday.toISOString().split('T')[0];
+    let tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1)
+    tomorrow = tomorrow.toISOString().split('T')[0];
 
     var currentDateInputField = $('<input>', {
         id: 'checkoutDateInput',
@@ -227,7 +231,7 @@ function selectItem(rentalItem) {
         class: 'form-control',
         value: twoWeeksFromToday,
         disabled: false,
-        min: currentDate
+        min: tomorrow
     });
     let row = jQuery('<tr>');
     row.append(jQuery('<td>').text(rentalItem.rentalItemGuid));
@@ -235,7 +239,7 @@ function selectItem(rentalItem) {
     row.append(jQuery('<td>').text(rentalItem.itemType));
     row.append(jQuery('<td>').append(currentDateInputField));
     row.append(jQuery('<td>').append(twoWeeksLaterInputField));
-    row.append(jQuery('<td>').html(`<button class="btn btn-outline-danger" onClick="">Remove Item</button>`));
+    row.append(jQuery('<td>').html(`<button class="btn btn-outline-danger remove-item-btn">Remove Item</button>`));
     jQuery('#item-table tbody').append(row);
 
     jQuery('#item-select-modal').modal('hide');
