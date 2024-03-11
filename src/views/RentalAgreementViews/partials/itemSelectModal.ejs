@@ -3,15 +3,17 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="item-select-modal-label">Select rental item to checkout</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <h5 class="modal-title fs-5" id="item-select-modal-label">Select rental item to checkout</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
+                <p class="lead">Scan a rental Item QR Code</p>
                 <div class="container-fluid">
-                    <p class="lead">Scan a rental Item QR Code</p>
-                    <div class="rentalItemQrcodeReader-container">
+                    <div class="rentalItemQrcodeReader-container text-center">
+                        <div class="spinner-border text-primary justify-content-center text-center" style="height:200px; width: 200px;" role="status"
+                            id="qrcode-spinner">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
                         <div id="rentalItemQrcodeReader"></div>
                     </div>
                 </div>
@@ -23,23 +25,21 @@
                             <div class="input-group">
                                 <input id="search-item-input" class="form-control" type="text"
                                     placeholder="Enter rental item ID" />
-                                <div class="input-group-append">
-                                    <button id="search-item-btn" type="submit" class="btn btn-outline-primary"><i
-                                            class="fa-solid fa-magnifying-glass"></i></button>
-                                    <button id="clear-item-search-btn" type="reset" class="btn btn-outline-danger"><i
-                                            class="fa-solid fa-x"></i></button>
-                                </div>
+                                <button id="search-item-btn" type="submit" class="btn btn-outline-primary"><i
+                                        class="fa-solid fa-magnifying-glass"></i></button>
+                                <button id="clear-item-search-btn" type="reset" class="btn btn-outline-danger"><i
+                                        class="fa-solid fa-x"></i></button>
                             </div>
                         </div>
                     </div>
                     <h6 class="">Search Results (select one):</h6>
                     <div id="item-search-results" class="item-search-results">
-                        
+
                     </div>
                 </div>
             </div>
             <div class="modal-footer text-center">
-                <button type="button" class="btn btn-secondary btn-block" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary btn-block" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>

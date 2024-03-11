@@ -79,7 +79,7 @@ jQuery(document).ready(function () {
 });
 
 async function initializeScanner() {
-
+    jQuery('#qrcode-spinner').show();
     let cameras = await Html5Qrcode.getCameras();
     let camera = cameras[0];
 
@@ -106,7 +106,10 @@ async function initializeScanner() {
         })
         .catch((err) => {
             console.log(err);
+        }).then(() => {
+            jQuery('#qrcode-spinner').hide();
         });
+        
 
 }
 
@@ -196,9 +199,11 @@ function updateItemSearchResults(filter = undefined) {
 
                 if (response.length >= 10) {
                     resultsContainer.html(`<p class="lead">Please refine your search. Search returned 10 or more results</p>`);
+                    return;
                 }
                 if (response.length == 0) {
                     resultsContainer.html(`<div class="text-center">No matchings rental items found.</div>`);
+                    return;
                 }
 
                 jQuery.each(response, function (index, rentalItem) {

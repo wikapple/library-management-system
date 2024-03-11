@@ -16,16 +16,15 @@
     </div>
     <div class="row">
       <div class="col-8 col-md-9 col-lg-10"></div>
-      <div class="col-4 col-md-3 col-lg-1"><button class="btn btn-outline-info" onclick="resetFormButtonClicked()"><i
+      <div class="col-4 col-md-3 col-lg-2"><button class="btn btn-outline-info" onclick="resetFormButtonClicked()"><i
             class="fa-solid fa-rotate-right"></i> Reset Form</button></div>
     </div>
     <form class="needs-validation" id="create-or-update-form">
       <input type="hidden" id="id" name="id" value=<%=viewModel.isNewMedia ? 0 : viewModel.mediaToUpdate.id %> required>
       <div class="row">
-        <div class="col-sm-6 col-md-4 col-lg-3 form-group ">
+        <div class="col-sm-6 col-md-4 col-lg-2 form-group ">
           <label for="media-type-selector" class="col-form-label">Media Type</label>
-          <select id="media-type-selector" name="type" class="form-select form-select-lg custom-select"
-            aria-label="media type select" required>
+          <select id="media-type-selector" name="type" class="form-select" aria-label="media type select" required>
             <% if(viewModel.isNewMedia) { %>
               <option value="" selected>Select media type</option>
               <% } %>
@@ -67,12 +66,12 @@
         </div>
       </div>
 
-      <div class="row">
-        <div class="col-md-6 col-lg-2 mb-3">
-          <label for="isChildSafe" class="form-check-label col-form-label">Is the media safe for children to use?
-          </label>
-          <input type="checkbox" class="form-control form-checkbox" id="isChildSafe" name="isChildSafe" <% if
+      <div class="row align-items-center mb-3">
+        <div class="col-md-6 col-lg-3 text-center justify-content-center">
+          <input type="checkbox" class="form-check-input" id="isChildSafe" name="isChildSafe" <% if
             (!viewModel.isNewMedia && viewModel.mediaToUpdate.isChildSafe) { %> checked <% } %>>
+            <label for="isChildSafe" class="form-check-label col-form-label"> is child safe?
+            </label>
         </div>
         <div class="col-md-6 col-lg-3 form-group">
           <label for="size">page count or memory size</label>
@@ -80,7 +79,7 @@
             (!viewModel.isNewMedia) { %> value="<%= viewModel.mediaToUpdate.pageCountOrSize %>" <% } %>/>
         </div>
 
-        <div class="col-md-12 col-lg-7 mb-3">
+        <div class="col-md-12 col-lg-6">
           <label for="uniqueIdentifier">ISBN or Serial Number</label>
           <input type="text" class="form-control" id="uniqueIdentifier" name="uniqueIdentifier"
             placeholder="Enter the ISBN or other unique identifier for the media" required <% if (!viewModel.isNewMedia)
@@ -92,8 +91,8 @@
       </div>
       <div class="row justify-content-center">
         <div class="col-12 text-center">
-          <button type="button" id="categories-button" class="btn btn-outline-primary" data-toggle="modal"
-            data-target="#category-select-modal">Select categories (
+          <button type="button" id="categories-button" class="btn btn-outline-primary" data-bs-toggle="modal"
+            data-bs-target="#category-select-modal">Select categories (
             <%= viewModel.isNewMedia ? 0 : viewModel.mediaToUpdate.categories.length %> selected)
           </button>
         </div>
@@ -108,11 +107,9 @@
         <textarea rows="4" required class="form-control form-control-lg text-area-input" name="description"
           id="description"><% if (!viewModel.isNewMedia) { %><%=viewModel.mediaToUpdate.description%><% } %></textarea>
       </div>
-      <div class="row">
-        <div class="col-md-6 mb-2">
+      <div class="row justify-content-center py-4">
+        <div class="col-md-6 mb-2 text-center">
           <a href="/media" class="btn btn-outline-danger btn-lg btn-block" type="cancel">Cancel</a>
-        </div>
-        <div class="col-md-6 mb-2">
           <button class="btn btn-success btn-lg btn-block" type="submit">Submit</button>
         </div>
       </div>

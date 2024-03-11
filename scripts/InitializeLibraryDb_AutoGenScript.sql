@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS `baserentalitem` (
   `name` varchar(255) NOT NULL,
   `itemType` enum('MEDIA','INSTRUMENT') NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 -- Dumping data for table librarydb.baserentalitem: ~8 rows (approximately)
 DELETE FROM `baserentalitem`;
@@ -200,7 +200,7 @@ CREATE TABLE IF NOT EXISTS `mediacategories` (
   CONSTRAINT `mediaFK` FOREIGN KEY (`mediaId`) REFERENCES `media` (`baseRentalItemId`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
--- Dumping data for table librarydb.mediacategories: ~27 rows (approximately)
+-- Dumping data for table librarydb.mediacategories: ~24 rows (approximately)
 DELETE FROM `mediacategories`;
 INSERT INTO `mediacategories` (`mediaId`, `categoryId`) VALUES
 	(8, 28),
@@ -312,7 +312,7 @@ CREATE TABLE IF NOT EXISTS `rentalitem` (
   CONSTRAINT `RentalItemCopy_BaseRentalItem_FK` FOREIGN KEY (`baseRentalItemId`) REFERENCES `baserentalitem` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
--- Dumping data for table librarydb.rentalitem: ~1 rows (approximately)
+-- Dumping data for table librarydb.rentalitem: ~10 rows (approximately)
 DELETE FROM `rentalitem`;
 INSERT INTO `rentalitem` (`rentalItemGuid`, `itemCondition`, `isOnHold`, `baseRentalItemId`) VALUES
 	('06b9bb1b-a57e-4dd2-b27a-14a719dbecee', 'New', b'1', 9),
@@ -323,7 +323,8 @@ INSERT INTO `rentalitem` (`rentalItemGuid`, `itemCondition`, `isOnHold`, `baseRe
 	('8fe8174f-537a-445b-9646-0cb71903aeb8', 'Fair', b'0', 11),
 	('a7f90d43-1000-4d04-9585-ed02c420ee84', 'New', b'0', 11),
 	('a977e95c-4328-4b5e-b715-fdd93b84135e', 'New', b'0', 12),
-	('db3dd69e-836b-494a-9a4b-3593d7531b69', 'Fair', b'0', 10);
+	('db3dd69e-836b-494a-9a4b-3593d7531b69', 'Fair', b'0', 10),
+	('f41fc0e2-8734-4900-a450-ff1c3ae9e5d5', 'Good', b'0', 39);
 
 -- Dumping structure for table librarydb.userrole
 DROP TABLE IF EXISTS `userrole`;
@@ -711,11 +712,11 @@ DELIMITER ;
 DROP PROCEDURE IF EXISTS `rentalItem_Filter`;
 DELIMITER //
 CREATE PROCEDURE `rentalItem_Filter`(
-    IN `filterValue` VARCHAR(36)
+	IN `filterValue` VARCHAR(36)
 )
     COMMENT 'Selects all rental items that have an ID containing the filter value'
 BEGIN
-    SELECT item.rentalItemGuid, item.itemCondition, item.isAvailable, baseItem.name, baseItem.description, baseItem.itemType, baseItem.id
+    SELECT item.rentalItemGuid, item.itemCondition, item.isOnHold, baseItem.name, baseItem.description, baseItem.itemType, baseItem.id
     FROM RentalItem item
     INNER JOIN baserentalitem baseItem
 ON item.baseRentalItemId = baseItem.id

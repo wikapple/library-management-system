@@ -1,10 +1,10 @@
 jQuery(document).ready(function () {
 jQuery('#confirm-delete-media-btn').click(function() {
     const button = $('#delete-media-btn');
-    const mediaIdSelected = button.data('id')
+    const mediaIdSelected = button.data('id');
     jQuery.ajax({
         type: 'DELETE',
-        url: `api/media/${mediaIdSelected}`,
+        url: `/api/media/${mediaIdSelected}`,
         success: function(response) {
 
           jQuery('#delete-confirmation-modal').modal('hide');
@@ -22,7 +22,6 @@ jQuery('#create-copy-modal').on('hidden.bs.modal', function () {
 });
 
 jQuery('#submit-new-copy-btn').click(function() {
-  console.log('sumbit');
   jQuery('#create-item-modal-form').submit();
 });
 

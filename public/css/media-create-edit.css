@@ -1,6 +1,3 @@
-.form-checkbox{
-    height: 20px;
-}
 .categories-check-input[type="checkbox"] {
     transform: scale(2); /* Adjust the scale factor as needed */
   }
@@ -12,6 +9,9 @@
 .category-check-label {
     font-size: 1.1em;
     font-weight: 400;
+}
+input[type="checkbox"] {
+    transform: scale(1.5);
 }
 
 .categories-outline {
