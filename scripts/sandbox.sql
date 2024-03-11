@@ -159,3 +159,36 @@ BEGIN
 END //
 DELIMITER ;
 
+DELIMITER //
+CREATE DEFINER=`root`@`localhost` PROCEDURE `rentalAgreement_SelectByRentalItemId`(
+    IN `rentalItemIdInput` int
+)
+LANGUAGE SQL
+NOT DETERMINISTIC
+CONTAINS SQL
+SQL SECURITY DEFINER
+COMMENT 'Selects all transactions for a given rental item'
+BEGIN
+   SELECT *
+   FROM RentalAgreement
+   WHERE rentalItemId = rentalItemIdInput;
+
+END //
+DELIMITER ;
+
+DELIMITER //
+CREATE DEFINER=`root`@`localhost` PROCEDURE `rentalAgreement_SelectByBorrowerId`(
+    IN `borrowerIdInput` int
+)
+LANGUAGE SQL
+NOT DETERMINISTIC
+CONTAINS SQL
+SQL SECURITY DEFINER
+COMMENT 'Selects all transactions for a given member'
+BEGIN
+   SELECT *
+   FROM RentalAgreement
+   WHERE borrowerId = borrowerIdInput;
+
+END //
+DELIMITER ;

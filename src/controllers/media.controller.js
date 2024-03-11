@@ -53,8 +53,8 @@ class MediaController {
 
     viewModel.mediaDetails = mediaDetails;
 
-    const rentalItemList = await this._itemDataAccess.getItemByBaseId(id);
-
+    let rentalItemList = await this._itemDataAccess.getItemByBaseId(id);
+  
     viewModel.rentalItemList = rentalItemList;
 
     res.render(`mediaViews/mediaDetail.ejs`, {viewModel});

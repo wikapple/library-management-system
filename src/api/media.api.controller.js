@@ -35,6 +35,11 @@ class MediaApiController {
       await this._mediaDataAccess.getMediaListByTypeAndFilter(mediaType, filterValue) :
       await this._mediaDataAccess.getMediaListByType(mediaType);
 
+    for(let media of mediaList) {
+      media.total = Number(media.total);
+      media.totalAvailable = Number(media.totalAvailable);
+    }
+
     res.status(200).json(mediaList);
   }
 

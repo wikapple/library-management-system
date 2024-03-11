@@ -67,7 +67,13 @@ class ItemDataAccess {
         try {
             const sqlQuery = `CALL rentalItem_SelectByBaseItemId(?)`;
             const dbResponse = await pool.query(sqlQuery, [baseItemId]);
-            const rentalItem = dbResponse[0];
+            let rentalItem = dbResponse[0];
+            rentalItem = rentalItem.map(x =>{
+                x.isCheckedOut = x.isCheckedOut == 1 ? true : false;
+                x.isAvailable = !x.isCheckedOut && !x.isOnHold;
+                debug(x);
+                return x;
+            });
             return rentalItem;
         } catch (error) {
             debug(error);

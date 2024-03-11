@@ -36,6 +36,22 @@
                             </ul>
                         </div>
                     </div>
+                    <div class="row justify-content-center text-center align-items-center mb-1">
+                        <div class="col">
+                            Total Available:
+                            <span class="detail-text <% if(viewModel.mediaDetails.totalAvailable == 0) { %> text-danger <% }%>">
+                                <%=viewModel.mediaDetails.totalAvailable%>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="row justify-content-center text-center align-items-center">
+                        <div class="col">
+                            Total Copies:
+                            <span class="detail-text <% if(viewModel.mediaDetails.total == 0) { %> text-danger <% }%>">
+                                <%=viewModel.mediaDetails.total%>
+                            </span>
+                        </div>
+                    </div>
                 </div>
                 <div class="col-md-8 order-md-1">
                     <div class="row align-items-center">
@@ -128,7 +144,7 @@
                         <tr>
                             <th scope="col">rental item ID</th>
                             <th scope="col">Condition</th>
-                            <th scope="col">Is on hold?</th>
+                            <th scope="col">Is available?</th>
                             <th scope="col">Actions</th>
                         </tr>
                     </thead>
@@ -146,8 +162,8 @@
                                         <td>
                                             <%=rentalItem.itemCondition%>
                                         </td>
-                                        <td>
-                                            <%=rentalItem.isAvailable ? "Yes" : "No" %>
+                                        <td class="<%= rentalItem.isAvailable ? 'text-success' : 'text-danger' %>">
+                                            <%= rentalItem.isAvailable ? "Yes" : "No" %>
                                         </td>
                                         <td>
                                             <a href="/item/<%=rentalItem.rentalItemGuid%>"

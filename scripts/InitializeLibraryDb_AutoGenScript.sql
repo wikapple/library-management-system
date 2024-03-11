@@ -292,13 +292,14 @@ CREATE TABLE IF NOT EXISTS `rentalagreement` (
   CONSTRAINT `RentalAgreement_EmployeeCheckin_FK` FOREIGN KEY (`checkinApprovedBy`) REFERENCES `employeeaccount` (`userId`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `RentalAgreement_EmployeeCheckout_FK` FOREIGN KEY (`checkoutApprovedBy`) REFERENCES `employeeaccount` (`userId`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `RentalAgreement_Member_FK` FOREIGN KEY (`borrowerId`) REFERENCES `memberaccount` (`userId`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
--- Dumping data for table librarydb.rentalagreement: ~2 rows (approximately)
+-- Dumping data for table librarydb.rentalagreement: ~3 rows (approximately)
 DELETE FROM `rentalagreement`;
 INSERT INTO `rentalagreement` (`transactionId`, `checkoutDate`, `checkinDueDate`, `rentalItemId`, `borrowerId`, `checkoutApprovedBy`, `checkinApprovedBy`, `actualCheckinDate`) VALUES
 	(1, '2024-03-10', '2024-03-24', '18fa80d0-ce73-431e-a1fb-b52897245885', 5, 1, NULL, NULL),
-	(2, '2024-03-10', '2024-03-24', '18fa80d0-ce73-431e-a1fb-b52897245885', 5, 1, NULL, NULL);
+	(2, '2024-03-10', '2024-03-24', '18fa80d0-ce73-431e-a1fb-b52897245885', 5, 1, NULL, NULL),
+	(3, '2024-03-11', '2024-03-25', '06b9bb1b-a57e-4dd2-b27a-14a719dbecee', 3, 1, NULL, NULL);
 
 -- Dumping structure for table librarydb.rentalitem
 DROP TABLE IF EXISTS `rentalitem`;
@@ -482,12 +483,32 @@ DROP PROCEDURE IF EXISTS `media_SelectAll`;
 DELIMITER //
 CREATE PROCEDURE `media_SelectAll`()
 BEGIN
-	SELECT i.id, i.description, mt.name AS type, m.uniqueIdentifier, m.author, i.name, m.publisher, m.isChildSafe, m.pageCountOrSize  
+	SELECT i.id, i.description, mt.name AS type, m.uniqueIdentifier, m.author, i.name, m.publisher, m.isChildSafe, m.pageCountOrSize, COALESCE(total.totalCount, 0) total, COALESCE(available.totalAvailableCount, 0) totalAvailable 
 	FROM media m
 	INNER JOIN BaseRentalItem i
 	ON m.baseRentalItemId = i.id
 	INNER JOIN MediaType mt
-	ON m.typeId = mt.Id;
+	ON m.typeId = mt.Id
+	LEFT JOIN (
+		SELECT COUNT(1) AS totalCount, baseRentalItemId 
+		FROM rentalItem
+		GROUP BY baseRentalItemId
+	) AS total
+	ON total.baseRentalItemID = i.id
+	LEFT JOIN (
+		SELECT COUNT(1) totalAvailableCount, ra.baseRentalItemId
+		FROM rentalitem ra
+		WHERE 
+			ra.isOnHold = 0 
+			AND
+			ra.rentalItemGuid NOT IN (
+				SELECT rentalItemId
+				FROM rentalagreement
+				WHERE actualCheckinDate IS NULL)
+		GROUP BY ra.baseRentalItemId
+	) AS available
+	ON available.baseRentalItemID = i.id;
+	
 END//
 DELIMITER ;
 
@@ -498,12 +519,31 @@ CREATE PROCEDURE `media_SelectById`(
 	IN `idInput` int
 )
 BEGIN
-	SELECT i.id, i.description, mt.name AS type, m.uniqueIdentifier, m.author, i.name, m.publisher, m.isChildSafe  , m.pageCountOrSize 
+	SELECT i.id, i.description, mt.name AS type, m.uniqueIdentifier, m.author, i.name, m.publisher, m.isChildSafe, m.pageCountOrSize, COALESCE(total.totalCount, 0) total, COALESCE(available.totalAvailableCount, 0) totalAvailable 
 	FROM media m
 	INNER JOIN BaseRentalItem i
 	ON m.baseRentalItemId = i.id
 	INNER JOIN MediaType mt
 	ON m.typeId = mt.Id
+	LEFT JOIN (
+		SELECT COUNT(1) AS totalCount, baseRentalItemId 
+		FROM rentalItem
+		GROUP BY baseRentalItemId
+	) AS total
+	ON total.baseRentalItemID = i.id
+	LEFT JOIN (
+		SELECT COUNT(1) totalAvailableCount, ra.baseRentalItemId
+		FROM rentalitem ra
+		WHERE 
+			ra.isOnHold = 0 
+			AND
+			ra.rentalItemGuid NOT IN (
+				SELECT rentalItemId
+				FROM rentalagreement
+				WHERE actualCheckinDate IS NULL)
+		GROUP BY ra.baseRentalItemId
+	) AS available
+	ON available.baseRentalItemID = i.id
 	WHERE m.baseRentalItemId = idInput;
 END//
 DELIMITER ;
@@ -515,12 +555,31 @@ CREATE PROCEDURE `media_SelectByType`(
 	IN `typeIdInput` int
 )
 BEGIN
-	SELECT i.id, i.description, mt.name AS type, m.uniqueIdentifier, m.author, i.name, m.publisher, m.isChildSafe, m.pageCountOrSize   
+	SELECT i.id, i.description, mt.name AS type, m.uniqueIdentifier, m.author, i.name, m.publisher, m.isChildSafe, m.pageCountOrSize, COALESCE(total.totalCount, 0) total, COALESCE(available.totalAvailableCount, 0) totalAvailable 
 	FROM media m
 	INNER JOIN BaseRentalItem i
 	ON m.baseRentalItemId = i.id
 	INNER JOIN MediaType mt
 	ON m.typeId = mt.Id
+	LEFT JOIN (
+		SELECT COUNT(1) AS totalCount, baseRentalItemId 
+		FROM rentalItem
+		GROUP BY baseRentalItemId
+	) AS total
+	ON total.baseRentalItemID = i.id
+	LEFT JOIN (
+		SELECT COUNT(1) totalAvailableCount, ra.baseRentalItemId
+		FROM rentalitem ra
+		WHERE 
+			ra.isOnHold = 0 
+			AND
+			ra.rentalItemGuid NOT IN (
+				SELECT rentalItemId
+				FROM rentalagreement
+				WHERE actualCheckinDate IS NULL)
+		GROUP BY ra.baseRentalItemId
+	) AS available
+	ON available.baseRentalItemID = i.id
 	WHERE m.typeId = typeIdInput;
 END//
 DELIMITER ;
@@ -695,6 +754,36 @@ BEGIN
 END//
 DELIMITER ;
 
+-- Dumping structure for procedure librarydb.rentalAgreement_SelectByBorrowerId
+DROP PROCEDURE IF EXISTS `rentalAgreement_SelectByBorrowerId`;
+DELIMITER //
+CREATE PROCEDURE `rentalAgreement_SelectByBorrowerId`(
+    IN `borrowerIdInput` int
+)
+    COMMENT 'Selects all transactions for a given member'
+BEGIN
+   SELECT *
+   FROM RentalAgreement
+   WHERE borrowerId = borrowerIdInput;
+
+END//
+DELIMITER ;
+
+-- Dumping structure for procedure librarydb.rentalAgreement_SelectByRentalItemId
+DROP PROCEDURE IF EXISTS `rentalAgreement_SelectByRentalItemId`;
+DELIMITER //
+CREATE PROCEDURE `rentalAgreement_SelectByRentalItemId`(
+    IN `rentalItemIdInput` int
+)
+    COMMENT 'Selects all transactions for a given rental item'
+BEGIN
+   SELECT *
+   FROM RentalAgreement
+   WHERE rentalItemId = rentalItemIdInput;
+
+END//
+DELIMITER ;
+
 -- Dumping structure for procedure librarydb.rentalItem_DeleteByItemCopyGuid
 DROP PROCEDURE IF EXISTS `rentalItem_DeleteByItemCopyGuid`;
 DELIMITER //
@@ -747,7 +836,20 @@ CREATE PROCEDURE `rentalItem_SelectByBaseItemId`(
 	IN `baseItemIdInput` INT
 )
 BEGIN
-SELECT item.rentalItemGuid, item.itemCondition, item.isOnHold, baseItem.name, baseItem.description, baseItem.itemType
+SELECT 
+	item.rentalItemGuid, 
+	item.itemCondition, 
+	item.isOnHold, 
+	baseItem.name, 
+	baseItem.description, 
+	baseItem.itemType,
+	CASE WHEN item.rentalItemGuid IN 
+	(
+		SELECT ra.rentalItemId
+		FROM rentalagreement ra
+		WHERE ra.actualCheckinDate IS NULL
+	)
+	THEN TRUE ELSE FALSE END AS isCheckedOut
 FROM RentalItem item
 INNER JOIN baserentalitem baseItem
 ON item.baseRentalItemId = baseItem.id
