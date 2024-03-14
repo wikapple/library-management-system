@@ -18,7 +18,7 @@ jQuery(document).ready(function () {
                 rentalAgreements: rentalAgreements
             }),
             success: function(response) {
-                console.log(response);
+                window.location.replace('/media');
             },
             error: function(xhr, status, error) {
                 console.log("Checkout failure");

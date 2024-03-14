@@ -1,6 +1,7 @@
 const chalk = require('chalk');
 const debug = require('debug')('app:itemController');
 const ItemDataAccess = require('../data/itemDataAccess');
+const RentalAgreementDataAccess = require('../data/rentalAgreementDataAccess');
 const { v4: uuidv4 } = require('uuid');
 const QRCode = require('qrcode');
 
@@ -8,6 +9,7 @@ class ItemController {
 
     constructor() {
         this._itemDataAccess = new ItemDataAccess();
+        this._rentalAgreementDataAccess = new RentalAgreementDataAccess();
     }
 
 
@@ -62,12 +64,20 @@ class ItemController {
 
         const rentalItem = await this._itemDataAccess.getItemByGuid(rentalItemGuid);
         viewModel.rentalItem = rentalItem;
+
+        const rentalAgreements = await this._rentalAgreementDataAccess.getRentalAgreementsByRentalItemId(rentalItemGuid);
+        viewModel.rentalAgreements = rentalAgreements
+
+        const isCheckedOut = rentalAgreements.some(rentalAgreement => rentalAgreement.actualCheckinDate == null);
+        viewModel.rentalItem.isCheckedOut = isCheckedOut;
+
         const qrCode = await this.generateQRCode(rentalItemGuid);
         viewModel.qrCode = qrCode;
 
         // Get Transaction history
         res.render(`itemViews/itemDetails.ejs`, { viewModel });
     }
+    
 
     // getItemByGuid
     async getItemByGuid(req, res) {

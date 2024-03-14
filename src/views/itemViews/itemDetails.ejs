@@ -42,18 +42,21 @@
                                             <i class="fa-solid fa-qrcode"></i> Show QR-Code
                                         </button>
                                     </li>
+                                    <% if(viewModel.rentalItem.isCheckedOut) { %>
                                     <li>
                                         <button class="dropdown-item text-success" id="diplay-qrcode-btn"
                                             data-bs-toggle="modal" data-bs-target="#display-qrcode-modal">
                                             <i class="fa-solid fa-arrow-turn-down"></i> Check In
                                         </button>
                                     </li>
+                                    <% } else { %>
                                     <li>
                                         <button class="dropdown-item text-success" id="diplay-qrcode-btn"
                                             data-bs-toggle="modal" data-bs-target="#display-qrcode-modal">
                                             <i class="fa-solid fa-arrow-turn-up"></i> Check Out
                                         </button>
                                     </li>
+                                    <% } %>
                                 </ul>
                             </div>
                         </div>
@@ -93,10 +96,18 @@
                         </div>
                         <div class="row align-items-center">
                             <div class="col-md-4 col-lg-3">
+                                Is checked out?
+                            </div>
+                            <div class="col-md-8 detail-text mb-2">
+                                <%=viewModel.rentalItem.isCheckedOut? "Yes" : "No" %>
+                            </div>
+                        </div>
+                        <div class="row align-items-center">
+                            <div class="col-md-4 col-lg-3">
                                 Condition:
                             </div>
                             <div class="col-md-8 detail-text mb-2">
-                                <%=viewModel.rentalItem.copyCondition%>
+                                <%=viewModel.rentalItem.itemCondition%>
                             </div>
                         </div>
                     </div>
@@ -112,17 +123,43 @@
                         <thead>
                             <tr>
                                 <th scope="col">Rental Date</th>
-                                <th scope="col">Return Date</th>
+                                <th scope="col">Return Due Date</th>
+                                <th scope="col">Actual Return Date</th>
                                 <th scope="col">Member</th>
                                 <th scope="col">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <% if (!viewModel?.tansactions || viewModel?.transactions?.length==0) { %>
+                            <% if (!viewModel?.rentalAgreements || viewModel?.rentalAgreements?.length==0) { %>
                                 <tr>
                                     <td colspan="4" class="text-center">No transaction history</td>
                                 </tr>
                                 <%} %>
+                                    <% for (let rentalAgreement of viewModel?.rentalAgreements) { %>
+
+                                        <tr class="<%= rentalAgreement.checkinDueDate < Date%>">
+                                            <td scope="col">
+                                                <%=rentalAgreement.checkoutDate.toLocaleDateString('en-US')%>
+                                            </td>
+
+                                            <td scope="col">
+                                                <%=rentalAgreement.checkinDueDate.toLocaleDateString('en-US')%>
+                                            </td>
+                                            <td scope="col">
+                                                <%= rentalAgreement.actualCheckinDate==null ? "Not returned" :
+                                                    rentalAgreement.actualCheckinDate.toLocaleDateString('en-US') %>
+                                            </td>
+
+
+                                            <td class="col">
+                                                <%= rentalAgreement.borrowerName %>
+                                            </td>
+
+
+                                            <td class="col">None</td>
+                                        </tr>
+
+                                        <% } %>
 
                         </tbody>
                     </table>

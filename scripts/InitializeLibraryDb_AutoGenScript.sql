@@ -146,7 +146,7 @@ CREATE TABLE IF NOT EXISTS `libraryuser` (
   CONSTRAINT `libraryuser_ibfk_1` FOREIGN KEY (`userRoleId`) REFERENCES `userrole` (`roleId`) ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
--- Dumping data for table librarydb.libraryuser: ~12 rows (approximately)
+-- Dumping data for table librarydb.libraryuser: ~10 rows (approximately)
 DELETE FROM `libraryuser`;
 INSERT INTO `libraryuser` (`userId`, `name`, `phoneNumber`, `email`, `passwordHash`, `dateOfBirth`, `userRoleId`) VALUES
 	(1, 'admin', '111-222-3333', 'admin@admin.com', '$2a$12$PbFqKsS1gGmPuMHPus6jIOst0RpmOTkji8s2tAyxUyGglh7tMu3Ny', '1990-01-01', 3),
@@ -292,14 +292,17 @@ CREATE TABLE IF NOT EXISTS `rentalagreement` (
   CONSTRAINT `RentalAgreement_EmployeeCheckin_FK` FOREIGN KEY (`checkinApprovedBy`) REFERENCES `employeeaccount` (`userId`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `RentalAgreement_EmployeeCheckout_FK` FOREIGN KEY (`checkoutApprovedBy`) REFERENCES `employeeaccount` (`userId`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `RentalAgreement_Member_FK` FOREIGN KEY (`borrowerId`) REFERENCES `memberaccount` (`userId`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
--- Dumping data for table librarydb.rentalagreement: ~3 rows (approximately)
+-- Dumping data for table librarydb.rentalagreement: ~5 rows (approximately)
 DELETE FROM `rentalagreement`;
 INSERT INTO `rentalagreement` (`transactionId`, `checkoutDate`, `checkinDueDate`, `rentalItemId`, `borrowerId`, `checkoutApprovedBy`, `checkinApprovedBy`, `actualCheckinDate`) VALUES
 	(1, '2024-03-10', '2024-03-24', '18fa80d0-ce73-431e-a1fb-b52897245885', 5, 1, NULL, NULL),
 	(2, '2024-03-10', '2024-03-24', '18fa80d0-ce73-431e-a1fb-b52897245885', 5, 1, NULL, NULL),
-	(3, '2024-03-11', '2024-03-25', '06b9bb1b-a57e-4dd2-b27a-14a719dbecee', 3, 1, NULL, NULL);
+	(3, '2024-03-11', '2024-03-25', '06b9bb1b-a57e-4dd2-b27a-14a719dbecee', 3, 1, NULL, NULL),
+	(4, '2024-03-13', '2024-03-27', '8fe8174f-537a-445b-9646-0cb71903aeb8', 3, 1, NULL, NULL),
+	(5, '2024-03-13', '2024-03-27', 'a977e95c-4328-4b5e-b715-fdd93b84135e', 3, 1, NULL, NULL),
+	(6, '2024-03-13', '2024-03-27', 'db3dd69e-836b-494a-9a4b-3593d7531b69', 10, 1, NULL, NULL);
 
 -- Dumping structure for table librarydb.rentalitem
 DROP TABLE IF EXISTS `rentalitem`;
@@ -313,17 +316,21 @@ CREATE TABLE IF NOT EXISTS `rentalitem` (
   CONSTRAINT `RentalItemCopy_BaseRentalItem_FK` FOREIGN KEY (`baseRentalItemId`) REFERENCES `baserentalitem` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
--- Dumping data for table librarydb.rentalitem: ~10 rows (approximately)
+-- Dumping data for table librarydb.rentalitem: ~14 rows (approximately)
 DELETE FROM `rentalitem`;
 INSERT INTO `rentalitem` (`rentalItemGuid`, `itemCondition`, `isOnHold`, `baseRentalItemId`) VALUES
 	('06b9bb1b-a57e-4dd2-b27a-14a719dbecee', 'New', b'1', 9),
+	('07211d07-cc27-438b-abf7-608cee23a2fd', 'New', b'0', 24),
 	('181a261b-b591-4866-8d3c-c904df3fd67c', 'New', b'0', 9),
 	('18fa80d0-ce73-431e-a1fb-b52897245885', 'new', b'0', 8),
+	('3339b5ea-b6bb-49e4-bad1-8c222b6d7a92', 'Fair', b'1', 24),
 	('484daa14-149b-4677-9f5a-efe4e0f2fd1d', 'New', b'0', 8),
+	('4e06d263-86d7-4edb-96d2-167287b60151', 'Fair', b'0', 9),
 	('73681d3c-65f5-413e-876e-e8a88ebe5a67', 'New', b'0', 8),
 	('8fe8174f-537a-445b-9646-0cb71903aeb8', 'Fair', b'0', 11),
 	('a7f90d43-1000-4d04-9585-ed02c420ee84', 'New', b'0', 11),
 	('a977e95c-4328-4b5e-b715-fdd93b84135e', 'New', b'0', 12),
+	('b99f4ad1-8ee9-4b3b-82d2-72a2219f3f17', 'Good', b'0', 9),
 	('db3dd69e-836b-494a-9a4b-3593d7531b69', 'Fair', b'0', 10),
 	('f41fc0e2-8734-4900-a450-ff1c3ae9e5d5', 'Good', b'0', 39);
 
@@ -744,13 +751,15 @@ DELIMITER ;
 -- Dumping structure for procedure librarydb.rentalAgreement_SelectAll
 DROP PROCEDURE IF EXISTS `rentalAgreement_SelectAll`;
 DELIMITER //
-CREATE PROCEDURE `rentalAgreement_SelectAll`(
-
-)
+CREATE PROCEDURE `rentalAgreement_SelectAll`()
     COMMENT 'Selects all rental agreement'
 BEGIN
-    SELECT *
-    FROM RentalAgreement;
+    SELECT ra.*, u.name
+	FROM rentalagreement ra
+	LEFT JOIN memberaccount ma
+	ON ra.borrowerId = ma.userId
+	LEFT JOIN libraryuser u
+	ON ma.userId = u.userId;
 END//
 DELIMITER ;
 
@@ -758,12 +767,16 @@ DELIMITER ;
 DROP PROCEDURE IF EXISTS `rentalAgreement_SelectByBorrowerId`;
 DELIMITER //
 CREATE PROCEDURE `rentalAgreement_SelectByBorrowerId`(
-    IN `borrowerIdInput` int
+	IN `borrowerIdInput` int
 )
     COMMENT 'Selects all transactions for a given member'
 BEGIN
-   SELECT *
-   FROM RentalAgreement
+   SELECT ra.*, u.name
+	FROM rentalagreement ra
+	LEFT JOIN memberaccount ma
+	ON ra.borrowerId = ma.userId
+	LEFT JOIN libraryuser u
+	ON ma.userId = u.userId
    WHERE borrowerId = borrowerIdInput;
 
 END//
@@ -773,14 +786,17 @@ DELIMITER ;
 DROP PROCEDURE IF EXISTS `rentalAgreement_SelectByRentalItemId`;
 DELIMITER //
 CREATE PROCEDURE `rentalAgreement_SelectByRentalItemId`(
-    IN `rentalItemIdInput` int
+	IN `rentalItemIdInput` VARCHAR(36)
 )
     COMMENT 'Selects all transactions for a given rental item'
 BEGIN
-   SELECT *
-   FROM RentalAgreement
-   WHERE rentalItemId = rentalItemIdInput;
-
+   SELECT ra.*, u.name AS borrowerName
+FROM rentalagreement ra
+LEFT JOIN memberaccount ma
+ON ra.borrowerId = ma.userId
+LEFT JOIN libraryuser u
+ON ma.userId = u.userId
+WHERE ra.rentalItemId = rentalItemIdInput;
 END//
 DELIMITER ;
 

@@ -71,7 +71,6 @@ class ItemDataAccess {
             rentalItem = rentalItem.map(x =>{
                 x.isCheckedOut = x.isCheckedOut == 1 ? true : false;
                 x.isAvailable = !x.isCheckedOut && !x.isOnHold;
-                debug(x);
                 return x;
             });
             return rentalItem;

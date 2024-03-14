@@ -61,7 +61,7 @@ function updateCopyTable() {
             var row = jQuery('<tr>');
             row.append(jQuery('<td>').text(copy.rentalItemGuid));
             row.append(jQuery('<td>').text(copy.itemCondition));
-            row.append(jQuery('<td>').text(copy.isOnHold ? 'Yes' : 'No'));
+            row.append(jQuery('<td>').html(`<span class="${copy.isAvailable? 'text-success':'text-danger'}">${copy.isAvailable ? 'Yes' : 'No'}</span>`));
             row.append(jQuery('<td>').html(`<a href="/item/${copy.rentalItemGuid}" class="btn btn-outline-info"><i class="fa-solid fa-circle-info"></i> View Rental Item</a>`));
             jQuery('#copy-table tbody').append(row);
         });
