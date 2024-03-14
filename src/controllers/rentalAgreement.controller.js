@@ -24,6 +24,16 @@ class RentalAgreementController {
                 
         res.render(`rentalAgreementViews/checkoutView.ejs`, { viewModel });
     }
+    async checkinView(req, res) {
+        let viewModel = {};
+        const {rentalItemId} = req.query;
+
+        if(rentalItemId) {
+            viewModel.rentalItem = await this.itemDataAccess.getItemByGuid(rentalItemId);
+        }
+                
+        res.render(`rentalAgreementViews/checkinView.ejs`, { viewModel });
+    }
 } 
 
 module.exports = RentalAgreementController;

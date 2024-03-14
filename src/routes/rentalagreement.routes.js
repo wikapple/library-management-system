@@ -7,7 +7,7 @@ const rentalAgreementRouter = express.Router();
 const rentalAgreementController = new RentalAgreementController();
 
 rentalAgreementRouter.get('/checkout', rentalAgreementController.checkoutView.bind(rentalAgreementController));  
-
+rentalAgreementRouter.get('/checkin', rentalAgreementController.checkinView.bind(rentalAgreementController));  
 
 
 

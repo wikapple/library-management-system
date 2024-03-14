@@ -1,0 +1,30 @@
+<link rel="stylesheet" href="/css/checkin.css">
+<%- include('partials/itemSelectModal.ejs') %>
+
+    <div class="container">
+        <h2 class="pb-2 border-bottom"><i class="fa-solid fa-arrow-turn-down"></i> Check In</h2>
+    </div>
+    <div class="container py-4 border-bottom border-primary">
+        <div class="row justify-content-center">
+            <div class="col-8 col-sm-6 col-md-4 col-lg-3 text-center">
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#item-select-modal"><i
+                        class="fa-solid fa-magnifying-glass"></i> Select Check In Item</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container py-4 border-bottom">
+        <h4>Item Details</h4>
+        <form action="">
+        </form>
+    </div>
+    <div class="container py-4 border-bottom border-primary">
+        <h4>Rental Agreement Details</h4>
+        <form action="">
+        </form>
+    </div>
+
+
+
+    <script src="/js/html5-qrcode.min.js"></script>
+    <script src="/js/checkin.js"></script>
