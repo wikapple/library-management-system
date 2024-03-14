@@ -137,15 +137,15 @@
                                 <%} %>
                                     <% for (let rentalAgreement of viewModel?.rentalAgreements) { %>
 
-                                        <tr class="<%= rentalAgreement.checkinDueDate < Date%>">
+                                        <tr>
                                             <td scope="col">
                                                 <%=rentalAgreement.checkoutDate.toLocaleDateString('en-US')%>
                                             </td>
 
-                                            <td scope="col">
+                                            <td scope="col" class="<%= rentalAgreement.isPastDue ? 'text-danger': ''%>">
                                                 <%=rentalAgreement.checkinDueDate.toLocaleDateString('en-US')%>
                                             </td>
-                                            <td scope="col">
+                                            <td scope="col" class="<%= rentalAgreement.isPastDue ? 'text-danger': ''%>">
                                                 <%= rentalAgreement.actualCheckinDate==null ? "Not returned" :
                                                     rentalAgreement.actualCheckinDate.toLocaleDateString('en-US') %>
                                             </td>

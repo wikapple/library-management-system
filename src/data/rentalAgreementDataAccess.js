@@ -22,9 +22,14 @@ class RentalAgreementDataAccess {
         try {
             const sqlQuery = `CALL rentalAgreement_SelectByRentalItemId(?)`;
             const result = await pool.query(sqlQuery, [rentalItemId]);
-            const rentalAgreements = result[0];
+            let rentalAgreements = result[0];
 
             rentalAgreements.sort((a,b) => this._sortRentalAgreements(a,b));
+
+            rentalAgreements = rentalAgreements.map(x =>{
+                x.isPastDue = x.actualCheckinDate ?? Date.now > x.checkinDueDate;
+                return x;
+            });
             return rentalAgreements;
         }
         catch (err) {
