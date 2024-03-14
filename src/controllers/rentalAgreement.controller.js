@@ -19,7 +19,7 @@ class RentalAgreementController {
         }
 
         if(rentalItemId) {
-            viewModel.rentalItemId = await this.itemDataAccess.getItemByGuid(rentalItemId);
+            viewModel.rentalItem = await this.itemDataAccess.getItemByGuid(rentalItemId);
         }
                 
         res.render(`rentalAgreementViews/checkoutView.ejs`, { viewModel });

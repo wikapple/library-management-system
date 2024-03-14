@@ -43,20 +43,19 @@
                                         </button>
                                     </li>
                                     <% if(viewModel.rentalItem.isCheckedOut) { %>
-                                    <li>
-                                        <button class="dropdown-item text-success" id="diplay-qrcode-btn"
-                                            data-bs-toggle="modal" data-bs-target="#display-qrcode-modal">
-                                            <i class="fa-solid fa-arrow-turn-down"></i> Check In
-                                        </button>
-                                    </li>
-                                    <% } else { %>
-                                    <li>
-                                        <button class="dropdown-item text-success" id="diplay-qrcode-btn"
-                                            data-bs-toggle="modal" data-bs-target="#display-qrcode-modal">
-                                            <i class="fa-solid fa-arrow-turn-up"></i> Check Out
-                                        </button>
-                                    </li>
-                                    <% } %>
+                                        <li>
+                                            <button class="dropdown-item text-success" id="diplay-qrcode-btn"
+                                                data-bs-toggle="modal" data-bs-target="#display-qrcode-modal">
+                                                <i class="fa-solid fa-arrow-turn-down"></i> Check In
+                                            </button>
+                                        </li>
+                                        <% } else { %>
+                                            <li>
+                                                <a href="<%= '/rentalagreement/checkout?rentalItemId=' + viewModel.rentalItem.rentalItemGuid%>" class="dropdown-item text-success">
+                                                    <i class="fa-solid fa-arrow-turn-up"></i> Check Out
+                                                </a>
+                                            </li>
+                                            <% } %>
                                 </ul>
                             </div>
                         </div>
@@ -80,7 +79,7 @@
                         </div>
                         <div class="row align-items-center">
                             <div class="col-md-4 col-lg-3">
-                                Item Copy Number:
+                                Rental Item ID:
                             </div>
                             <div class="col-md-8 detail-text mb-2">
                                 <%=viewModel.rentalItem.rentalItemGuid%>

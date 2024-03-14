@@ -66,5 +66,13 @@
                 </div>
             </div>
         </div>
+        
         <script src="/js/html5-qrcode.min.js"></script>
         <script src="/js/checkout.js"></script>
+        <script>
+            jQuery(document).ready(function () {
+            <% if (viewModel.rentalItem) { %>
+                selectItem(<%- JSON.stringify(viewModel.rentalItem) %>);
+            <% } %>
+            });
+        </script>
