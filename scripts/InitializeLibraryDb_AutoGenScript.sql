@@ -840,11 +840,24 @@ CREATE PROCEDURE `rentalItem_Filter`(
 )
     COMMENT 'Selects all rental items that have an ID containing the filter value'
 BEGIN
-    SELECT item.rentalItemGuid, item.itemCondition, item.isOnHold, baseItem.name, baseItem.description, baseItem.itemType, baseItem.id
-    FROM RentalItem item
-    INNER JOIN baserentalitem baseItem
-ON item.baseRentalItemId = baseItem.id
-    WHERE
+    SELECT
+	   item.rentalItemGuid, 
+	   item.itemCondition, 
+	   item.isOnHold, 
+	   baseItem.name, 
+	   baseItem.description, 
+	   baseItem.itemType,
+	   CASE WHEN item.rentalItemGuid IN 
+	   (
+		   SELECT ra.rentalItemId
+		   FROM rentalagreement ra
+		   WHERE ra.actualCheckinDate IS NULL
+	   )
+	   THEN TRUE ELSE FALSE END AS isCheckedOut
+   FROM RentalItem item
+   INNER JOIN baserentalitem baseItem
+   ON item.baseRentalItemId = baseItem.id
+   WHERE
         item.rentalItemGuid LIKE CONCAT('%',filterValue,'%');
 END//
 DELIMITER ;
@@ -899,11 +912,24 @@ CREATE PROCEDURE `rentalItem_SelectByRentalItemGuid`(
 	IN `guidInput` VARCHAR(36)
 )
 BEGIN
-SELECT item.rentalItemGuid, item.itemCondition, item.isOnHold, baseItem.name, baseItem.description, baseItem.itemType, baseItem.id
-FROM RentalItem item
-INNER JOIN baserentalitem baseItem
-ON item.baseRentalItemId = baseItem.id
-WHERE item.rentalItemGuid = guidInput;
+    SELECT
+	   item.rentalItemGuid, 
+	   item.itemCondition, 
+	   item.isOnHold, 
+	   baseItem.name, 
+	   baseItem.description, 
+	   baseItem.itemType,
+	   CASE WHEN item.rentalItemGuid IN 
+	   (
+		   SELECT ra.rentalItemId
+		   FROM rentalagreement ra
+		   WHERE ra.actualCheckinDate IS NULL
+	   )
+	   THEN TRUE ELSE FALSE END AS isCheckedOut
+   FROM RentalItem item
+   INNER JOIN baserentalitem baseItem
+   ON item.baseRentalItemId = baseItem.id
+   WHERE item.rentalItemGuid = guidInput;
 
 END//
 DELIMITER ;
