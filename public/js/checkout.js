@@ -17,10 +17,10 @@ jQuery(document).ready(function () {
                 checkoutDate: checkoutDate,
                 rentalAgreements: rentalAgreements
             }),
-            success: function(response) {
+            success: function (response) {
                 window.location.replace('/media');
             },
-            error: function(xhr, status, error) {
+            error: function (xhr, status, error) {
                 console.log("Checkout failure");
                 console.log(xhr.responseText);
             }
@@ -72,7 +72,7 @@ jQuery(document).ready(function () {
         updateItemSearchResults();
     });
 
-    jQuery('#item-table').on('click', '.remove-item-btn', function() {
+    jQuery('#item-table').on('click', '.remove-item-btn', function () {
         jQuery(this).closest('tr').remove();
     })
 
@@ -95,9 +95,9 @@ async function initializeScanner() {
             processRentalItemId(decodedText);
             scanner.stop().then((ignore) => {
                 // What to do when scanner stops
-              }).catch((err) => {
+            }).catch((err) => {
                 // What to do when scanner stopping causes an error
-              });
+            });
 
         },
         (errorMessage) => {
@@ -109,7 +109,7 @@ async function initializeScanner() {
         }).then(() => {
             jQuery('#qrcode-spinner').hide();
         });
-        
+
 
 }
 
@@ -195,6 +195,9 @@ function updateItemSearchResults(filter = undefined) {
             url: `/api/item?filter=${filter}`,
             method: 'GET',
             success: function (response) {
+
+                response = response.filter(x => !x.isCheckedOut && !x.isOnHold);
+
                 resultsContainer.empty();
 
                 if (response.length >= 10) {
@@ -283,8 +286,23 @@ async function processRentalItemId(rentalItemId) {
         method: 'GET',
         success: function (response) {
             if (response) {
-                selectItem(response);
-                
+
+                if (response.isCheckedOut) {
+                    jQuery('#qr-error-message').text("Item is already checked out");
+                    jQuery('#qr-error-message').show(500);
+                    initializeScanner();
+                }
+                else if (response.isOnHold) {
+                    jQuery('#qr-error-message').text("Item is on hold");
+                    jQuery('#qr-error-message').show(500);
+                    initializeScanner();
+                }
+                else {
+                    jQuery('#qr-error-message').text('');
+                    jQuery('#qr-error-message').hide(200);
+                    selectItem(response);
+                }
+
             } else {
                 // What to do if no valid rental item is returned?
 
@@ -300,7 +318,7 @@ async function processRentalItemId(rentalItemId) {
 function getItemTableData() {
     let itemData = [];
 
-    jQuery('#item-table tbody tr').each(function() {
+    jQuery('#item-table tbody tr').each(function () {
         let rowData = {};
 
         rowData.rentalItemId = jQuery(this).find('td:eq(0)').text();
