@@ -430,12 +430,31 @@ CREATE PROCEDURE `media_Filter`(
 	IN `filterValue` VARCHAR(255)
 )
 BEGIN
-	SELECT i.id, i.description, mt.name AS type, m.uniqueIdentifier, m.author, i.name, m.publisher, m.isChildSafe, m.pageCountOrSize   
+	SELECT i.id, i.description, mt.name AS type, m.uniqueIdentifier, m.author, i.name, m.publisher, m.isChildSafe, m.pageCountOrSize, COALESCE(total.totalCount, 0) total, COALESCE(available.totalAvailableCount, 0) totalAvailable 
 	FROM media m
 	INNER JOIN BaseRentalItem i
 	ON m.baseRentalItemId = i.id
 	INNER JOIN MediaType mt
 	ON m.typeId = mt.Id
+	LEFT JOIN (
+		SELECT COUNT(1) AS totalCount, baseRentalItemId 
+		FROM rentalItem
+		GROUP BY baseRentalItemId
+	) AS total
+	ON total.baseRentalItemID = i.id
+	LEFT JOIN (
+		SELECT COUNT(1) totalAvailableCount, ra.baseRentalItemId
+		FROM rentalitem ra
+		WHERE 
+			ra.isOnHold = 0 
+			AND
+			ra.rentalItemGuid NOT IN (
+				SELECT rentalItemId
+				FROM rentalagreement
+				WHERE actualCheckinDate IS NULL)
+		GROUP BY ra.baseRentalItemId
+	) AS available
+	ON available.baseRentalItemID = i.id
 	WHERE 
 		m.typeId = typeIdInput 
 		AND 
