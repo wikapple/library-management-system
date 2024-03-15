@@ -16,7 +16,6 @@ jQuery(document).ready(function () {
         event.preventDefault();
 
         let form = jQuery(this);
-
         let categories = getCheckedCategories();
 
         form.find('.hidden-category-list').remove();
@@ -28,14 +27,13 @@ jQuery(document).ready(function () {
         });
 
         let formData = form.serialize();
-
         jQuery.ajax({
             url: "/media",
             method: "POST",
             data: formData,
             success: function (response, textStatus, xhr) {
 
-                window.location.replace('/media');
+                window.location.replace(`/media/${form[0].id.value}`);
             },
 
             error: function (xhr, status, error) {
