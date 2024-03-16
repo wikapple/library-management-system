@@ -297,6 +297,11 @@ async function processRentalItemId(rentalItemId) {
                     jQuery('#qr-error-message').show(500);
                     initializeScanner();
                 }
+                else if (isItemAlreadySelected(response.rentalItemGuid)) {
+                    jQuery('#qr-error-message').text("Item is already selected");
+                    jQuery('#qr-error-message').show(500);
+                    initializeScanner();
+                }
                 else {
                     jQuery('#qr-error-message').text('');
                     jQuery('#qr-error-message').hide(200);
@@ -313,6 +318,12 @@ async function processRentalItemId(rentalItemId) {
             // What to do on an api error
         }
     });
+}
+
+function isItemAlreadySelected(rentalItemId) {
+    const selectedData = getItemTableData();
+
+    return selectedData.some(x => x.rentalItemId == rentalItemId);
 }
 
 function getItemTableData() {
