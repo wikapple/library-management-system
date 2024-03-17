@@ -242,15 +242,22 @@ function updateItemSearchResults(filter = undefined) {
     }
 }
 
+function getDateStringFormattedForInput(date) {
+    const day = ("0" + date.getDate()).slice(-2);
+    const month = ("0" + (date.getMonth() + 1)).slice(-2);
+    return date.getFullYear() + "-" + month + "-" + day;
+}
+
 function selectItem(rentalItem) {
 
-    const currentDate = new Date().toISOString().split('T')[0];
+    let currentDate = new Date();
+    currentDate = getDateStringFormattedForInput(currentDate);
     let twoWeeksFromToday = new Date();
     twoWeeksFromToday.setDate(twoWeeksFromToday.getDate() + 14);
-    twoWeeksFromToday = twoWeeksFromToday.toISOString().split('T')[0];
+    twoWeeksFromToday = getDateStringFormattedForInput(twoWeeksFromToday);
     let tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1)
-    tomorrow = tomorrow.toISOString().split('T')[0];
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow = getDateStringFormattedForInput(tomorrow);
 
     var currentDateInputField = $('<input>', {
         id: 'checkoutDateInput',
