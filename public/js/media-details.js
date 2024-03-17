@@ -65,6 +65,11 @@ function updateCopyTable() {
             row.append(jQuery('<td>').html(`<a href="/item/${copy.rentalItemGuid}" class="btn btn-outline-info"><i class="fa-solid fa-circle-info"></i> View Rental Item</a>`));
             jQuery('#copy-table tbody').append(row);
         });
+
+        const totalAvailable = response.filter(item => item.isAvailable).length;
+        jQuery('#totalAvailableCount').text(totalAvailable);
+        const total = response.length;
+        jQuery('#totalCount').text(total);
     },
     error: function (xhr, status, error) {
         console.log(error?.message);

@@ -33,7 +33,7 @@ jQuery(document).ready(function () {
             data: formData,
             success: function (response, textStatus, xhr) {
 
-                window.location.replace(`/media/${form[0].id.value}`);
+                window.location.replace(`/media`);
             },
 
             error: function (xhr, status, error) {
