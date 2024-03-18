@@ -70,6 +70,19 @@ function updateCopyTable() {
         jQuery('#totalAvailableCount').text(totalAvailable);
         const total = response.length;
         jQuery('#totalCount').text(total);
+
+        if(totalAvailable) {
+          jQuery('#totalAvailableCount').removeClass('text-danger');
+          jQuery('#totalAvailableCount').addClass('text-success');
+          jQuery('#totalCount').removeClass('text-danger');
+          jQuery('#totalCount').addClass('text-success');
+        }
+        else {
+          jQuery('#totalAvailableCount').removeClass('text-success');
+          jQuery('#totalAvailableCount').addClass('text-danger');
+          jQuery('#totalCount').removeClass('text-success');
+          jQuery('#totalCount').addClass('text-danger');
+        }
     },
     error: function (xhr, status, error) {
         console.log(error?.message);
