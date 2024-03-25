@@ -10,7 +10,7 @@ itemRouter.post('/', itemController.createOrUpdateItem.bind(itemController));
 itemRouter.get('/:rentalItemGuid', itemController.getItemDetailsViewByGuid.bind(itemController));
 itemRouter.get('/qrcode/:rentalItemGuid', itemController.getItemQrCode.bind(itemController));
 itemRouter.get('/baseItem/:baseItemId', itemController.getItemByBaseItemId.bind(itemController));
-itemRouter.delete('/:rentalItemBuid', itemController.deleteItemByGuid.bind(itemController));
+itemRouter.delete('/:rentalItemGuid', itemController.deleteItemByGuid.bind(itemController));
 
 
 

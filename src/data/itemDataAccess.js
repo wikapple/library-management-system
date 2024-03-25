@@ -85,7 +85,7 @@ class ItemDataAccess {
     // deleteItemByItemGuid
     async deleteItemByItemGuid(itemGuidToDelete) {
         try {
-            const sqlQuery = `Call media_DeleteById(?)`;
+            const sqlQuery = `Call rentalItem_DeleteByRentalItemGuid(?)`;
 
             await pool.query(
                 sqlQuery,

@@ -98,7 +98,7 @@ class ItemController {
     async deleteItemByGuid(req, res) {
         const rentalItemGuid = req.params.rentalItemGuid;
         await this._itemDataAccess.deleteItemByItemGuid(rentalItemGuid);
-        return res.status(204);
+        res.sendStatus(204);
     }
 
     async getItemQrCode(req, res) {

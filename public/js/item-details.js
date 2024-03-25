@@ -1,3 +1,22 @@
+jQuery(document).ready(function () { 
+  jQuery('#confirm-delete-item-btn').on('click', function(){
+
+    var itemId = jQuery(this).data('id');
+    console.log(`itemID = ${itemId}`);
+    jQuery.ajax({
+      url: `/item/${itemId}`,
+      type: 'DELETE',
+      success: function(response) {
+        window.location.href = '/';
+      },
+      error: function(xhr, status, error) {
+        console.log(`Error deleting rental item. error: ${error?.message}`);
+      }
+    })
+  });
+
+});
+
 function printQrCode() {
     var qrGuidContent = $('#qr-container').clone();
     var printContent = $('<div></div>').append(qrGuidContent);
