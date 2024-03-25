@@ -25,7 +25,7 @@ class ItemDataAccess {
     // updateItem
     async updateItem(updateRequest) {
         try {
-            const { itemGuid, condition, isOnHold } = createRequest;
+            const { itemGuid, condition, isOnHold } = updateRequest;
             const sqlQuery = `CALL rentalItem_UpdateByRentalItemGuid(?, ?, ?)`;
             await pool.query(sqlQuery, [itemGuid, condition, isOnHold], (error, results, fields) => {
                 if (error) {

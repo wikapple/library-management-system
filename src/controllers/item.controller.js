@@ -44,15 +44,15 @@ class ItemController {
 
     async updateItem(req, res) {
         let dbParams = {
-            itemGuid: req.body.itemGuid,
+            itemGuid: req.body.rentalItemGuid,
             isOnHold: req.body.isOnHold ? true : false,
             condition: req.body.condition,
         };
 
-        const isUpdateSuccessful = await this._itemDataAccessitemDataAccess.updateItem(dbParams);
+        const isUpdateSuccessful = await this._itemDataAccess.updateItem(dbParams);
 
         if (isUpdateSuccessful) {
-            res.sendStatus(204);
+            res.redirect(`/item/${req.body.rentalItemGuid}`);
         } else {
             res.sendStatus(500);
         }

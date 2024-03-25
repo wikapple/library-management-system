@@ -3,40 +3,42 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title fs-5" id="update-item-modal-label">Update copy <%=viewModel.rentalItem.itemCopyGuid%></h5>
+                <h5 class="modal-title fs-5" id="update-item-modal-label">Update copy <%=viewModel.rentalItem.rentalItemGuid%></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
-                    <form id="update-item-form" action="">
-                        <input type="hidden" id="id" name="baseItemId" value=<%=viewModel.rentalItem.itemCopyGuid%> required>
+                    <form id="update-item-form" action="/item" method="POST">
+                        <input type="hidden" id="id" name="rentalItemGuid" value=<%=viewModel.rentalItem.rentalItemGuid%> required>
                         <div class="row justify-content-center align-items-center">
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="copy-condition-select copy-label">Item Condition</label>
                                     <select class="form-control" name="condition" id="copy-condition-select">
-                                      <option>New</option>
-                                      <option>Good</option>
-                                      <option>Fair</option>
-                                      <option>worn</option>
-                                      <option>poor</option>
+                                      <option <%if(viewModel?.rentalItem?.itemCondition== "New"){%>selected <%}%>>New</option>
+                                      <option <%if(viewModel?.rentalItem?.itemCondition== "Good"){%>selected <%}%>>Good</option>
+                                      <option <%if(viewModel?.rentalItem?.itemCondition == "Fair"){%>selected <%}%>>Fair</option>
+                                      <option <%if(viewModel?.rentalItem?.itemCondition == "Worn"){%>selected <%}%>>Worn</option>
+                                      <option <%if(viewModel?.rentalItem?.itemCondition == "Poor"){%>selected <%}%>>Poor</option>
                                     </select>
                                   </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-check">
-                                    <input type="checkbox" name="isOnHold" class="form-check-input" id="isOnHold-checkbox">
-                                    <label class="form-check-label copy-label" for="isOnHold-checkbox">Copy is available</label>
+                                    <input type="checkbox" name="isOnHold" class="form-check-input" id="isOnHold-checkbox"
+                                        <%if(viewModel?.rentalItem?.isOnHold){%>checked <%}%> />
+                                    <label class="form-check-label copy-label" for="isOnHold-checkbox">Copy is on hold</label>
                                   </div>
                             </div>
+                        </div>
+                        <div class="modal-footer text-center">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" id="submit-update-item-btn" class="btn btn-success">Update Item</button>
                         </div>
                     </form>
                 </div>
             </div>
-            <div class="modal-footer text-center">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" id="submit-update-item-btn" class="btn btn-success">Update Item</button>
-            </div>
+            
         </div>
     </div>
 </div>
