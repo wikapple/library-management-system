@@ -77,7 +77,7 @@ function updateItemSearchResults(filter = undefined) {
     }
     else {
         jQuery.ajax({
-            url: `/api/item?filter=${filter}`,
+            url: `/api/item?filter=${filter}&checkedOut=true`,
             method: 'GET',
             success: function (response) {
                 resultsContainer.empty();
@@ -124,19 +124,53 @@ function updateItemSearchResults(filter = undefined) {
     }
 }
 
-function selectItem(rentalItem) {
+function selectCheckinItem(rentalItem, rentalAgreement) {
 
     jQuery('#item-select-modal').modal('hide');
     jQuery('#search-item-input').val('');
 }
 
 async function processRentalItemId(rentalItemId) {
+    const rentalItem = await getRentalItem(rentalItemId);
+    let rentalAgreement;
+    if (rentalItem) {
+        rentalAgreement = await getActiveRentalAgreement(rentalItemId);
+    }
+
+    if (rentalItem && rentalAgreement) {
+        selectCheckinItem(rentalItem, rentalAgreement);
+    } else {
+        console.log("Error retrieving rental item or rental agreement");
+    }
+}
+
+async function getRentalItem(rentalItemId) {
     jQuery.ajax({
         url: `/api/item/${rentalItemId}`,
         method: 'GET',
         success: function (response) {
             if (response) {
-                selectItem(response);
+                return(response);
+                
+            } else {
+                // What to do if no valid rental item is returned?
+
+            }
+        },
+        error: function (error) {
+            initializeScanner();
+            // What to do on an api error
+        }
+    });
+}
+
+async function getRentalAgreementsByRentalItemId(rentalItemId) {
+    jQuery.ajax({
+        url: `/api/rentalAgreement/byRentalItem/${rentalItemId}?isActive=true`,
+        method: 'GET',
+        success: function (response) {
+            if (response) {
+                return(response);
                 
             } else {
                 // What to do if no valid rental item is returned?

@@ -22,10 +22,10 @@ class RentalAgreementApiController {
             try {
 
                 const rentalItem = await this.itemDataAccess.getItemByGuid(rentalAgreement.rentalItemId);
-                if(rentalItem.isCheckedOut) {
+                if (rentalItem.isCheckedOut) {
                     throw Error('rental item is already checked out.');
                 }
-                if(rentalItem.isOnHold) {
+                if (rentalItem.isOnHold) {
                     throw Error('rental item is on hold.');
                 }
 
@@ -43,6 +43,24 @@ class RentalAgreementApiController {
             }
         }
         res.status(200).json(checkoutResults);
+    }
+    async getRentalAgreementsByRentalItemId(req, res) {
+        try {
+            const { rentalItemId } = req.params;
+            const { isActive } = req.query;
+
+            var rentalAgreements = await this.rentalAgreementDataAccess.getRentalAgreementsByRentalItemId(rentalItemId);
+
+            if (isActive) {
+                rentalAgreements = rentalAgreements.find(agreement => !agreement.actualCheckinDate);
+            }
+
+            res.status(200).json(rentalAgreements);
+        }
+        catch (error) {
+            debug(error);
+            res.sendStatus(500);
+        }
     }
 }
 

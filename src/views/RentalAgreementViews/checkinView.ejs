@@ -13,15 +13,76 @@
         </div>
     </div>
 
-    <div class="container py-4 border-bottom">
+    <div class="container py-4 border-bottom <% if(!viewModel.rentalItem) { %> hidden<% } %>">
         <h4>Item Details</h4>
-        <form action="">
-        </form>
+        <div class="row align-items-center">
+            <div class="col-md-4 col-lg-3">
+                Item ID:
+            </div>
+            <div class="col-md-8 detail-text mb-2">
+                <a id="rentalItemIdLink" href="<%=" /item/"+viewModel.rentalItem?.rentalItemGuid%>"><%=viewModel?.rentalItem?.rentalItemGuid%></a>
+            </div>
+        </div>
+        <div class="row align-items-center">
+            <div class="col-md-4 col-lg-3">
+                Item Name:
+            </div>
+            <div class="col-md-8 detail-text mb-2">
+                <a id="rentalItemNameLink" href="<%=" /media/"+viewModel?.rentalItem?.id%>"><%=viewModel?.rentalItem?.name%></a>
+            </div>
+        </div>
+        <div class="row align-items-center">
+            <div class="col-md-4 col-lg-3">
+                Item Type:
+            </div>
+            <div id="rentalItemType" class="col-md-8 detail-text mb-2">
+                <%=viewModel?.rentalItem?.itemType%>
+            </div>
+        </div>
+        <div class="row align-items-center">
+            <div class="col-md-4 col-lg-3">
+                Is on hold?
+            </div>
+            <div id="isOnHold" class="col-md-8 detail-text mb-2">
+                <%=viewModel.rentalItem?.isOnHold? "Yes" : "No" %>
+            </div>
+        </div>
+        <div class="row align-items-center">
+            <div class="col-md-4 col-lg-3">
+                Condition at checkout:
+            </div>
+            <div id="condition" class="col-md-8 detail-text mb-2">
+                <%=viewModel?.rentalItem?.itemCondition%>
+            </div>
+        </div>
     </div>
-    <div class="container py-4 border-bottom border-primary">
+    </div>
+    <div class="container py-4 border-bottom border-primary <% if(!viewModel.rentalItem) { %> hidden<% } %>">
         <h4>Rental Agreement Details</h4>
-        <form action="">
-        </form>
+        <div class="row align-items-center">
+            <div class="col-md-4 col-lg-3">
+                Borrowing Member:
+            </div>
+            <div class="col-md-8 detail-text mb-2">
+                <a id="borrowingMemberLink" href="<%=" /member/"+viewModel?.rentalAgreement?.borrowerId%>"><%=viewModel?.rentalAgreement?.borrowerName%></a>
+            </div>
+        </div>
+        <div class="row align-items-center">
+            <div class="col-md-4 col-lg-3">
+                Checkout Date:
+            </div>
+            <div id="condition" class="col-md-8 detail-text mb-2">
+                <%=viewModel?.rentalAgreement?.checkoutDate?.toLocaleDateString('en-US')%>
+            </div>
+        </div>
+        <div class="row align-items-center">
+            <div class="col-md-4 col-lg-3">
+                Checkin Due Date:
+            </div>
+            <div id="condition" class="col-md-8 detail-text mb-2">
+                <%=viewModel?.rentalAgreement?.checkinDueDate?.toLocaleDateString('en-US')%>
+            </div>
+        </div>
     </div>
 
 

@@ -44,14 +44,14 @@
                                     </li>
                                     <% if(viewModel.rentalItem.isCheckedOut) { %>
                                         <li>
-                                            <button class="dropdown-item text-success" id="diplay-qrcode-btn"
-                                                data-bs-toggle="modal" data-bs-target="#display-qrcode-modal">
+                                            <a href="<%= '/rentalagreement/checkin?rentalItemId=' + viewModel.rentalItem.rentalItemGuid%>" class="dropdown-item text-success">
                                                 <i class="fa-solid fa-arrow-turn-down"></i> Check In
-                                            </button>
+                                            </a>
                                         </li>
                                         <% } else { %>
                                             <li>
-                                                <a href="<%= '/rentalagreement/checkout?rentalItemId=' + viewModel.rentalItem.rentalItemGuid%>" class="dropdown-item text-success">
+                                                <a href="<%= '/rentalagreement/checkout?rentalItemId=' + viewModel.rentalItem.rentalItemGuid%>"
+                                                    class="dropdown-item text-success">
                                                     <i class="fa-solid fa-arrow-turn-up"></i> Check Out
                                                 </a>
                                             </li>
@@ -63,7 +63,7 @@
                     <div class="col-md-8 order-md-1">
                         <div class="row align-items-center">
                             <div class="col-md-4 col-lg-3">
-                                Copy of:
+                                Item Name:
                             </div>
                             <div class="col-md-8 detail-text mb-2">
                                 <a href="<%=" /media/"+viewModel.rentalItem.id%>"><%=viewModel.rentalItem.name%></a>

@@ -39,5 +39,5 @@ apiRouter.delete('/item/:rentalItemBuid', itemApiController.deleteItemByGuid.bin
 
 // rental agreements
 apiRouter.post('/rentalagreement/checkout',authValidator.checkAuthenticatedEmployee, rentalAgreementApiController.submitRentalAgreements.bind(rentalAgreementApiController));
-
+apiRouter.get('/rentalAgreement/byRentalItem/:rentalItemId', rentalAgreementApiController.getRentalAgreementsByRentalItemId.bind(rentalAgreementApiController));
 module.exports = apiRouter;

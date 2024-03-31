@@ -64,9 +64,18 @@ class ItemApiController {
     }
 
     async getItemsFilteredByGuid(req, res) {
-        const filterValue = req.query.filter;
-        if(filterValue) {
-            const rentalItemList = await this._itemDataAccess.getItemListByGuidFilter(filterValue);
+
+        let {filter, isCheckedOut } = req.query;
+        
+
+        if(filter) {
+
+            let rentalItemList = await this._itemDataAccess.getItemListByGuidFilter(filter);
+            if (isCheckedOut !== undefined) {
+                isCheckedOut = isCheckedOut === 'true';
+                rentalItemList = rentalItemList.filter(x => x.isCheckedOut == isCheckedOut);
+            }
+
             return res.status(200).json(rentalItemList);
         } else {
             return res.status(400);

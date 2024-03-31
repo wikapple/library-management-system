@@ -4,10 +4,12 @@
   "description": "Library management system project for IU INFO-C451 ",
   "main": "index.js",
   "scripts": {
-    "start": "cross-env DEBUG=app,app:* & node ./app.js",
+    "start": "set DEBUG=app,app:* & node ./app.js",
     "debug": "cross-env DEBUG=app,app:* nodemon ./app.js",
     "start-windows": "set DEBUG=app,app:* & node ./app.js",
     "debug-windows": "set DEBUG=* & nodemon ./app.js",
+    "start-mac": "DEBUG=app,app:* node ./app.js",
+    "debug-mac": "DEBUG=app,app:* node ./app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
