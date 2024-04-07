@@ -8,6 +8,7 @@ const rentalAgreementController = new RentalAgreementController();
 
 rentalAgreementRouter.get('/checkout', rentalAgreementController.checkoutView.bind(rentalAgreementController));  
 rentalAgreementRouter.get('/checkin', rentalAgreementController.checkinView.bind(rentalAgreementController));  
+rentalAgreementRouter.post('/checkin', rentalAgreementController.submitCheckin.bind(rentalAgreementController));  
 
 
 

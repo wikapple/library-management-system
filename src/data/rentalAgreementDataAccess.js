@@ -27,10 +27,38 @@ class RentalAgreementDataAccess {
             rentalAgreements.sort((a,b) => this._sortRentalAgreements(a,b));
 
             rentalAgreements = rentalAgreements.map(x =>{
-                x.isPastDue = x.actualCheckinDate ?? Date.now > x.checkinDueDate;
+                x.isPastDue = x.actualCheckinDate ?? new Date() > new Date(x.checkinDueDate);
                 return x;
             });
             return rentalAgreements;
+        }
+        catch (err) {
+            debug(err);
+        }
+    }
+
+    async getRentalAgreementByTransactionId(transactionId) {
+        try {
+            const sqlQuery = `CALL rentalAgreement_SelectByTransactionId(?)`;
+            const result = await pool.query(sqlQuery, [transactionId]);
+            let rentalAgreement = result[0][0];
+
+            if(rentalAgreement) {
+                rentalAgreement.isPastDue = rentalAgreement.actualCheckinDate ?? new Date() > new Date(rentalAgreement.checkinDueDate);
+            } 
+
+            return rentalAgreement;
+        }
+        catch (err) {
+            debug(err);
+        }
+    }
+
+    async checkin(transactionId, returnDate, approvedByEmployeeId) {
+        try {
+            const sqlQuery = `CALL rentalAgreement_CheckinByTransactionId(?, ?, ?, @IsSuccessful); select @IsSuccessful;`;
+            const result = await pool.query(sqlQuery, [transactionId, returnDate, approvedByEmployeeId]);
+            return result[1][0]['@IsSuccessful'];
         }
         catch (err) {
             debug(err);

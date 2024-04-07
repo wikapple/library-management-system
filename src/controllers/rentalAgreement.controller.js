@@ -48,11 +48,42 @@ class RentalAgreementController {
                 
         res.render(`rentalAgreementViews/checkinView.ejs`, { viewModel });
     }
+
+    async submitCheckin(req, res) {
+
+        const approvedByEmployeeId = req.user.userId;
+        const {rentalAgreementIdInput, returnedCondition, returnDate} = req.body;
+
+        const rentalAgreement = await this.rentalAgreementDataAccess.getRentalAgreementByTransactionId(rentalAgreementIdInput);
+        const rentalItem = await this.itemDataAccess.getItemByGuid(rentalAgreement.rentalItemId);
+        const member = await this.memberDataAccess.getMemberById(rentalAgreement.borrowerId);
+
+        // Update rentalAgreement (checkin)
+        await this.rentalAgreementDataAccess.checkin(rentalAgreementIdInput, returnDate, approvedByEmployeeId);
+
+        // Update rentalItem condition if needed
+        if(rentalItem.itemCondition !== returnedCondition) {
+            const updateRequest = 
+                { itemGuid : rentalItem.rentalItemGuid, condition : returnedCondition, isOnHold : rentalItem.isOnHold }
+            
+            await this.itemDataAccess.updateItem(updateRequest);
+        }
+
+        // if needed, apply fees to member.
+        if(rentalAgreement.isPastDue) {
+            
+        }
+
+        res.status(200).redirect('/');
+    }
+
     async getActiveRentalAgreementByRentalItemId(rentalItemId) {
         var rentalAgreements = await this.rentalAgreementDataAccess.getRentalAgreementsByRentalItemId(rentalItemId);
         var rentalAgreement = rentalAgreements.find(agreement => !agreement.actualCheckinDate);
         return rentalAgreement;
     }
+
+    
 } 
 
 module.exports = RentalAgreementController;

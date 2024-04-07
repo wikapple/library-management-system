@@ -50,11 +50,10 @@ class RentalAgreementApiController {
             const { isActive } = req.query;
 
             var rentalAgreements = await this.rentalAgreementDataAccess.getRentalAgreementsByRentalItemId(rentalItemId);
-
+            
             if (isActive) {
                 rentalAgreements = rentalAgreements.find(agreement => !agreement.actualCheckinDate);
             }
-
             res.status(200).json(rentalAgreements);
         }
         catch (error) {

@@ -30,7 +30,9 @@ jQuery(document).ready(function () {
 
     jQuery('#item-table').on('click', '.remove-item-btn', function() {
         jQuery(this).closest('tr').remove();
-    })
+    });
+
+    jQuery('#returnDate').val(getDateStringFormattedForInput(new Date()));
 
 });
 
@@ -77,7 +79,7 @@ function updateItemSearchResults(filter = undefined) {
     }
     else {
         jQuery.ajax({
-            url: `/api/item?filter=${filter}&checkedOut=true`,
+            url: `/api/item?filter=${filter}&isCheckedOut=true`,
             method: 'GET',
             success: function (response) {
                 resultsContainer.empty();
@@ -109,7 +111,7 @@ function updateItemSearchResults(filter = undefined) {
                     let button = jQuery('<button>', {
                         html: buttonText,
                         click: function () {
-                            selectItem(rentalItem);
+                            processRentalItemId(rentalItem.rentalItemGuid, rentalItem);
                         },
                         class: 'btn btn-outline-info btn-block mb-2 item-select-btn'
                     });
@@ -124,14 +126,59 @@ function updateItemSearchResults(filter = undefined) {
     }
 }
 
+function getDateStringFormattedForInput(date) {
+    const day = ("0" + date.getDate()).slice(-2);
+    const month = ("0" + (date.getMonth() + 1)).slice(-2);
+    return date.getFullYear() + "-" + month + "-" + day;
+}
+
 function selectCheckinItem(rentalItem, rentalAgreement) {
 
     jQuery('#item-select-modal').modal('hide');
     jQuery('#search-item-input').val('');
+
+    clearCheckinForm();
+
+    jQuery('#rentalItemIdLink').text(rentalItem.rentalItemGuid).attr('href', `/item/${rentalItem.rentalItemGuid}`);
+    jQuery('#rentalItemNameLink').text(rentalItem.name).attr('href', `/media/${rentalItem.id}`);
+    jQuery('#rentalItemType').text(rentalItem.itemType);
+    jQuery('#isOnHold').text(rentalItem.isOnHold ? 'Yes' : 'No');
+    jQuery('#condition').text(rentalItem.itemCondition);
+    jQuery('#borrowingMemberLink').text(rentalAgreement.borrowerName).attr('href', `/member/${rentalAgreement.borrowerId}`);
+    jQuery('#checkoutDate').text(new Date(rentalAgreement.checkoutDate).toLocaleDateString('en-US'));
+    jQuery('#checkinDueDate').text(new Date(rentalAgreement.checkinDueDate).toLocaleDateString('en-US'));
+    jQuery('#rentalAgreementIdInput').val(rentalAgreement.transactionId);
+    jQuery('#returnedConditionSelect option').each(function() {
+        if ($(this).text().toLowerCase() === rentalItem.itemCondition.toLowerCase()) {
+            $(this).prop('selected', true);
+            return false; // Stop the loop once the option is found
+        }
+    });
+    jQuery('#itemDetailsContainer').removeClass('hidden');
+    jQuery('#rentalAgreementContainer').removeClass('hidden');
+    jQuery('#checkinFormContainer').removeClass('hidden');
+    const newUrl = `/rentalagreement/checkin?rentalItemId=${rentalItem.rentalItemGuid}`;
+    history.pushState(null, null, newUrl);
+}
+function clearCheckinForm() {
+    jQuery('#rentalItemIdLink').text('').attr('href', '');
+    jQuery('#rentalItemNameLink').text('').attr('href', '');
+    jQuery('#rentalItemType').text('');
+    jQuery('#isOnHold').text('');
+    jQuery('#condition').text('');
+    jQuery('#borrowingMemberLink').text('').attr('href', '');
+    jQuery('#checkoutDate').text('');
+    jQuery('#checkinDueDate').text('');
+    jQuery('#rentalAgreementIdInput').val('');
+    jQuery('#returnedConditionSelect').find('option').removeAttr('selected');
+
 }
 
-async function processRentalItemId(rentalItemId) {
-    const rentalItem = await getRentalItem(rentalItemId);
+async function processRentalItemId(rentalItemId, rentalItem = null) {
+    
+    if(!rentalItem) {
+        rentalItem = await getRentalItem(rentalItemId);
+    }
     let rentalAgreement;
     if (rentalItem) {
         rentalAgreement = await getActiveRentalAgreement(rentalItemId);
@@ -164,8 +211,8 @@ async function getRentalItem(rentalItemId) {
     });
 }
 
-async function getRentalAgreementsByRentalItemId(rentalItemId) {
-    jQuery.ajax({
+async function getActiveRentalAgreement(rentalItemId) {
+    const response = await jQuery.ajax({
         url: `/api/rentalAgreement/byRentalItem/${rentalItemId}?isActive=true`,
         method: 'GET',
         success: function (response) {
@@ -173,13 +220,16 @@ async function getRentalAgreementsByRentalItemId(rentalItemId) {
                 return(response);
                 
             } else {
+                console.log('error');
                 // What to do if no valid rental item is returned?
 
             }
         },
-        error: function (error) {
+        error: function (XHR, textStatus, error) {
             initializeScanner();
+            console.log(XHR);
             // What to do on an api error
         }
     });
+    return response;
 }

@@ -13,14 +13,16 @@
         </div>
     </div>
 
-    <div class="container py-4 border-bottom <% if(!viewModel.rentalItem) { %> hidden<% } %>">
+    <div id="itemDetailsContainer" class="container py-4 border-bottom <% if(!viewModel.rentalItem) { %> hidden<% } %>">
         <h4>Item Details</h4>
         <div class="row align-items-center">
             <div class="col-md-4 col-lg-3">
                 Item ID:
             </div>
             <div class="col-md-8 detail-text mb-2">
-                <a id="rentalItemIdLink" href="<%=" /item/"+viewModel.rentalItem?.rentalItemGuid%>"><%=viewModel?.rentalItem?.rentalItemGuid%></a>
+                <a id="rentalItemIdLink" href="<%=" /item/"+viewModel.rentalItem?.rentalItemGuid%>">
+                    <%=viewModel?.rentalItem?.rentalItemGuid%>
+                </a>
             </div>
         </div>
         <div class="row align-items-center">
@@ -28,7 +30,9 @@
                 Item Name:
             </div>
             <div class="col-md-8 detail-text mb-2">
-                <a id="rentalItemNameLink" href="<%=" /media/"+viewModel?.rentalItem?.id%>"><%=viewModel?.rentalItem?.name%></a>
+                <a id="rentalItemNameLink" href="<%=" /media/"+viewModel?.rentalItem?.id%>">
+                    <%=viewModel?.rentalItem?.name%>
+                </a>
             </div>
         </div>
         <div class="row align-items-center">
@@ -57,21 +61,24 @@
         </div>
     </div>
     </div>
-    <div class="container py-4 border-bottom border-primary <% if(!viewModel.rentalItem) { %> hidden<% } %>">
+    <div id="rentalAgreementContainer"
+        class="container py-4 border-bottom border-primary <% if(!viewModel.rentalItem) { %> hidden<% } %>">
         <h4>Rental Agreement Details</h4>
         <div class="row align-items-center">
             <div class="col-md-4 col-lg-3">
                 Borrowing Member:
             </div>
             <div class="col-md-8 detail-text mb-2">
-                <a id="borrowingMemberLink" href="<%=" /member/"+viewModel?.rentalAgreement?.borrowerId%>"><%=viewModel?.rentalAgreement?.borrowerName%></a>
+                <a id="borrowingMemberLink" href="<%=" /member/"+viewModel?.rentalAgreement?.borrowerId%>">
+                    <%=viewModel?.rentalAgreement?.borrowerName%>
+                </a>
             </div>
         </div>
         <div class="row align-items-center">
             <div class="col-md-4 col-lg-3">
                 Checkout Date:
             </div>
-            <div id="condition" class="col-md-8 detail-text mb-2">
+            <div id="checkoutDate" class="col-md-8 detail-text mb-2">
                 <%=viewModel?.rentalAgreement?.checkoutDate?.toLocaleDateString('en-US')%>
             </div>
         </div>
@@ -79,12 +86,38 @@
             <div class="col-md-4 col-lg-3">
                 Checkin Due Date:
             </div>
-            <div id="condition" class="col-md-8 detail-text mb-2">
+            <div id="checkinDueDate" class="col-md-8 detail-text mb-2">
                 <%=viewModel?.rentalAgreement?.checkinDueDate?.toLocaleDateString('en-US')%>
             </div>
         </div>
     </div>
+    <div id="checkinFormContainer" class="container py-4 <% if(!viewModel.rentalItem ||
+    !viewModel.rentalAgreement){ %>hidden<% }%>">
+        <form id="checkinForm" action="/rentalAgreement/checkin" method="POST"  >
+                <input type="hidden" name="rentalAgreementIdInput" id="rentalAgreementIdInput" <%if (viewModel.rentalAgreement) {%> value="<%= viewModel.rentalAgreement.transactionId %>"<% } %> />
+                <div class="row">
+                    <div class="col-md-3">
+                        <label for="returnedCondition">Return Condition:</label>
+                        <select class="form-control" name="returnedCondition" id="returnedConditionSelect">
+                            <option <% if(viewModel?.rentalItem?.itemCondition == "New") { %> selected <% } %> value="New">New</option>
+                            <option <% if(viewModel?.rentalItem?.itemCondition == "Good") { %> selected <% } %> value="Good">Good</option>
+                            <option <% if(viewModel?.rentalItem?.itemCondition == "Fair") { %> selected <% } %> value="Fair">Fair</option>
+                            <option <% if(viewModel?.rentalItem?.itemCondition == "Worn") { %> selected <% } %> value="Worn">Worn</option>
+                            <option <% if(viewModel?.rentalItem?.itemCondition == "Poor") {%> selected <% } %> value="Poor">Poor</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="returnDate">Return date:</label>
+                        <input id="returnDate" name="returnDate" class="form-control" type="date">
+                    </div>
+                    <div class="col-md-3 d-flex align-items-center">
+                        <button type="submit" class="btn btn-primary">Submit Checkin</button>    
+                    </div>
 
+                </div>
+                
+        </form>
+    </div>
 
 
     <script src="/js/html5-qrcode.min.js"></script>

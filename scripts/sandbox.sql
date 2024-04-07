@@ -143,6 +143,36 @@ BEGIN
 END //
 DELIMITER ;
 
+DELIMITER //
+CREATE DEFINER=`root`@`localhost` PROCEDURE `rentalAgreement_CheckinByTransactionId`(
+    IN `transactionIdInput` int,
+    IN `actualCheckinDateInput` DATE,
+    IN `checkinApprovedByInput` int,
+	OUT `IsSuccessful` BIT
+)
+LANGUAGE SQL
+NOT DETERMINISTIC
+CONTAINS SQL
+SQL SECURITY DEFINER
+COMMENT 'Checks in rental agreement'
+BEGIN
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SET IsSuccessful = 0;
+    END;
+    START TRANSACTION;
+        SET IsSuccessful = 0;
+        UPDATE RentalAgreement
+        SET 
+            actualCheckinDate = actualCheckinDateInput,
+            checkinApprovedBy = checkinApprovedByInput,
+            lastUpdatedBy = checkinApprovedByInput
+        WHERE transactionId = transactionIdInput;
+    COMMIT;
+    SET IsSuccessful = 1;
+END //
+DELIMITER ;
 
 DELIMITER //
 CREATE DEFINER=`root`@`localhost` PROCEDURE `rentalAgreement_SelectAll`(
