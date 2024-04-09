@@ -7,5 +7,6 @@ const memberRouter = express.Router();
 const memberController = new MemberController();
 
 memberRouter.get('/', memberController.getMemberListView.bind(memberController));
+memberRouter.get('/:memberId', memberController.getMemberDetailsView.bind(memberController));
 
 module.exports = memberRouter;

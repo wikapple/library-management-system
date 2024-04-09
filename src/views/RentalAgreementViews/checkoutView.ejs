@@ -71,8 +71,13 @@
         <script src="/js/checkout.js"></script>
         <script>
             jQuery(document).ready(function () {
+            
             <% if (viewModel.rentalItem) { %>
                 selectItem(<%- JSON.stringify(viewModel.rentalItem) %>);
+            <% } %>
+            
+            <% if (viewModel.member) { %>
+                selectMember(<%- JSON.stringify(viewModel.member) %>);
             <% } %>
             });
         </script>

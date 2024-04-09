@@ -1,0 +1,149 @@
+<link rel="stylesheet" href="/css/media-details.css">
+<div class="container">
+    <div class="py-2 text-center">
+        <h1 id="title"><i class="fa-solid fa-user"></i> Member Details</h1>
+        <p class="lead font-italic font-weight-bold">
+            <%=viewModel.memberDetails.name%>
+        </p>
+    </div>
+</div>
+<div class="container summary-container">
+    <div class="row py-3">
+        <div class="col-md-4 order-md-2">
+            <div class="row justify-content-center">
+                <div class="mb-3 dropdown text-center">
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa-solid fa-wrench"></i> Actions
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <button class="dropdown-item text-info" id="edit-member-btn" data-bs-toggle="modal"
+                                data-bs-target="#update-item-modal">
+                                <i class="fa-solid fa-pen-to-square"></i> Edit Member Details
+                            </button>
+                        </li>
+                        <li>
+                            <button class="dropdown-item text-danger" id="delete-member-btn" data-bs-toggle="modal"
+                                data-bs-target="#delete-confirmation-modal">
+                                <i class="fa-solid fa-trash"></i> Delete Member Account
+                            </button>
+                        </li>
+                        <% if(!viewModel.memberDetails.isFrozen) { %>
+                            <li>
+                                <a href="<%= '/rentalagreement/checkout?memberId=' + viewModel.memberDetails.userId%>"
+                                    class="dropdown-item text-success">
+                                    <i class="fa-solid fa-arrow-turn-up"></i> Check Out
+                                </a>
+                            </li>
+                            <% } %>
+                            <% if(viewModel.memberDetails.balance < 0) { %>
+                                <li>
+                                    <a href=""
+                                        class="dropdown-item text-success">
+                                        <i class="fa-solid fa-dollar-sign"></i> Process Payment
+                                    </a>
+                                </li>
+                                <% } %>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8 order-md-1">
+            <div class="row align-items-center">
+                <div class="col-md-4 col-lg-3">
+                    Name:
+                </div>
+                <div class="col-md-8 detail-text mb-2">
+                    <%=viewModel.memberDetails.name%>
+                </div>
+            </div>
+            <div class="row align-items-center">
+                <div class="col-md-4 col-lg-3">
+                    <i class="fa-solid fa-phone"></i> Phone Number:
+                </div>
+                <div class="col-md-8 detail-text mb-2">
+                    <a href="<%=" tel:" + viewModel.memberDetails.phoneNumber%>">
+                        <%=viewModel.memberDetails.phoneNumber%>
+                    </a>
+                </div>
+            </div>
+            <div class="row align-items-center">
+                <div class="col-md-4 col-lg-3">
+                    <i class="fa-solid fa-envelope"></i> email:
+                </div>
+                <div class="col-md-8 detail-text mb-2">
+                    <a href="<%="mailto:" + viewModel.memberDetails.email %>"><%=viewModel.memberDetails.email%></a>
+                </div>
+            </div>
+            <div class="row align-items-center">
+                <div class="col-md-4 col-lg-3">
+                    Current balance:
+                </div>
+                <div class="col-md-8 detail-text mb-2 <% if(viewModel.memberDetails.balance < 0) {%>text-danger<%}%>">
+                    <%=viewModel.memberDetails.balance %>
+                </div>
+            </div>
+            <div class="row align-items-center">
+                <div class="col-md-4 col-lg-3">
+                    Is Frozen?
+                </div>
+                <div class="col-md-8 detail-text mb-2">
+                    <%=viewModel.memberDetails.isFrozen ? "Yes" :"No"%>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container copies-container py-4">
+    <div class="row mb-2">
+        <div class="col text-center">
+            <h4>Transaction History for <%=viewModel.memberDetails.name%>
+            </h4>
+        </div>
+    </div>
+    <table class="table table-bordered" id="transaction-history-table">
+        <thead>
+            <tr>
+                <th scope="col">Rental Date</th>
+                <th scope="col">Return Due Date</th>
+                <th scope="col">Actual Return Date</th>
+                <th scope="col">Rental Item</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% if (!viewModel?.rentalAgreements || viewModel?.rentalAgreements?.length==0) { %>
+                <tr>
+                    <td colspan="5" class="text-center">No transaction history</td>
+                </tr>
+                <%} %>
+                    <% for (let rentalAgreement of viewModel?.rentalAgreements) { %>
+
+                        <tr>
+                            <td scope="col">
+                                <%=rentalAgreement.checkoutDate.toLocaleDateString('en-US')%>
+                            </td>
+
+                            <td scope="col" class="<%= rentalAgreement.isPastDue ? 'text-danger': ''%>">
+                                <%=rentalAgreement.checkinDueDate.toLocaleDateString('en-US')%>
+                            </td>
+                            <td scope="col" class="<%= rentalAgreement.isPastDue ? 'text-danger': ''%>">
+                                <%= rentalAgreement.actualCheckinDate==null ? "Not returned" :
+                                    rentalAgreement.actualCheckinDate.toLocaleDateString('en-US') %>
+                            </td>
+
+
+                            <td class="col">
+                                <a href="<%=`/item/${rentalAgreement.rentalItemId}` %>"><%=rentalAgreement.rentalItemId%></a>
+                            </td>
+
+
+                            <td class="col">None</td>
+                        </tr>
+
+                        <% } %>
+
+        </tbody>
+    </table>
+</div>

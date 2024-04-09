@@ -37,7 +37,7 @@ function updateMemberTable(filter = '') {
                 row.append(jQuery('<td>').html(member.isFrozen ? `<p class="text-danger">Frozen</p>` : `<p class="text-success">Active</p>`));
                 row.append(jQuery('<td>').html(member.balance < 0 ? `<p class="text-danger">Yes</p>` : `<p class="text-success">No</p>`));
                 row.append(jQuery('<td>').text('0'));
-                row.append(jQuery('<td>').html(`<a href="/member/${member.id}" class="btn btn-outline-info"><i class="fa-solid fa-address-card"></i> View Details</a>`));
+                row.append(jQuery('<td>').html(`<a href="/member/${member.userId}" class="btn btn-outline-info"><i class="fa-solid fa-address-card"></i> View Details</a>`));
                 jQuery('#member-table tbody').append(row);
             });
         },
