@@ -31,6 +31,26 @@ BEGIN
 END //
 DELIMITER ;
 
+DELIMITER //
+CREATE DEFINER=`root`@`localhost` PROCEDURE `memberAccount_Update`(
+	IN `newBalance` DECIMAL,
+    IN `newFrozenStatus` BIT,
+	IN `memberIdToUpdate` INT
+)
+LANGUAGE SQL
+NOT DETERMINISTIC
+CONTAINS SQL
+SQL SECURITY DEFINER
+COMMENT ''
+BEGIN
+    UPDATE MemberAccount
+    SET 
+        balance = newBalance,
+        isFrozen = newFrozenStatus
+    WHERE memberId = memberIdToUpdate;
+END //
+DELIMITER ;
+
 
 
 DELIMITER //
@@ -188,6 +208,29 @@ BEGIN
     FROM RentalAgreement;
 END //
 DELIMITER ;
+
+DELIMITER //
+CREATE DEFINER=`root`@`localhost` PROCEDURE `rentalAgreement_SelectCurrentOverdue`(
+     
+)
+LANGUAGE SQL
+NOT DETERMINISTIC
+CONTAINS SQL
+SQL SECURITY DEFINER
+COMMENT 'Selects all currently overdue rental agreements'
+BEGIN
+    SELECT ra.*, u.name
+	FROM rentalagreement ra
+	LEFT JOIN memberaccount ma
+	ON ra.borrowerId = ma.userId
+	LEFT JOIN libraryuser u
+	ON ma.userId = u.userId
+    WHERE ra.actualCheckinDate IS NULL AND
+    ra.checkinDueDate < NOW();
+END //
+DELIMITER ;
+
+
 
 DELIMITER //
 CREATE DEFINER=`root`@`localhost` PROCEDURE `rentalAgreement_SelectByRentalItemId`(

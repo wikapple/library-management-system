@@ -263,13 +263,13 @@ CREATE TABLE IF NOT EXISTS `memberaccount` (
 -- Dumping data for table librarydb.memberaccount: ~10 rows (approximately)
 DELETE FROM `memberaccount`;
 INSERT INTO `memberaccount` (`userId`, `balance`, `isFrozen`) VALUES
-	(3, 0.00, b'0'),
+	(3, -2.00, b'1'),
 	(4, 0.00, b'0'),
-	(5, 0.00, b'0'),
+	(5, -2.00, b'1'),
 	(7, 0.00, b'0'),
 	(8, 0.00, b'0'),
 	(9, 0.00, b'0'),
-	(10, 0.00, b'0'),
+	(10, -1.00, b'1'),
 	(12, 0.00, b'0'),
 	(15, 0.00, b'0'),
 	(16, 0.00, b'0');
@@ -319,7 +319,7 @@ CREATE TABLE IF NOT EXISTS `rentalitem` (
   CONSTRAINT `RentalItemCopy_BaseRentalItem_FK` FOREIGN KEY (`baseRentalItemId`) REFERENCES `baserentalitem` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
--- Dumping data for table librarydb.rentalitem: ~13 rows (approximately)
+-- Dumping data for table librarydb.rentalitem: ~14 rows (approximately)
 DELETE FROM `rentalitem`;
 INSERT INTO `rentalitem` (`rentalItemGuid`, `itemCondition`, `isOnHold`, `baseRentalItemId`) VALUES
 	('06b9bb1b-a57e-4dd2-b27a-14a719dbecee', 'Good', b'0', 9),
@@ -742,6 +742,23 @@ BEGIN
 END//
 DELIMITER ;
 
+-- Dumping structure for procedure librarydb.memberAccount_Update
+DROP PROCEDURE IF EXISTS `memberAccount_Update`;
+DELIMITER //
+CREATE PROCEDURE `memberAccount_Update`(
+	IN `newBalance` DECIMAL,
+	IN `newFrozenStatus` BIT,
+	IN `memberIdToUpdate` INT
+)
+BEGIN
+    UPDATE MemberAccount
+    SET 
+        balance = newBalance,
+        isFrozen = newFrozenStatus
+    WHERE userId = memberIdToUpdate;
+END//
+DELIMITER ;
+
 -- Dumping structure for procedure librarydb.rentalAgreement_CheckinByTransactionId
 DROP PROCEDURE IF EXISTS `rentalAgreement_CheckinByTransactionId`;
 DELIMITER //
@@ -829,6 +846,7 @@ BEGIN
 	ON ma.userId = u.userId
    WHERE borrowerId = borrowerIdInput;
 
+
 END//
 DELIMITER ;
 
@@ -865,6 +883,25 @@ ON ra.borrowerId = ma.userId
 LEFT JOIN libraryuser u
 ON ma.userId = u.userId
 WHERE ra.transactionId = transactionIdInput;
+END//
+DELIMITER ;
+
+-- Dumping structure for procedure librarydb.rentalAgreement_SelectCurrentOverdue
+DROP PROCEDURE IF EXISTS `rentalAgreement_SelectCurrentOverdue`;
+DELIMITER //
+CREATE PROCEDURE `rentalAgreement_SelectCurrentOverdue`(
+     
+)
+    COMMENT 'Selects all currently overdue rental agreements'
+BEGIN
+    SELECT ra.*, u.name
+	FROM rentalagreement ra
+	LEFT JOIN memberaccount ma
+	ON ra.borrowerId = ma.userId
+	LEFT JOIN libraryuser u
+	ON ma.userId = u.userId
+    WHERE ra.actualCheckinDate IS NULL AND
+    ra.checkinDueDate < NOW();
 END//
 DELIMITER ;
 

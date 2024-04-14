@@ -36,6 +36,16 @@ class MemberDataAccess {
             debug(error);
         }
     }
+    async updateMember(memberId, balance, isFrozen) {
+        try {
+            const sqlQuery = 'CALL memberAccount_Update(?, ?, ?)';
+            const result = await pool.query(sqlQuery, [balance, isFrozen, memberId]);
+            return;
+        }
+        catch (error) {
+            debug(error);
+        }
+    }
 }
 
 module.exports = MemberDataAccess;

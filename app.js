@@ -21,6 +21,8 @@ const apiRoutes = require('./src/routes/api.routes');
 const memberRoutes = require('./src/routes/member.routes');
 const rentalAgreementRoutes = require('./src/routes/rentalagreement.routes');
 const expressLayouts = require('express-ejs-layouts');
+
+const PastDueScanner = require('./src/services/pastDuePenaltyService');
 const app = express();
 app.use(express.static(path.join(__dirname, '/public/')));
 
@@ -35,7 +37,8 @@ initializePassport (
     async email => await this.userDataAccess.getUserByEmail(email),
     async id => await this.userDataAccess.getUserById(id)
  );
-
+const pastDueScanner = new PastDueScanner();
+pastDueScanner.schedulerPastDueScan();
 
 /**
  * Middleware

@@ -24,7 +24,7 @@ class RentalAgreementDataAccess {
             const result = await pool.query(sqlQuery, [rentalItemId]);
             let rentalAgreements = result[0];
 
-            rentalAgreements.sort((a,b) => this._sortRentalAgreements(a,b));
+            rentalAgreements.sort((a,b) => this._sortRentalAgreementsByDates(a,b));
 
             rentalAgreements = rentalAgreements.map(x =>{
                 x.isPastDue = x.actualCheckinDate ?? new Date() > new Date(x.checkinDueDate);
@@ -65,7 +65,7 @@ class RentalAgreementDataAccess {
         }
     }
 
-    _sortRentalAgreements(a,b) {
+    _sortRentalAgreementsByDates(a,b) {
         try {
         if (a.actualCheckinDate == null && b.actualCheckinDate != null) { return -1;}
         if (b.actualCheckinDate == null && a.actualCheckinDate != null) { return 1;}
@@ -91,6 +91,25 @@ class RentalAgreementDataAccess {
             const sqlQuery = `CALL rentalAgreement_SelectByBorrowerId(?)`;
             const result = await pool.query(sqlQuery, [borrowerId]);
             const rentalAgreements = result[0];
+            return rentalAgreements;
+        }
+        catch (err) {
+            debug(err);
+        }
+    }
+
+    async getOverdueRentals() {
+        try {
+            const sqlQuery = `CALL rentalAgreement_SelectCurrentOverdue()`;
+            const result = await pool.query(sqlQuery, []);
+            let rentalAgreements = result[0];
+
+            rentalAgreements.sort((a,b) => a.borrowerId < b.borrowerId ? 1 : -1);
+
+            rentalAgreements = rentalAgreements.map(x =>{
+                x.isPastDue = x.actualCheckinDate ?? new Date() > new Date(x.checkinDueDate);
+                return x;
+            });
             return rentalAgreements;
         }
         catch (err) {
