@@ -1,0 +1,35 @@
+<div class="modal fade" id="member-select-modal" tabindex="-1" role="dialog" aria-labelledby="member-select-modal-label"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fs-5" id="member-select-modal-label">Select a member</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <p class="lead">Search for a member by their id, name, email, or phone number</p>
+                    <div class="row align-items-center justify-content-center mb-3">
+                        <div class="col-12 mb-2">
+                            <div class="input-group">
+                                <input id="search-member-input" class="form-control" type="text"
+                                    placeholder="Search for member" />
+                                <button id="search-member-btn" type="submit" class="btn btn-outline-primary"><i
+                                        class="fa-solid fa-magnifying-glass"></i></button>
+                                <button id="clear-member-search-btn" type="reset" class="btn btn-outline-danger"><i
+                                        class="fa-solid fa-x"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <h6 class="">Search Results (select one):</h6>
+                    <div id="member-search-results" class="member-search-results">
+
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer text-center">
+                <button type="button" class="btn btn-secondary btn-block" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

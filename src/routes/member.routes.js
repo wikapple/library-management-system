@@ -8,5 +8,6 @@ const memberController = new MemberController();
 
 memberRouter.get('/', memberController.getMemberListView.bind(memberController));
 memberRouter.get('/:memberId', memberController.getMemberDetailsView.bind(memberController));
+memberRouter.get('/billing/payment', memberController.processPaymentView.bind(memberController));
 
 module.exports = memberRouter;

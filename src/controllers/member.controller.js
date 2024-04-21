@@ -30,15 +30,25 @@ class MemberController {
         const memberId = req.params.memberId;
 
         const memberDetails = await this.memberDataAccess.getMemberById(memberId);
-        debug(memberDetails);
         viewModel.memberDetails = memberDetails;
 
         const rentalAgreements = await this.rentalAgreementDataAccess.getRentalAgreementsByBorrowerId(memberId);
-        debug(rentalAgreements);
 
         viewModel.rentalAgreements = rentalAgreements;
 
         res.render(`memberViews/memberDetailsView.ejs`, { viewModel });
+    }
+
+    async processPaymentView(req, res) {
+        let viewModel = {};
+        const memberId = req.query.memberId;
+
+        if(memberId) {
+            const memberDetails = await this.memberDataAccess.getMemberById(memberId);
+            viewModel.memberDetails = memberDetails;
+        }
+
+        res.render(`memberViews/processPayment.ejs`, { viewModel });
     }
 } 
 

@@ -4,7 +4,8 @@ jQuery(document).ready(function () {
 
     jQuery('#complete-checkout-btn').click(function () {
         const userId = jQuery('#user-id').val();
-        const checkoutDate = new Date().toISOString().split('T')[0];
+        const now = new Date();
+        const checkoutDate = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
         const rentalAgreements = getItemTableData();
 
 
