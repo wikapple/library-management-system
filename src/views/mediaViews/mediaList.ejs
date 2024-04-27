@@ -26,8 +26,10 @@
                 </div>
             </div>
             <div class="col-md-2 mb-2 text-end">
+                <% if(viewModel.isEmployee) { %>
                 <a href="/media/createOrEdit/0" class="btn btn-primary btn-rounded delete-media-btn"> Add Media<i
                         class="fa-solid fa-plus"></i></a>
+                <% } %>
             </div>
         </div>
     </div>

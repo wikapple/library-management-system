@@ -3,6 +3,7 @@ jQuery(document).ready(function () {
     updateMemberSearchResults();
 
     jQuery('#complete-checkout-btn').click(function () {
+        jQuery('#error-message').empty;
         const userId = jQuery('#user-id').val();
         const now = new Date();
         const checkoutDate = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
@@ -19,11 +20,12 @@ jQuery(document).ready(function () {
                 rentalAgreements: rentalAgreements
             }),
             success: function (response) {
-                window.location.replace('/media');
+                window.location.replace('/');
             },
             error: function (xhr, status, error) {
                 console.log("Checkout failure");
                 console.log(xhr.responseText);
+                jQuery('#error-message').html(xhr.responseText);
             }
         });
     });

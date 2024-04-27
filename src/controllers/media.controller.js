@@ -38,7 +38,7 @@ class MediaController {
 
   async mediaListView(req, res) {
     let viewModel = {};
-
+    viewModel.isEmployee = ['Administrator', 'StaffMember'].includes(req.user.userRole);
     viewModel.mediaTypes = await this._mediaDataAccess.getAllMediaTypes();
 
     res.render(`mediaViews/mediaList.ejs`, { viewModel });
@@ -49,8 +49,8 @@ class MediaController {
     const id = req.params.mediaId;
     let viewModel = {};
 
+    viewModel.isEmployee = ['Administrator', 'StaffMember'].includes(req.user.userRole);
     const mediaDetails = await this._mediaDataAccess.getMediaById(id);
-
     viewModel.mediaDetails = mediaDetails;
 
     let rentalItemList = await this._itemDataAccess.getItemByBaseId(id);

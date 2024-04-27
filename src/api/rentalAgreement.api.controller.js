@@ -16,6 +16,15 @@ class RentalAgreementApiController {
         const approvedByEmployeeId = req.user.userId;
         const { userId, checkoutDate, rentalAgreements } = req.body;
 
+        const memberDetails = await this.memberDataAccess.getMemberById(userId);
+
+        debug(memberDetails);
+        if (memberDetails && memberDetails.isFrozen) {
+            debug(memberDetails);
+            res.status(400).json({error: 'Member account is frozen'});
+            return;
+        }
+
         let checkoutResults = [];
 
         for (let rentalAgreement of rentalAgreements) {

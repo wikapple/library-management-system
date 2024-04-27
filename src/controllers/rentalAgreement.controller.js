@@ -69,11 +69,6 @@ class RentalAgreementController {
             await this.itemDataAccess.updateItem(updateRequest);
         }
 
-        // if needed, apply fees to member.
-        if(rentalAgreement.isPastDue) {
-            
-        }
-
         res.status(200).redirect('/');
     }
 

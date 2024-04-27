@@ -1,6 +1,40 @@
-<h1>Library Member Dashboard</h1>
-<h4>Hello <%= user %></h4>
-<button>View My Account</button>
-<button>View Media</button>
-
+<h1 class="text-center title">Member Dashboard</h1>
+<div class="container py-2 text-center rounded notification-board">
+    <h4>Notifications:</h4>
+    <% if(viewModel.notifications.length == 0) { %>
+        <p>None</p>
+    <% } else {%>
+        <ul class="text-warning" style="list-style-type: none;">
+            <% for(let notification of viewModel.notifications) {%>
+                <li><%=notification%></li>
+            <% }%>
+        </ul>
+    <% } %>
+</div>
+<div class="container py-2">
+    <h4 class="pb-1 border-bottom">I want to ...</h4>
+    <div class="row g-4 py-5 row-cols-1 row-cols-lg-3 justify-content-start">
+        <a href="/media" class="rounded m-3 col align-items-start anchor-feature-link">
+            <i class="fa-solid fa-book fa-4x"></i>
+            <div class="ml-2">
+                <h3 class="fw-bold mb-0 fs-4 text-body-emphasis">View library media</h3>
+                <p>Lookup library media and check availability.</p>
+            </div>
+        </a>
+        <a href="<%=`/member/${viewModel.memberDetails.userId}`%>" class="rounded m-3 col align-items-start anchor-feature-link">
+            <i class="fa-solid fa-users fa-4x"></i>
+            <div class="ml-2">
+                <h3 class="fw-bold mb-0 fs-4 text-body-emphasis">My Profile</h3>
+                <p>View my details and transaction history.</p>
+            </div>
+        </a>
+        <a href="/member/billing/payment" class="rounded m-3 col align-items-start anchor-feature-link">
+            <i class="fa-solid fa-credit-card fa-4x"></i>
+            <div class="ml-2">
+                <h3 class="fw-bold mb-0 fs-4 text-body-emphasis">Pay my member fees</h3>
+                <p>Self pay using an authorized credit or debit card</p>
+            </div>
+        </a>
+    </div>
+</div>
 

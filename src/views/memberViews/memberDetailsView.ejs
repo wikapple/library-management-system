@@ -11,42 +11,43 @@
     <div class="row py-3">
         <div class="col-md-4 order-md-2">
             <div class="row justify-content-center">
-                <div class="mb-3 dropdown text-center">
-                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
-                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="fa-solid fa-wrench"></i> Actions
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li>
-                            <button class="dropdown-item text-info" id="edit-member-btn" data-bs-toggle="modal"
-                                data-bs-target="#update-item-modal">
-                                <i class="fa-solid fa-pen-to-square"></i> Edit Member Details
-                            </button>
-                        </li>
-                        <li>
-                            <button class="dropdown-item text-danger" id="delete-member-btn" data-bs-toggle="modal"
-                                data-bs-target="#delete-confirmation-modal">
-                                <i class="fa-solid fa-trash"></i> Delete Member Account
-                            </button>
-                        </li>
-                        <% if(!viewModel.memberDetails.isFrozen) { %>
+                <% if (viewModel.isEmployee) { %>
+                    <div class="mb-3 dropdown text-center">
+                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fa-solid fa-wrench"></i> Actions
+                        </button>
+                        <ul class="dropdown-menu">
                             <li>
-                                <a href="<%= '/rentalagreement/checkout?memberId=' + viewModel.memberDetails.userId%>"
-                                    class="dropdown-item text-success">
-                                    <i class="fa-solid fa-arrow-turn-up"></i> Check Out
-                                </a>
+                                <button class="dropdown-item text-info" id="edit-member-btn" data-bs-toggle="modal"
+                                    data-bs-target="#update-item-modal">
+                                    <i class="fa-solid fa-pen-to-square"></i> Edit Member Details
+                                </button>
                             </li>
-                            <% } %>
-                            <% if(viewModel.memberDetails.balance < 0) { %>
+                            <li>
+                                <button class="dropdown-item text-danger" id="delete-member-btn" data-bs-toggle="modal"
+                                    data-bs-target="#delete-confirmation-modal">
+                                    <i class="fa-solid fa-trash"></i> Delete Member Account
+                                </button>
+                            </li>
+                            <% if(!viewModel.memberDetails.isFrozen) { %>
                                 <li>
-                                    <a href=""
+                                    <a href="<%= '/rentalagreement/checkout?memberId=' + viewModel.memberDetails.userId%>"
                                         class="dropdown-item text-success">
-                                        <i class="fa-solid fa-dollar-sign"></i> Process Payment
+                                        <i class="fa-solid fa-arrow-turn-up"></i> Check Out
                                     </a>
                                 </li>
                                 <% } %>
-                    </ul>
-                </div>
+                                    <% if(viewModel.memberDetails.balance < 0) { %>
+                                        <li>
+                                            <a href="" class="dropdown-item text-success">
+                                                <i class="fa-solid fa-dollar-sign"></i> Process Payment
+                                            </a>
+                                        </li>
+                                        <% } %>
+                        </ul>
+                    </div>
+                    <% } %>
             </div>
         </div>
         <div class="col-md-8 order-md-1">
@@ -73,7 +74,7 @@
                     <i class="fa-solid fa-envelope"></i> email:
                 </div>
                 <div class="col-md-8 detail-text mb-2">
-                    <a href="<%="mailto:" + viewModel.memberDetails.email %>"><%=viewModel.memberDetails.email%></a>
+                    <a href="<%=" mailto:" + viewModel.memberDetails.email %>"><%=viewModel.memberDetails.email%></a>
                 </div>
             </div>
             <div class="row align-items-center">
@@ -105,6 +106,7 @@
     <table class="table table-bordered" id="transaction-history-table">
         <thead>
             <tr>
+                <th scope="col">Item Name</th>
                 <th scope="col">Rental Date</th>
                 <th scope="col">Return Due Date</th>
                 <th scope="col">Actual Return Date</th>
@@ -121,6 +123,11 @@
                     <% for (let rentalAgreement of viewModel?.rentalAgreements) { %>
 
                         <tr>
+                            <td scope="col" >
+                                <a href="<%=`/media/${rentalAgreement.itemId}`%>">
+                                    <%=rentalAgreement.itemName%>
+                                </a>
+                            </td>
                             <td scope="col">
                                 <%=rentalAgreement.checkoutDate.toLocaleDateString('en-US')%>
                             </td>
@@ -135,7 +142,15 @@
 
 
                             <td class="col">
-                                <a href="<%=`/item/${rentalAgreement.rentalItemId}` %>"><%=rentalAgreement.rentalItemId%></a>
+                                <% if (viewModel.isEmployee) { %>
+                                    <a href="<%=`/item/${rentalAgreement.rentalItemId}` %>">
+                                        <%=rentalAgreement.rentalItemId%>
+                                    </a>
+                                    <% } else { %>
+                                        <span>
+                                            <%=rentalAgreement.rentalItemId%>
+                                        </span>
+                                        <% } %>
                             </td>
 
 

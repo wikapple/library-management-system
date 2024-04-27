@@ -31,7 +31,7 @@ class AuthController {
             res.redirect('/auth/login');
         }
         else {
-            request.flash('Error', 'Failed to register new member')
+            req.flash('Error', 'Failed to register new member');
             res.redirect('/auth/register');
         }
     }

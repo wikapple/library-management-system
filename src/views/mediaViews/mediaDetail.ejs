@@ -15,11 +15,13 @@
                 <div class="col-md-4 order-md-2">
                     <div class="row justify-content-center">
                         <div class="mb-3 dropdown text-center">
+                            <% if (viewModel.isEmployee) { %>
                             <button class="btn btn-outline-secondary dropdown-toggle" type="button"
                                 id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true"
                                 aria-expanded="false">
                                 <i class="fa-solid fa-wrench"></i> Actions
                             </button>
+                            <% } %>
                             <ul class="dropdown-menu">
                                 <li>
                                     <a href="/media/createOrEdit/<%=viewModel.mediaDetails.id%>"
@@ -128,6 +130,7 @@
                     <%=viewModel.mediaDetails.description%>
                 </div>
             </div>
+            <% if (viewModel.isEmployee) { %>
             <div class="container copies-container py-4">
                 <div class="row mb-2">
                     <div class="col"></div>
@@ -175,5 +178,6 @@
                     </tbody>
                 </table>
             </div>
+            <% } %>
         </div>
         <script src="/js/media-details.js"></script>

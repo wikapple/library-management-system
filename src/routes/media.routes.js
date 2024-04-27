@@ -6,11 +6,11 @@ const authValidator = require('../middleware/validators/authValidator.middleware
 const mediaRouter = express.Router();
 const mediaController = new MediaController();
 
-mediaRouter.post('/', mediaController.addOrUpdateMedia.bind(mediaController));
-mediaRouter.delete('/:mediaId', mediaController.deleteMedia.bind(mediaController));
-mediaRouter.get('/', mediaController.mediaListView.bind(mediaController));
-mediaRouter.get('/:mediaId', mediaController.getMediaDetailsView.bind(mediaController));
-mediaRouter.get('/createOrEdit/:mediaId', mediaController.getCreateOrEditView.bind(mediaController));
+mediaRouter.post('/', authValidator.checkAuthenticatedEmployee, mediaController.addOrUpdateMedia.bind(mediaController));
+mediaRouter.delete('/:mediaId', authValidator.checkAuthenticatedEmployee, mediaController.deleteMedia.bind(mediaController));
+mediaRouter.get('/', authValidator.checkAuthenticated, mediaController.mediaListView.bind(mediaController));
+mediaRouter.get('/:mediaId', authValidator.checkAuthenticated, mediaController.getMediaDetailsView.bind(mediaController));
+mediaRouter.get('/createOrEdit/:mediaId', authValidator.checkAuthenticatedEmployee, mediaController.getCreateOrEditView.bind(mediaController));
 
 
 
