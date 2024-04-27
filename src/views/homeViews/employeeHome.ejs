@@ -26,7 +26,7 @@
     </div>
 </div>
 <div class="container py-2">
-    <h4 class="pb-1 border-bottom">User Management</h4>
+    <h4 class="pb-1 border-bottom">Management</h4>
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 py-3 justify-content-start">
         <a href="/member" class="rounded m-3 col align-items-start anchor-feature-link">
             <i class="fa-solid fa-users fa-4x"></i>
@@ -35,33 +35,11 @@
                 <p>Lookup library members. View check-out status and rental history. Activate and freeze accounts.</p>
             </div>
         </a>
-        <% if (currentUser && currentUser.userRole==='Administrator' ) { %>
-            <a href="/" class="rounded col m-3 align-items-start anchor-feature-link">
-                <i class="fa-solid fa-building-columns fa-4x"></i>
-                <div class="ml-2">
-                    <h3 class="fw-bold mb-0 fs-4 text-body-emphasis">Library Staff Management</h3>
-                    <p>Lookup library staff. Add or remove library staff members from system.</p>
-                </div>
-            </a>
-            <% } %>
-    </div>
-</div>
-<div class="container py-1">
-    <h4 class="pb-1 border-bottom">Inventory Management</h4>
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 py-3 justify-content-start">
         <a href="/media" class="rounded m-3 col align-items-start anchor-feature-link">
             <i class="fa-solid fa-book fa-4x"></i>
             <div class="ml-2">
                 <h3 class="fw-bold mb-0 fs-4 text-body-emphasis">Media Management</h3>
                 <p>Search library media. Check media status and availability. Create, edit or delete media.</p>
-            </div>
-        </a>
-        <a href="/" class="rounded m-3 col align-items-start anchor-feature-link">
-            <i class="fa-solid fa-guitar fa-4x"></i>
-            <div class="ml-2">
-                <h3 class="fw-bold mb-0 fs-4 text-body-emphasis">Instrument Management</h3>
-                <p>Search library instruments. Check instrument status and availability. Create, edit or delete
-                    instruments.</p>
             </div>
         </a>
     </div>
