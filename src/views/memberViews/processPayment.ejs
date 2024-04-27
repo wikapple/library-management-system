@@ -4,47 +4,52 @@
         <h2 class="pb-2 border-bottom"><i class="fa-solid fa-dollar-sign"></i> Process Payment</h2>
     </div>
     <div class="container py-4 border-bottom border-primary">
-        <h4 class="text-center">Select member</h4>
-        <div class="row justify-content-center">
-            <div class="col-8 col-sm-6 col-md-4 col-lg-3 text-center">
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#member-select-modal"><i
-                        class="fa-solid fa-magnifying-glass"></i> Lookup Member</button>
-            </div>
-        </div>
-        <form id="paying-member-form" action="" style="display: none;">
-            <div class="row">
-                <div class="form-group mb-2 col-md-6">
-                    <label for="name">User ID:</label>
-                    <input type="text" name="userId" class="form-control" id="user-id" required disabled readonly>
-                </div>
-                <div class="form-group mb-2 col-md-6">
-                    <label for="name">Name:</label>
-                    <input type="text" name="name" class="form-control" id="name" required disabled readonly>
+        <% if(viewModel.isEmployee) { %>
+            <h4 class="text-center">Select member</h4>
+            <div class="row justify-content-center">
+                <div class="col-8 col-sm-6 col-md-4 col-lg-3 text-center">
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#member-select-modal"><i
+                            class="fa-solid fa-magnifying-glass"></i> Lookup Member</button>
                 </div>
             </div>
-            <div class="row">
-                <div class="form-group mb-2 col-md-6">
-                    <label for="name">Phone Number:</label>
-                    <input type="tel" name="phoneNumber" class="form-control" id="phone" required disabled readonly>
-                </div>
-                <div class="form-group mb-2 col-md-6">
-                    <label for="email">Email:</label>
-                    <input type="email" name="email" class="form-control" id="email" required disabled readonly>
-                </div>
-            </div>
-            <div class="row">
-                <div class="form-group col h4">
-                    <label for="balance">Current balance:</label>
-                    <input type="balance" name="balance" class="form-control display-4" id="balance" required disabled
-                        readonly>
-                </div>
-            </div>
-        </form>
+            <% } %>
+                <form id="paying-member-form" action="" <% if(!viewModel.memberDetails){%>style="display: none;"<%}%>>
+                    <div class="row">
+                        <div class="form-group mb-2 col-md-6">
+                            <label for="name">User ID:</label>
+                            <input type="text" name="userId" class="form-control" id="user-id" required disabled
+                                readonly>
+                        </div>
+                        <div class="form-group mb-2 col-md-6">
+                            <label for="name">Name:</label>
+                            <input type="text" name="name" class="form-control" id="name" required disabled readonly>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group mb-2 col-md-6">
+                            <label for="name">Phone Number:</label>
+                            <input type="tel" name="phoneNumber" class="form-control" id="phone" required disabled
+                                readonly>
+                        </div>
+                        <div class="form-group mb-2 col-md-6">
+                            <label for="email">Email:</label>
+                            <input type="email" name="email" class="form-control" id="email" required disabled readonly>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col h4">
+                            <label for="balance">Current balance:</label>
+                            <input type="balance" name="balance" class="form-control display-4" id="balance" required
+                                disabled readonly>
+                        </div>
+                    </div>
+                </form>
     </div>
     <div class="container py-4 border-bottom border-primary">
 
 
-        <form id="paymentForm" class="form-signin auth-form container-fluid justify-content-center" style="display: none;" action="/member/billing/payment" method="POST">
+        <form id="paymentForm" class="form-signin auth-form container-fluid justify-content-center"
+            style="display: none;" action="/member/billing/payment" method="POST">
             <input type="hidden" name="paymentMemberId" class="form-control" id="paymentMemberId" hidden>
             <div class="form-group mb-2 col-md-6 col-lg-4">
                 <label for="amount">Payment amount:</label>
@@ -67,14 +72,14 @@
             </div>
             <div class="form-group mb-2 col-md-6 col-lg-4">
                 <label for="billingZip">Billing Zip Code:</label>
-                <input type="text" name="billingZip" class="form-control" id="billingZip" placeholder="Enter your billing zip code"
-                    required>
+                <input type="text" name="billingZip" class="form-control" id="billingZip"
+                    placeholder="Enter your billing zip code" required>
             </div>
             <div class="form-group mb-2 col-md-6 col-lg-4">
                 <label for="cardExp">Card Expiration Date:</label>
                 <input type="date" name="cardExp" class="form-control" id="cardExp" required>
             </div>
-            <div class="form-group mb-2 col-md-4 col-lg-2">
+            <div class="form-group mb-2 col-md-5 col-lg-3">
                 <label for="password">Security Code:</label>
                 <input type="password" name="password" class="form-control" id="password"
                     aria-describedby="cardSecurityCodeHelp" placeholder="Enter security code on back of card" required>
@@ -90,8 +95,8 @@
     <script>
         jQuery(document).ready(function () {
             
-            <% if (viewModel.member) { %>
-                selectMember(<% - JSON.stringify(viewModel.member) %>);
+            <% if (viewModel.memberDetails) { %>
+                selectMember(<%- JSON.stringify(viewModel.memberDetails) %>);
             <% } %>
             });
     </script>

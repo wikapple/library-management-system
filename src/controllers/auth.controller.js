@@ -11,7 +11,8 @@ class AuthController {
     }
 
     async registerView (req, res, next) {
-        res.render('authViews/register', {});
+        let viewModel = {};
+        res.render('authViews/register', { viewModel });
     }
     
     async registerMember(req, res, next) {
@@ -38,7 +39,8 @@ class AuthController {
     
     
     async loginView(req, res, next) {
-        res.render('authViews/login', {});
+        let viewModel = {};
+        res.render('authViews/login', { viewModel });
     }
     
     login = (

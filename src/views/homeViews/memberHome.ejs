@@ -28,7 +28,7 @@
                 <p>View my details and transaction history.</p>
             </div>
         </a>
-        <a href="/member/billing/payment" class="rounded m-3 col align-items-start anchor-feature-link">
+        <a href="<%=`/member/billing/payment?memberId=${viewModel.memberDetails.userId}`%>" class="rounded m-3 col align-items-start anchor-feature-link">
             <i class="fa-solid fa-credit-card fa-4x"></i>
             <div class="ml-2">
                 <h3 class="fw-bold mb-0 fs-4 text-body-emphasis">Pay my member fees</h3>

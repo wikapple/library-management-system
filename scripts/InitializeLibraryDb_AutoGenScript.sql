@@ -314,7 +314,7 @@ CREATE TABLE IF NOT EXISTS `rentalitem` (
   CONSTRAINT `RentalItemCopy_BaseRentalItem_FK` FOREIGN KEY (`baseRentalItemId`) REFERENCES `baserentalitem` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
--- Dumping data for table librarydb.rentalitem: ~14 rows (approximately)
+-- Dumping data for table librarydb.rentalitem: ~13 rows (approximately)
 DELETE FROM `rentalitem`;
 INSERT INTO `rentalitem` (`rentalItemGuid`, `itemCondition`, `isOnHold`, `baseRentalItemId`) VALUES
 	('06b9bb1b-a57e-4dd2-b27a-14a719dbecee', 'Good', b'0', 9),

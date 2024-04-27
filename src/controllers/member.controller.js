@@ -29,7 +29,14 @@ class MemberController {
     async getMemberDetailsView(req, res) {
         let viewModel = {};
         const memberId = req.params.memberId;
-        viewModel.isEmployee = ['Administrator', 'StaffMember'].includes(req.user.userRole);
+        const isEmployee = ['Administrator', 'StaffMember'].includes(req.user.userRole);
+
+        if(!isEmployee && memberId != req.user.userId) {
+            res.status(400).redirect('/');
+            return;
+        }
+
+        viewModel.isEmployee = isEmployee;
         const memberDetails = await this.memberDataAccess.getMemberById(memberId);
         viewModel.memberDetails = memberDetails;
 
@@ -42,7 +49,14 @@ class MemberController {
 
     async processPaymentView(req, res) {
         let viewModel = {};
+        const isEmployee = ['Administrator', 'StaffMember'].includes(req.user.userRole);
         const memberId = req.query.memberId;
+
+        if(!isEmployee && memberId != req.user.userId) {
+            res.status(400).redirect('/');
+            return;
+        }
+        viewModel.isEmployee = isEmployee;
 
         if(memberId) {
             const memberDetails = await this.memberDataAccess.getMemberById(memberId);
