@@ -263,9 +263,9 @@ CREATE TABLE IF NOT EXISTS `memberaccount` (
 -- Dumping data for table librarydb.memberaccount: ~10 rows (approximately)
 DELETE FROM `memberaccount`;
 INSERT INTO `memberaccount` (`userId`, `balance`, `isFrozen`) VALUES
-	(3, -2.00, b'1'),
+	(3, 2.00, b'0'),
 	(4, 0.00, b'0'),
-	(5, -2.00, b'1'),
+	(5, 0.00, b'0'),
 	(7, 0.00, b'0'),
 	(8, 0.00, b'0'),
 	(9, 0.00, b'0'),
@@ -295,13 +295,12 @@ CREATE TABLE IF NOT EXISTS `rentalagreement` (
   CONSTRAINT `RentalAgreement_EmployeeCheckout_FK` FOREIGN KEY (`checkoutApprovedBy`) REFERENCES `employeeaccount` (`userId`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `RentalAgreement_EmployeeLastUpdated_FK` FOREIGN KEY (`lastUpdatedBy`) REFERENCES `employeeaccount` (`userId`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `RentalAgreement_Member_FK` FOREIGN KEY (`borrowerId`) REFERENCES `memberaccount` (`userId`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
--- Dumping data for table librarydb.rentalagreement: ~0 rows (approximately)
+-- Dumping data for table librarydb.rentalagreement: ~1 rows (approximately)
 DELETE FROM `rentalagreement`;
 INSERT INTO `rentalagreement` (`transactionId`, `checkoutDate`, `checkinDueDate`, `rentalItemId`, `borrowerId`, `checkoutApprovedBy`, `checkinApprovedBy`, `actualCheckinDate`, `lastUpdatedBy`) VALUES
-	(12, '2024-04-20', '2024-05-21', 'a977e95c-4328-4b5e-b715-fdd93b84135e', 16, 1, 1, '2024-04-20', 1),
-	(13, '2024-04-20', '2024-05-04', 'f41fc0e2-8734-4900-a450-ff1c3ae9e5d5', 16, 1, 1, '2024-04-20', 1);
+	(17, '2024-04-26', '2024-04-29', '4e06d263-86d7-4edb-96d2-167287b60151', 3, 1, NULL, NULL, 1);
 
 -- Dumping structure for table librarydb.rentalitem
 DROP TABLE IF EXISTS `rentalitem`;
@@ -346,6 +345,787 @@ INSERT INTO `userrole` (`roleId`, `name`) VALUES
 	(1, 'Member'),
 	(2, 'StaffMember'),
 	(3, 'Administrator');
+
+-- Dumping structure for procedure librarydb.category_SelectAll
+DROP PROCEDURE IF EXISTS `category_SelectAll`;
+DELIMITER //
+CREATE PROCEDURE `category_SelectAll`()
+BEGIN
+	SELECT *
+	FROM category;
+END//
+DELIMITER ;
+
+-- Dumping structure for procedure librarydb.category_SelectByMediaId
+DROP PROCEDURE IF EXISTS `category_SelectByMediaId`;
+DELIMITER //
+CREATE PROCEDURE `category_SelectByMediaId`(
+	IN `mediaId` int
+)
+BEGIN
+	SELECT c.*
+	FROM category c
+	WHERE c.id IN (
+		SELECT mc.categoryId
+		FROM mediacategories mc 
+		WHERE mc.mediaId = mediaId
+	);
+END//
+DELIMITER ;
+
+-- Dumping structure for procedure librarydb.instrumentType_SelectAll
+DROP PROCEDURE IF EXISTS `instrumentType_SelectAll`;
+DELIMITER //
+CREATE PROCEDURE `instrumentType_SelectAll`()
+BEGIN
+	SELECT *
+	FROM InstrumentType;
+END//
+DELIMITER ;
+
+-- Dumping structure for procedure librarydb.mediaType_SelectAll
+DROP PROCEDURE IF EXISTS `mediaType_SelectAll`;
+DELIMITER //
+CREATE PROCEDURE `mediaType_SelectAll`()
+BEGIN
+	SELECT *
+	FROM MediaType;
+END//
+DELIMITER ;
+
+-- Dumping structure for procedure librarydb.media_DeleteById
+DROP PROCEDURE IF EXISTS `media_DeleteById`;
+DELIMITER //
+CREATE PROCEDURE `media_DeleteById`(
+	IN `idToDelete` int
+)
+BEGIN
+	START TRANSACTION;
+
+	DELETE 
+	FROM mediacategories
+	WHERE mediacategories.mediaId= idToDelete;
+
+	DELETE
+	FROM media
+	WHERE media.baseRentalItemId = idToDelete;
+	
+	DELETE 
+	FROM BaseRentalItem
+	WHERE baserentalitem.id = idToDelete;
+	
+	COMMIT;
+	ROLLBACK;
+END//
+DELIMITER ;
+
+-- Dumping structure for procedure librarydb.media_Filter
+DROP PROCEDURE IF EXISTS `media_Filter`;
+DELIMITER //
+CREATE PROCEDURE `media_Filter`(
+	IN `typeIdInput` INT,
+	IN `filterValue` VARCHAR(255)
+)
+BEGIN
+	SELECT i.id, i.description, mt.name AS type, m.uniqueIdentifier, m.author, i.name, m.publisher, m.isChildSafe, m.pageCountOrSize, COALESCE(total.totalCount, 0) total, COALESCE(available.totalAvailableCount, 0) totalAvailable 
+	FROM media m
+	INNER JOIN BaseRentalItem i
+	ON m.baseRentalItemId = i.id
+	INNER JOIN MediaType mt
+	ON m.typeId = mt.Id
+	LEFT JOIN (
+		SELECT COUNT(1) AS totalCount, baseRentalItemId 
+		FROM rentalItem
+		GROUP BY baseRentalItemId
+	) AS total
+	ON total.baseRentalItemID = i.id
+	LEFT JOIN (
+		SELECT COUNT(1) totalAvailableCount, ra.baseRentalItemId
+		FROM rentalitem ra
+		WHERE 
+			ra.isOnHold = 0 
+			AND
+			ra.rentalItemGuid NOT IN (
+				SELECT rentalItemId
+				FROM rentalagreement
+				WHERE actualCheckinDate IS NULL)
+		GROUP BY ra.baseRentalItemId
+	) AS available
+	ON available.baseRentalItemID = i.id
+	WHERE 
+		m.typeId = typeIdInput 
+		AND 
+		(
+			m.uniqueIdentifier LIKE CONCAT('%',filterValue,'%')
+			OR m.publisher LIKE CONCAT('%',filterValue,'%')
+			OR m.author LIKE CONCAT('%',filterValue,'%')
+			OR i.name LIKE CONCAT('%',filterValue,'%')
+		);
+END//
+DELIMITER ;
+
+-- Dumping structure for procedure librarydb.media_Insert
+DROP PROCEDURE IF EXISTS `media_Insert`;
+DELIMITER //
+CREATE PROCEDURE `media_Insert`(
+	IN `uniqueIdentifierInput` VARCHAR(255),
+	IN `nameInput` VARCHAR(255),
+	IN `descriptionInput` TEXT,
+	IN `publisherInput` VARCHAR(255),
+	IN `isChildSafeInput` BIT,
+	IN `typeInput` INT,
+	IN `sizeInput` INT,
+	IN `categoryIdsInput` VARCHAR(255),
+	IN `authorInput` VARCHAR(255)
+)
+BEGIN
+	DECLARE lastInsertId INT;
+	
+	START TRANSACTION;
+
+	INSERT INTO BaseRentalItem (NAME, DESCRIPTION, ITEMTYPE)
+	VALUES (nameInput, descriptionInput, 'MEDIA');
+	
+	SET lastInsertId = LAST_INSERT_ID();
+	
+	INSERT INTO media (baseRentalItemId, uniqueIdentifier, publisher, isChildSafe, typeId, author, pageCountOrSize)
+	VALUES (lastInsertId, uniqueIdentifierInput, publisherInput, isChildSafeInput, typeInput, authorInput, sizeInput);
+	
+	INSERT INTO mediacategories (mediaId, categoryId)
+	SELECT lastInsertId, id
+	FROM Category
+	WHERE FIND_IN_SET(id, categoryIdsInput);
+	
+	COMMIT;
+	ROLLBACK;
+END//
+DELIMITER ;
+
+-- Dumping structure for procedure librarydb.media_SelectAll
+DROP PROCEDURE IF EXISTS `media_SelectAll`;
+DELIMITER //
+CREATE PROCEDURE `media_SelectAll`()
+BEGIN
+	SELECT i.id, i.description, mt.name AS type, m.uniqueIdentifier, m.author, i.name, m.publisher, m.isChildSafe, m.pageCountOrSize, COALESCE(total.totalCount, 0) total, COALESCE(available.totalAvailableCount, 0) totalAvailable 
+	FROM media m
+	INNER JOIN BaseRentalItem i
+	ON m.baseRentalItemId = i.id
+	INNER JOIN MediaType mt
+	ON m.typeId = mt.Id
+	LEFT JOIN (
+		SELECT COUNT(1) AS totalCount, baseRentalItemId 
+		FROM rentalItem
+		GROUP BY baseRentalItemId
+	) AS total
+	ON total.baseRentalItemID = i.id
+	LEFT JOIN (
+		SELECT COUNT(1) totalAvailableCount, ra.baseRentalItemId
+		FROM rentalitem ra
+		WHERE 
+			ra.isOnHold = 0 
+			AND
+			ra.rentalItemGuid NOT IN (
+				SELECT rentalItemId
+				FROM rentalagreement
+				WHERE actualCheckinDate IS NULL)
+		GROUP BY ra.baseRentalItemId
+	) AS available
+	ON available.baseRentalItemID = i.id;
+	
+END//
+DELIMITER ;
+
+-- Dumping structure for procedure librarydb.media_SelectById
+DROP PROCEDURE IF EXISTS `media_SelectById`;
+DELIMITER //
+CREATE PROCEDURE `media_SelectById`(
+	IN `idInput` int
+)
+BEGIN
+	SELECT i.id, i.description, mt.name AS type, m.uniqueIdentifier, m.author, i.name, m.publisher, m.isChildSafe, m.pageCountOrSize, COALESCE(total.totalCount, 0) total, COALESCE(available.totalAvailableCount, 0) totalAvailable 
+	FROM media m
+	INNER JOIN BaseRentalItem i
+	ON m.baseRentalItemId = i.id
+	INNER JOIN MediaType mt
+	ON m.typeId = mt.Id
+	LEFT JOIN (
+		SELECT COUNT(1) AS totalCount, baseRentalItemId 
+		FROM rentalItem
+		GROUP BY baseRentalItemId
+	) AS total
+	ON total.baseRentalItemID = i.id
+	LEFT JOIN (
+		SELECT COUNT(1) totalAvailableCount, ra.baseRentalItemId
+		FROM rentalitem ra
+		WHERE 
+			ra.isOnHold = 0 
+			AND
+			ra.rentalItemGuid NOT IN (
+				SELECT rentalItemId
+				FROM rentalagreement
+				WHERE actualCheckinDate IS NULL)
+		GROUP BY ra.baseRentalItemId
+	) AS available
+	ON available.baseRentalItemID = i.id
+	WHERE m.baseRentalItemId = idInput;
+END//
+DELIMITER ;
+
+-- Dumping structure for procedure librarydb.media_SelectByType
+DROP PROCEDURE IF EXISTS `media_SelectByType`;
+DELIMITER //
+CREATE PROCEDURE `media_SelectByType`(
+	IN `typeIdInput` int
+)
+BEGIN
+	SELECT i.id, i.description, mt.name AS type, m.uniqueIdentifier, m.author, i.name, m.publisher, m.isChildSafe, m.pageCountOrSize, COALESCE(total.totalCount, 0) total, COALESCE(available.totalAvailableCount, 0) totalAvailable 
+	FROM media m
+	INNER JOIN BaseRentalItem i
+	ON m.baseRentalItemId = i.id
+	INNER JOIN MediaType mt
+	ON m.typeId = mt.Id
+	LEFT JOIN (
+		SELECT COUNT(1) AS totalCount, baseRentalItemId 
+		FROM rentalItem
+		GROUP BY baseRentalItemId
+	) AS total
+	ON total.baseRentalItemID = i.id
+	LEFT JOIN (
+		SELECT COUNT(1) totalAvailableCount, ra.baseRentalItemId
+		FROM rentalitem ra
+		WHERE 
+			ra.isOnHold = 0 
+			AND
+			ra.rentalItemGuid NOT IN (
+				SELECT rentalItemId
+				FROM rentalagreement
+				WHERE actualCheckinDate IS NULL)
+		GROUP BY ra.baseRentalItemId
+	) AS available
+	ON available.baseRentalItemID = i.id
+	WHERE m.typeId = typeIdInput;
+END//
+DELIMITER ;
+
+-- Dumping structure for procedure librarydb.media_UpdateById
+DROP PROCEDURE IF EXISTS `media_UpdateById`;
+DELIMITER //
+CREATE PROCEDURE `media_UpdateById`(
+	IN `idToUpdate` INT,
+	IN `uniqueIdentifierToUpdate` VARCHAR(255),
+	IN `nameToUpdate` VARCHAR(255),
+	IN `descriptionToUpdate` TEXT,
+	IN `publisherToUpdate` VARCHAR(255),
+	IN `isChildSafeToUpdate` BIT,
+	IN `typeToUpdate` INT,
+	IN `categoryIdsToUpdate` VARCHAR(255),
+	IN `authorToUpdate` VARCHAR(255),
+	IN `pageCountOrSizeToUpdate` INT
+)
+BEGIN
+	
+	START TRANSACTION;
+	
+	UPDATE BaseRentalItem 
+	SET 
+		NAME = nameToUpdate,
+		DESCRIPTION = descriptionToUpdate
+	WHERE id = idToUpdate;
+
+	UPDATE Media
+	SET
+		uniqueIdentifier = uniqueIdentifierToUpdate,
+		publisher = publisherToUpdate,
+		isChildSafe = isChildSafeToUpdate,
+		typeId = typeToUpdate,
+		author = authorToUpdate,
+		pageCountOrSize = pageCountOrSizeToUpdate
+	WHERE baseRentalItemId = idToUpdate;
+	
+	DELETE FROM MediaCategories
+	WHERE mediaId = idToUpdate;
+	
+	INSERT INTO mediacategories (mediaId, categoryId)
+	SELECT idToUpdate, id
+	FROM Category
+	WHERE FIND_IN_SET(id, categoryIdsToUpdate);
+	
+	COMMIT;
+	ROLLBACK;
+END//
+DELIMITER ;
+
+-- Dumping structure for procedure librarydb.memberAccount_filter
+DROP PROCEDURE IF EXISTS `memberAccount_filter`;
+DELIMITER //
+CREATE PROCEDURE `memberAccount_filter`(
+    IN `filterValue` VARCHAR(255)
+)
+    COMMENT 'Selects all members that match filter value'
+BEGIN
+    SELECT lu.userId, lu.name, lu.phoneNumber, lu.email, ma.balance, ma.isFrozen
+    FROM libraryuser lu
+    INNER JOIN
+    MemberAccount ma
+    ON lu.userId = ma.userId
+    WHERE
+        lu.name LIKE CONCAT('%',filterValue,'%')
+        OR lu.phoneNumber LIKE CONCAT('%',filterValue,'%')
+        OR lu.email LIKE CONCAT('%',filterValue,'%');
+
+END//
+DELIMITER ;
+
+-- Dumping structure for procedure librarydb.memberAccount_Insert
+DROP PROCEDURE IF EXISTS `memberAccount_Insert`;
+DELIMITER //
+CREATE PROCEDURE `memberAccount_Insert`(
+	IN `nameInput` VARCHAR(255),
+	IN `phoneNumberInput` VARCHAR(20),
+	IN `emailInput` VARCHAR(255),
+	IN `passwordHashInput` VARCHAR(255),
+	IN `dobInput` DATE,
+	OUT `IdOutput` INT
+)
+    COMMENT 'Inserts a user into the database with the default role of Member and created a member account'
+BEGIN
+	START TRANSACTION;
+	  SET @memberIdVar = (SELECT roleId FROM userrole WHERE NAME LIKE 'Member' LIMIT 1);
+
+	  INSERT INTO librarydb.libraryuser (NAME, phoneNumber, email, passwordhash, dateofbirth, userRoleId)
+	  VALUES(nameInput, phoneNumberInput, emailInput, passwordHashInput, dobInput, @memberIdVar);
+	
+	  SET IdOutput = LAST_INSERT_ID();
+	
+	  INSERT INTO librarydb.memberaccount (userId)
+	  VALUES (IdOutput);
+	COMMIT;
+	ROLLBACK;
+END//
+DELIMITER ;
+
+-- Dumping structure for procedure librarydb.memberAccount_SelectAll
+DROP PROCEDURE IF EXISTS `memberAccount_SelectAll`;
+DELIMITER //
+CREATE PROCEDURE `memberAccount_SelectAll`()
+    COMMENT 'Selects all members'
+BEGIN
+    SELECT lu.userId, lu.name, lu.phoneNumber, lu.email, ma.balance, ma.isFrozen
+    FROM libraryuser lu
+    INNER JOIN
+    MemberAccount ma
+    ON lu.userId = ma.userId;
+END//
+DELIMITER ;
+
+-- Dumping structure for procedure librarydb.memberAccount_SelectByUserId
+DROP PROCEDURE IF EXISTS `memberAccount_SelectByUserId`;
+DELIMITER //
+CREATE PROCEDURE `memberAccount_SelectByUserId`(
+    IN `userIdInput` int
+)
+    COMMENT 'Selects a member by their user ID'
+BEGIN
+    SELECT lu.userId, lu.name, lu.phoneNumber, lu.email, ma.balance, ma.isFrozen
+    FROM libraryuser lu
+    INNER JOIN
+    MemberAccount ma
+    ON lu.userId = ma.userId
+    WHERE
+        lu.userId = userIdInput;
+
+END//
+DELIMITER ;
+
+-- Dumping structure for procedure librarydb.memberAccount_Update
+DROP PROCEDURE IF EXISTS `memberAccount_Update`;
+DELIMITER //
+CREATE PROCEDURE `memberAccount_Update`(
+	IN `newBalance` DECIMAL,
+	IN `newFrozenStatus` BIT,
+	IN `memberIdToUpdate` INT
+)
+BEGIN
+    UPDATE MemberAccount
+    SET 
+        balance = newBalance,
+        isFrozen = newFrozenStatus
+    WHERE userId = memberIdToUpdate;
+END//
+DELIMITER ;
+
+-- Dumping structure for procedure librarydb.rentalAgreement_CheckinByTransactionId
+DROP PROCEDURE IF EXISTS `rentalAgreement_CheckinByTransactionId`;
+DELIMITER //
+CREATE PROCEDURE `rentalAgreement_CheckinByTransactionId`(
+    IN `transactionIdInput` int,
+    IN `actualCheckinDateInput` DATE,
+    IN `checkinApprovedByInput` int,
+	OUT `IsSuccessful` BIT
+)
+    COMMENT 'Checks in rental agreement'
+BEGIN
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SET IsSuccessful = 0;
+    END;
+    START TRANSACTION;
+        SET IsSuccessful = 0;
+        UPDATE RentalAgreement
+        SET 
+            actualCheckinDate = actualCheckinDateInput,
+            checkinApprovedBy = checkinApprovedByInput,
+            lastUpdatedBy = checkinApprovedByInput
+        WHERE transactionId = transactionIdInput;
+    COMMIT;
+    SET IsSuccessful = 1;
+END//
+DELIMITER ;
+
+-- Dumping structure for procedure librarydb.rentalAgreement_Insert
+DROP PROCEDURE IF EXISTS `rentalAgreement_Insert`;
+DELIMITER //
+CREATE PROCEDURE `rentalAgreement_Insert`(
+	IN `checkoutDateInput` DATE,
+	IN `checkinDueDateInput` DATE,
+	IN `rentalItemIdInput` VARCHAR(36),
+	IN `borrowerIdInput` INT,
+	IN `checkoutApprovedByInput` INT,
+	OUT `IsSuccessful` BIT
+)
+    COMMENT 'Inserts a new rental agreement'
+BEGIN
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SET IsSuccessful = 0;
+    END;
+    START TRANSACTION;
+        SET IsSuccessful = 0;
+        INSERT INTO RentalAgreement(checkoutDate, checkinDueDate, rentalItemId, borrowerId, checkoutApprovedBy, lastUpdatedBy)
+        VALUES (checkoutDateInput, checkinDueDateInput, rentalItemIdInput, borrowerIdInput, checkoutApprovedByInput, checkoutApprovedByInput);
+    COMMIT;
+    SET IsSuccessful = 1;
+END//
+DELIMITER ;
+
+-- Dumping structure for procedure librarydb.rentalAgreement_SelectAll
+DROP PROCEDURE IF EXISTS `rentalAgreement_SelectAll`;
+DELIMITER //
+CREATE PROCEDURE `rentalAgreement_SelectAll`()
+    COMMENT 'Selects all rental agreement'
+BEGIN
+    SELECT ra.*, u.name
+	FROM rentalagreement ra
+	LEFT JOIN memberaccount ma
+	ON ra.borrowerId = ma.userId
+	LEFT JOIN libraryuser u
+	ON ma.userId = u.userId;
+END//
+DELIMITER ;
+
+-- Dumping structure for procedure librarydb.rentalAgreement_SelectByBorrowerId
+DROP PROCEDURE IF EXISTS `rentalAgreement_SelectByBorrowerId`;
+DELIMITER //
+CREATE PROCEDURE `rentalAgreement_SelectByBorrowerId`(
+	IN `borrowerIdInput` int
+)
+    COMMENT 'Selects all transactions for a given member'
+BEGIN
+   SELECT ra.*, u.name AS borrowerName, bri.id AS itemId, bri.name AS itemName
+	FROM rentalagreement ra
+	LEFT JOIN memberaccount ma
+	ON ra.borrowerId = ma.userId
+	LEFT JOIN libraryuser u
+	ON ma.userId = u.userId
+	INNER JOIN
+	rentalitem ri
+	ON ri.rentalItemGuid = ra.rentalItemId
+	INNER JOIN
+	baserentalitem bri
+	ON bri.id = ri.baseRentalItemId
+   WHERE borrowerId = borrowerIdInput;
+
+
+END//
+DELIMITER ;
+
+-- Dumping structure for procedure librarydb.rentalAgreement_SelectByRentalItemId
+DROP PROCEDURE IF EXISTS `rentalAgreement_SelectByRentalItemId`;
+DELIMITER //
+CREATE PROCEDURE `rentalAgreement_SelectByRentalItemId`(
+	IN `rentalItemIdInput` VARCHAR(36)
+)
+    COMMENT 'Selects all transactions for a given rental item'
+BEGIN
+   SELECT ra.*, u.name AS borrowerName
+FROM rentalagreement ra
+LEFT JOIN memberaccount ma
+ON ra.borrowerId = ma.userId
+LEFT JOIN libraryuser u
+ON ma.userId = u.userId
+WHERE ra.rentalItemid = rentalItemIdInput;
+END//
+DELIMITER ;
+
+-- Dumping structure for procedure librarydb.rentalAgreement_SelectByTransactionId
+DROP PROCEDURE IF EXISTS `rentalAgreement_SelectByTransactionId`;
+DELIMITER //
+CREATE PROCEDURE `rentalAgreement_SelectByTransactionId`(
+	IN `transactionIdInput` int
+)
+    COMMENT 'Select a rental agreement by its transaction id'
+BEGIN
+   SELECT ra.*, u.name AS borrowerName
+FROM rentalagreement ra
+LEFT JOIN memberaccount ma
+ON ra.borrowerId = ma.userId
+LEFT JOIN libraryuser u
+ON ma.userId = u.userId
+WHERE ra.transactionId = transactionIdInput;
+END//
+DELIMITER ;
+
+-- Dumping structure for procedure librarydb.rentalAgreement_SelectCurrentOverdue
+DROP PROCEDURE IF EXISTS `rentalAgreement_SelectCurrentOverdue`;
+DELIMITER //
+CREATE PROCEDURE `rentalAgreement_SelectCurrentOverdue`(
+     
+)
+    COMMENT 'Selects all currently overdue rental agreements'
+BEGIN
+    SELECT ra.*, u.name
+	FROM rentalagreement ra
+	LEFT JOIN memberaccount ma
+	ON ra.borrowerId = ma.userId
+	LEFT JOIN libraryuser u
+	ON ma.userId = u.userId
+    WHERE ra.actualCheckinDate IS NULL AND
+    ra.checkinDueDate < NOW();
+END//
+DELIMITER ;
+
+-- Dumping structure for procedure librarydb.rentalItem_DeleteByRentalItemGuid
+DROP PROCEDURE IF EXISTS `rentalItem_DeleteByRentalItemGuid`;
+DELIMITER //
+CREATE PROCEDURE `rentalItem_DeleteByRentalItemGuid`(
+	IN `guidInput` VARCHAR(36)
+)
+BEGIN
+DELETE FROM rentalItem
+WHERE rentalItemGuid = guidInput;
+
+END//
+DELIMITER ;
+
+-- Dumping structure for procedure librarydb.rentalItem_Filter
+DROP PROCEDURE IF EXISTS `rentalItem_Filter`;
+DELIMITER //
+CREATE PROCEDURE `rentalItem_Filter`(
+	IN `filterValue` VARCHAR(36)
+)
+    COMMENT 'Selects all rental items that have an ID containing the filter value'
+BEGIN
+    SELECT
+	   item.rentalItemGuid, 
+	   item.itemCondition, 
+	   item.isOnHold, 
+	   baseItem.name, 
+	   baseItem.description, 
+	   baseItem.itemType,
+	   baseItem.id,
+	   CASE WHEN item.rentalItemGuid IN 
+	   (
+		   SELECT ra.rentalItemId
+		   FROM rentalagreement ra
+		   WHERE ra.actualCheckinDate IS NULL
+	   )
+	   THEN TRUE ELSE FALSE END AS isCheckedOut
+   FROM RentalItem item
+   INNER JOIN baserentalitem baseItem
+   ON item.baseRentalItemId = baseItem.id
+   WHERE
+        item.rentalItemGuid LIKE CONCAT('%',filterValue,'%');
+END//
+DELIMITER ;
+
+-- Dumping structure for procedure librarydb.rentalItem_Insert
+DROP PROCEDURE IF EXISTS `rentalItem_Insert`;
+DELIMITER //
+CREATE PROCEDURE `rentalItem_Insert`(
+	IN `guidInput` VARCHAR(36),
+	IN `copyConditionInput` VARCHAR(50),
+	IN `isOnHoldInput` BIT,
+	IN `baseRentalItemIdInput` INT
+)
+BEGIN
+INSERT INTO rentalitem (rentalItemGuid, itemCondition, isOnHold, baseRentalItemId)
+VALUES (guidInput, copyConditionInput, isOnHoldInput, baseRentalItemIdInput);
+END//
+DELIMITER ;
+
+-- Dumping structure for procedure librarydb.rentalItem_SelectByBaseItemId
+DROP PROCEDURE IF EXISTS `rentalItem_SelectByBaseItemId`;
+DELIMITER //
+CREATE PROCEDURE `rentalItem_SelectByBaseItemId`(
+	IN `baseItemIdInput` INT
+)
+BEGIN
+SELECT 
+	item.rentalItemGuid, 
+	item.itemCondition, 
+	item.isOnHold, 
+	baseItem.name, 
+	baseItem.description, 
+	baseItem.itemType,
+	baseItem.id,
+	CASE WHEN item.rentalItemGuid IN 
+	(
+		SELECT ra.rentalItemId
+		FROM rentalagreement ra
+		WHERE ra.actualCheckinDate IS NULL
+	)
+	THEN TRUE ELSE FALSE END AS isCheckedOut
+FROM RentalItem item
+INNER JOIN baserentalitem baseItem
+ON item.baseRentalItemId = baseItem.id
+WHERE baseItem.id = baseItemIdInput;
+END//
+DELIMITER ;
+
+-- Dumping structure for procedure librarydb.rentalItem_SelectByRentalItemGuid
+DROP PROCEDURE IF EXISTS `rentalItem_SelectByRentalItemGuid`;
+DELIMITER //
+CREATE PROCEDURE `rentalItem_SelectByRentalItemGuid`(
+	IN `guidInput` VARCHAR(36)
+)
+BEGIN
+    SELECT
+	   item.rentalItemGuid, 
+	   item.itemCondition, 
+	   item.isOnHold, 
+	   baseItem.name, 
+	   baseItem.description, 
+	   baseItem.itemType,
+	   baseItem.id,
+	   CASE WHEN item.rentalItemGuid IN 
+	   (
+		   SELECT ra.rentalItemId
+		   FROM rentalagreement ra
+		   WHERE ra.actualCheckinDate IS NULL
+	   )
+	   THEN TRUE ELSE FALSE END AS isCheckedOut
+   FROM RentalItem item
+   INNER JOIN baserentalitem baseItem
+   ON item.baseRentalItemId = baseItem.id
+   WHERE item.rentalItemGuid = guidInput;
+
+END//
+DELIMITER ;
+
+-- Dumping structure for procedure librarydb.rentalItem_UpdateByRentalItemGuid
+DROP PROCEDURE IF EXISTS `rentalItem_UpdateByRentalItemGuid`;
+DELIMITER //
+CREATE PROCEDURE `rentalItem_UpdateByRentalItemGuid`(
+	IN `guidInput` VARCHAR(36),
+	IN `itemConditionInput` VARCHAR(50),
+	IN `isOnHoldInput` BIT
+)
+BEGIN
+UPDATE rentalItem
+SET
+	itemCondition = itemConditionInput,
+	isOnHold = isOnHoldInput
+WHERE rentalItemGuid = guidInput;
+END//
+DELIMITER ;
+
+-- Dumping structure for procedure librarydb.role_SelectAll
+DROP PROCEDURE IF EXISTS `role_SelectAll`;
+DELIMITER //
+CREATE PROCEDURE `role_SelectAll`()
+SELECT RoleId, Name From UserRole//
+DELIMITER ;
+
+-- Dumping structure for procedure librarydb.user_DeleteById
+DROP PROCEDURE IF EXISTS `user_DeleteById`;
+DELIMITER //
+CREATE PROCEDURE `user_DeleteById`(
+	IN `idToDelete` INT
+)
+    COMMENT 'Deletes the user by their UserId'
+BEGIN
+	DELETE FROM librarydb.libraryuser
+	WHERE UserId = idToDelete;
+END//
+DELIMITER ;
+
+-- Dumping structure for procedure librarydb.user_Insert
+DROP PROCEDURE IF EXISTS `user_Insert`;
+DELIMITER //
+CREATE PROCEDURE `user_Insert`(
+	IN `nameInput` VARCHAR(255),
+	IN `phoneNumberInput` VARCHAR(20),
+	IN `emailInput` VARCHAR(255),
+	IN `passwordHashInput` VARCHAR(255),
+	IN `dobInput` DATE,
+	OUT `IdOutput` INT
+)
+    COMMENT 'Inserts a user into the database with the default role of Member'
+BEGIN
+	SET @memberIdVar = (SELECT roleId FROM userrole WHERE NAME LIKE 'Member' LIMIT 1);
+
+	INSERT INTO librarydb.libraryuser (NAME, phoneNumber, email, passwordhash, dateofbirth, userRoleId)
+	VALUES(nameInput, phoneNumberInput, emailInput, passwordHashInput, dobInput, @memberIdVar);
+	
+	SET IdOutput = LAST_INSERT_ID();
+END//
+DELIMITER ;
+
+-- Dumping structure for procedure librarydb.user_SelectByEmail
+DROP PROCEDURE IF EXISTS `user_SelectByEmail`;
+DELIMITER //
+CREATE PROCEDURE `user_SelectByEmail`(
+	IN `emailInput` varchar(255)
+)
+SELECT u.userId, u.name, u.phoneNumber, u.email, u.passwordHash, u.dateOfBirth, r.name userRole FROM libraryuser u INNER JOIN userrole r ON u.UserRoleId = r.RoleId WHERE u.email = emailInput//
+DELIMITER ;
+
+-- Dumping structure for procedure librarydb.user_SelectById
+DROP PROCEDURE IF EXISTS `user_SelectById`;
+DELIMITER //
+CREATE PROCEDURE `user_SelectById`(
+	IN `idInput` int
+)
+SELECT u.userId, u.name, u.phoneNumber, u.email, u.passwordHash, u.dateOfBirth, r.name userRole FROM libraryuser u INNER JOIN userrole r ON u.UserRoleId = r.RoleId WHERE u.UserId = idInput//
+DELIMITER ;
+
+-- Dumping structure for procedure librarydb.user_UpdateById
+DROP PROCEDURE IF EXISTS `user_UpdateById`;
+DELIMITER //
+CREATE PROCEDURE `user_UpdateById`(
+	IN `IdInput` INT,
+	IN `nameInput` VARCHAR(255),
+	IN `phoneNumberInput` VARCHAR(20),
+	IN `emailInput` VARCHAR(255),
+	IN `passwordHashInput` VARCHAR(255),
+	IN `dobInput` DATE,
+	IN `UserRoleIdInput` INT
+)
+BEGIN
+	UPDATE librarydb.libraryuser u
+	SET
+		u.Name = nameInput,
+		u.PhoneNumber = phoneNumberInput,
+		u.Email = emailInput,
+		u.PasswordHash = passwordHashInput,
+		u.DateOfBirth = dobInput,
+		u.UserRoleId = UserRoleIdInput
+	WHERE 
+		u.UserId = idInput;
+END//
+DELIMITER ;
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
