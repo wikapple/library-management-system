@@ -144,9 +144,9 @@ CREATE TABLE IF NOT EXISTS `libraryuser` (
   UNIQUE KEY `Email` (`email`) USING BTREE,
   KEY `UserRoleId` (`userRoleId`) USING BTREE,
   CONSTRAINT `libraryuser_ibfk_1` FOREIGN KEY (`userRoleId`) REFERENCES `userrole` (`roleId`) ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
--- Dumping data for table librarydb.libraryuser: ~12 rows (approximately)
+-- Dumping data for table librarydb.libraryuser: ~13 rows (approximately)
 DELETE FROM `libraryuser`;
 INSERT INTO `libraryuser` (`userId`, `name`, `phoneNumber`, `email`, `passwordHash`, `dateOfBirth`, `userRoleId`) VALUES
 	(1, 'admin', '111-222-3333', 'admin@admin.com', '$2a$12$PbFqKsS1gGmPuMHPus6jIOst0RpmOTkji8s2tAyxUyGglh7tMu3Ny', '1990-01-01', 3),
@@ -160,7 +160,8 @@ INSERT INTO `libraryuser` (`userId`, `name`, `phoneNumber`, `email`, `passwordHa
 	(10, 'Matt', '123-456-1234', 'matt@matthew.com', '$2b$10$olKlcya6kiYEbjAD.bd1E.zlcDolOddK.rqIHdZwoOr87KjlY3mT6', '2024-02-26', 1),
 	(12, 'William Applegate', '502-648-5380', 'wikapple@iu.edu', '$2b$10$h2G81ek0A.ydC9WPYT2mNOjhEOyr4JnVxjq8csq6xk1hQyP3GBG4a', '1990-05-05', 1),
 	(15, 'John Doe', '111-222-3333', 'john@doe.com', '$2b$10$FgZathCO1yJpDlzXJ/EbqeWhOFXiev5iE8RV4vi1TlCG9YC1IeYju', '1990-01-01', 1),
-	(16, 'Mary Member', '987-654-3210', 'mary@member.com', '$2b$10$02kOSB0AsqmnX7j457TaOO0UvhoMzkZbUwyN5n6fXHm9..NEoBUQK', '2000-01-01', 1);
+	(16, 'Mary Member', '987-654-3210', 'mary@member.com', '$2b$10$02kOSB0AsqmnX7j457TaOO0UvhoMzkZbUwyN5n6fXHm9..NEoBUQK', '2000-01-01', 1),
+	(17, 'Norville Rogers', '123-456-7890', 'shaggy@scoobydoo.com', '$2b$10$DN/Wd6dEBAsY9c8vTZHe2.F.ZH0YBYnayMBBd3sFWJ9JcKoprE2Em', '1969-09-13', 1);
 
 -- Dumping structure for table librarydb.media
 DROP TABLE IF EXISTS `media`;
@@ -260,10 +261,10 @@ CREATE TABLE IF NOT EXISTS `memberaccount` (
   CONSTRAINT `MemberAccount_LibraryUser_FK` FOREIGN KEY (`userId`) REFERENCES `libraryuser` (`userId`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
--- Dumping data for table librarydb.memberaccount: ~10 rows (approximately)
+-- Dumping data for table librarydb.memberaccount: ~11 rows (approximately)
 DELETE FROM `memberaccount`;
 INSERT INTO `memberaccount` (`userId`, `balance`, `isFrozen`) VALUES
-	(3, 2.00, b'0'),
+	(3, 1.00, b'1'),
 	(4, 0.00, b'0'),
 	(5, 0.00, b'0'),
 	(7, 0.00, b'0'),
@@ -272,7 +273,8 @@ INSERT INTO `memberaccount` (`userId`, `balance`, `isFrozen`) VALUES
 	(10, -1.00, b'1'),
 	(12, 0.00, b'0'),
 	(15, 0.00, b'0'),
-	(16, 0.00, b'0');
+	(16, 0.00, b'0'),
+	(17, 0.00, b'0');
 
 -- Dumping structure for table librarydb.rentalagreement
 DROP TABLE IF EXISTS `rentalagreement`;
@@ -295,12 +297,13 @@ CREATE TABLE IF NOT EXISTS `rentalagreement` (
   CONSTRAINT `RentalAgreement_EmployeeCheckout_FK` FOREIGN KEY (`checkoutApprovedBy`) REFERENCES `employeeaccount` (`userId`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `RentalAgreement_EmployeeLastUpdated_FK` FOREIGN KEY (`lastUpdatedBy`) REFERENCES `employeeaccount` (`userId`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `RentalAgreement_Member_FK` FOREIGN KEY (`borrowerId`) REFERENCES `memberaccount` (`userId`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 -- Dumping data for table librarydb.rentalagreement: ~1 rows (approximately)
 DELETE FROM `rentalagreement`;
 INSERT INTO `rentalagreement` (`transactionId`, `checkoutDate`, `checkinDueDate`, `rentalItemId`, `borrowerId`, `checkoutApprovedBy`, `checkinApprovedBy`, `actualCheckinDate`, `lastUpdatedBy`) VALUES
-	(17, '2024-04-26', '2024-04-29', '4e06d263-86d7-4edb-96d2-167287b60151', 3, 1, NULL, NULL, 1);
+	(17, '2024-04-26', '2024-04-29', '4e06d263-86d7-4edb-96d2-167287b60151', 3, 1, NULL, NULL, 1),
+	(18, '2024-05-01', '2024-05-15', '18fa80d0-ce73-431e-a1fb-b52897245885', 17, 1, 1, '2024-05-01', 1);
 
 -- Dumping structure for table librarydb.rentalitem
 DROP TABLE IF EXISTS `rentalitem`;
@@ -314,13 +317,13 @@ CREATE TABLE IF NOT EXISTS `rentalitem` (
   CONSTRAINT `RentalItemCopy_BaseRentalItem_FK` FOREIGN KEY (`baseRentalItemId`) REFERENCES `baserentalitem` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
--- Dumping data for table librarydb.rentalitem: ~13 rows (approximately)
+-- Dumping data for table librarydb.rentalitem: ~14 rows (approximately)
 DELETE FROM `rentalitem`;
 INSERT INTO `rentalitem` (`rentalItemGuid`, `itemCondition`, `isOnHold`, `baseRentalItemId`) VALUES
 	('06b9bb1b-a57e-4dd2-b27a-14a719dbecee', 'Good', b'0', 9),
 	('07211d07-cc27-438b-abf7-608cee23a2fd', 'New', b'0', 24),
 	('181a261b-b591-4866-8d3c-c904df3fd67c', 'New', b'0', 9),
-	('18fa80d0-ce73-431e-a1fb-b52897245885', 'new', b'0', 8),
+	('18fa80d0-ce73-431e-a1fb-b52897245885', 'New', b'0', 8),
 	('3339b5ea-b6bb-49e4-bad1-8c222b6d7a92', 'Fair', b'1', 24),
 	('484daa14-149b-4677-9f5a-efe4e0f2fd1d', 'New', b'0', 8),
 	('4e06d263-86d7-4edb-96d2-167287b60151', 'Fair', b'0', 9),

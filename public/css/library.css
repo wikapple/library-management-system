@@ -7,7 +7,12 @@ body{
     max-width: 600px;
     padding: 10px 20px;
 }
-
+.btn, a {
+    transition: transform 0.4s ease;
+}
+.btn:hover, a:hover{
+    transform: scale(1.1);
+}
 .anchor-feature-link {
     color: inherit;
     border:1px solid #DDD;
@@ -17,9 +22,11 @@ body{
     max-width:350px;
     text-decoration: none;
     display: block;
+    transition: transform 0.4s ease;
 }
 .anchor-feature-link:hover {
     text-decoration: underline;
+    transform: scale(1.05);
 }
 .notification-board {
     color: inherit;
